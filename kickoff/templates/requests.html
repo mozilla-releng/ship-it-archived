@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html lang='en-US'>
+<head>
+<title>Release Kick-off!</title>
+<link rel='stylesheet' type='text/css' href='{{ url_for('static', filename='kickoff.css') }}' />
+</head>
+<body>
+<table>
+<tr>
+    <th>Release Name</th>
+    <th>Submitted By</th>
+    <th>Status</th>
+</tr>
+{% for rel in releases %}
+<tr>
+    <td>{{ rel.name }}</td>
+    <td>{{ rel.submitter }}</td>
+    {% if not rel.complete %}
+        <td>Not started</td>
+    {% else %}
+        <td>Started</td>
+    {% endif %}
+{% endfor %}
+</body>
+</html>

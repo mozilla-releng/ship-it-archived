@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html lang='en-US'>
+<head>
+<title>Release Kick-off!</title>
+<link rel='stylesheet' type='text/css' href='{{ url_for('static', filename='kickoff.css') }}' />
+</head>
+<body>
+<form id='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
+<div>Products:
+    {{ form.fennec.label()|safe }}
+    {{ form.fennec()|safe }}
+    {{ form.firefox.label()|safe }}
+    {{ form.firefox()|safe }}
+    {{ form.thunderbird.label()|safe }}
+    {{ form.thunderbird()|safe }}
+</div>
+<div>
+    {{ form.version.label()|safe }}
+    {{ form.version()|safe }}
+</div>
+<div>
+    {{ form.buildNumber.label()|safe }}
+    {{ form.buildNumber()|safe }}
+</div>
+<div>
+    {{ form.mozillaRevision.label()|safe }}
+    {{ form.mozillaRevision()|safe }}
+</div>
+<div>
+    {{ form.commRevision.label()|safe }}
+    {{ form.commRevision()|safe }}
+</div>
+<div>
+    {{ form.fennecL10nChangesets.label()|safe }}
+    {{ form.fennecL10nChangesets()|safe }}
+</div>
+<div>
+    {{ form.firefoxL10nChangesets.label()|safe }}
+    {{ form.firefoxL10nChangesets()|safe }}
+</div>
+<div>
+    {{ form.thunderbirdL10nChangesets.label()|safe }}
+    {{ form.thunderbirdL10nChangesets()|safe }}
+</div>
+<div>
+    {{ form.partials.label()|safe }}
+    {{ form.partials()|safe }}
+</div>
+<div>
+    {{ form.whatsnew.label()|safe }}
+    {{ form.whatsnew()|safe }}
+</div>
+<div>
+    <input type='submit' value='Gimme a release!' />
+</form>
+</body>
+</html>
