@@ -8,7 +8,7 @@ class TestRequestsAPI(ViewTest):
     def testGetAllReleases(self):
         ret = self.client.get('/releases')
         expected = {
-            'releases': ['foo11', 'bar12']
+            'releases': ['foo-1-1', 'bar-1-2']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -16,16 +16,16 @@ class TestRequestsAPI(ViewTest):
     def testGetIncompleteReleases(self):
         ret = self.client.get('/releases', query_string={'incomplete': True})
         expected = {
-            'releases': ['foo11']
+            'releases': ['foo-1-1']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
 class TestReleaseAPI(ViewTest):
     def testGetRelease(self):
-        ret = self.client.get('/releases/bar12')
+        ret = self.client.get('/releases/bar-1-2')
         expected = {
-            'name': 'bar12',
+            'name': 'bar-1-2',
             'submitter': 'joe',
             'product': 'bar',
             'version': '1',
@@ -41,7 +41,7 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testMarkAsComplete(self):
-        ret = self.client.post('/releases/foo11', data={'complete': True})
+        ret = self.client.post('/releases/foo-1-1', data={'complete': True})
         self.assertEquals(ret.status_code, 200)
         with app.test_request_context():
-            self.assertEquals(Release.query.filter_by(name='foo11').first().complete, True)
+            self.assertEquals(Release.query.filter_by(name='foo-1-1').first().complete, True)

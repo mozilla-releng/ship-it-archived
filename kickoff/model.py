@@ -1,4 +1,4 @@
-#from release.info getReleaseName
+from mozilla.release.info import getReleaseName
 
 from kickoff import db
 
@@ -18,8 +18,7 @@ class Release(db.Model):
     def __init__(self, submitter, product, version, buildNumber,
                  mozillaRevision, l10nChangesets, partials, whatsnew,
                  commRevision=None):
-        #self.name = getReleaseName(product, version, buildNumber)
-        self.name = product + version + str(buildNumber)
+        self.name = getReleaseName(product, version, buildNumber)
         self.submitter = submitter
         self.product = product
         self.version = version
