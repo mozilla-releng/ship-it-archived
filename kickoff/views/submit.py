@@ -52,4 +52,4 @@ class SubmitRelease(MethodView):
             db.session.add(release)
 
         db.session.commit()
-        return redirect('requests.html')
+        return redirect('releases.html')
