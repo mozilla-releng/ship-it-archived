@@ -17,7 +17,7 @@ class ReleaseForm(Form):
     fennecL10nChangesets = TextField('Fennec L10n Changesets:')
     firefoxL10nChangesets = TextField('Firefox L10n Changesets:')
     thunderbirdL10nChangesets = TextField('Thunderbird L10n Changesets:')
-    partials = TextField('Partial versions (comm separated):')
+    partials = TextField('Partial versions (comma separated):')
     whatsnew = BooleanField('Show whatsnew page?')
 
 class SubmitRelease(MethodView):
