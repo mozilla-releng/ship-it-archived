@@ -4,32 +4,39 @@ from flask.views import MethodView
 from flask.ext.wtf import Form, BooleanField
 
 from kickoff import app, db
-from kickoff.model import Release
+from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, \
+  getReleaseTable
 
 class CompleteForm(Form):
     complete = BooleanField('complete')
 
-class ReleasesAPI(MethodView):
-    def get(self):
-        releases = []
-        if request.args.get('incomplete'):
-            for r in Release.query.filter_by(complete=False):
+def getReleases(incompleteOnly=False):
+    releases = []
+    for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
+        if incompleteOnly:
+            for r in table.query.filter_by(complete=False):
                 releases.append(r.name)
         else:
-            for r in Release.query.all():
+            for r in table.query.all():
                 releases.append(r.name)
-        return jsonify({'releases': releases})
+    return releases
+
+class ReleasesAPI(MethodView):
+    def get(self):
+        return jsonify({'releases': getReleases(request.args.get('incomplete', False))})
 
 class ReleaseAPI(MethodView):
     def get(self, releaseName):
-        return jsonify(Release.query.filter_by(name=releaseName).first().toDict())
+        table = getReleaseTable(releaseName)
+        return jsonify(table.query.filter_by(name=releaseName).first().toDict())
 
     def post(self, releaseName):
+        table = getReleaseTable(releaseName)
         form = CompleteForm()
         if not form.validate():
             return Response(status=400, response=form.errors)
 
-        release = Release.query.filter_by(name=releaseName).first()
+        release = table.query.filter_by(name=releaseName).first()
         release.complete = form.complete.data
         db.session.add(release)
         db.session.commit()
@@ -37,4 +44,4 @@ class ReleaseAPI(MethodView):
 
 class Releases(MethodView):
     def get(self):
-        return render_template('releases.html', releases=Release.query.all())
+        return render_template('releases.html', releases=getReleases())

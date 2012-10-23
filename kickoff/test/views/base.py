@@ -3,9 +3,11 @@ from tempfile import mkstemp
 import unittest
 
 from kickoff import app, db
-from kickoff.model import Release
+from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease
 
 class ViewTest(unittest.TestCase):
+    auth = {'REMOTE_USER': 'bob'}
+
     def setUp(self):
         self.db_fd, self.db_file = mkstemp()
         app.config['DEBUG'] = True
@@ -14,8 +16,11 @@ class ViewTest(unittest.TestCase):
         with app.test_request_context():
             db.init_app(app)
             db.create_all()
-            db.session.add(Release('joe', 'foo', '1', 1, 'abc', 'http://foo', '1,2', False))
-            r = Release('joe', 'bar', '1', 2, 'abcd', 'http://bar', '1,2', True)
+            db.session.add(FennecRelease('joe', '1', 1, 'abc', 'http://foo'))
+            r = FirefoxRelease('0,1', False, 'joe', '2', 1, 'def', 'http://bar')
+            r.complete = True
+            db.session.add(r)
+            r = ThunderbirdRelease('ghi', '0', True, 'bob', '2', 2, 'ghi', 'http://baz')
             r.complete = True
             db.session.add(r)
             db.session.commit()
@@ -27,3 +32,9 @@ class ViewTest(unittest.TestCase):
         app._got_first_request = False
         os.close(self.db_fd)
         os.remove(self.db_file)
+
+    def get(self, *args, **kwargs):
+        return self.client.get(*args, environ_base=self.auth, **kwargs)
+
+    def post(self, *args, **kwargs):
+        return self.client.post(*args, environ_base=self.auth, **kwargs)

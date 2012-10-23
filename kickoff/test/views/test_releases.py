@@ -1,39 +1,38 @@
 import simplejson as json
 
 from kickoff import app
-from kickoff.model import Release
+from kickoff.model import FirefoxRelease
 from kickoff.test.views.base import ViewTest
 
 class TestRequestsAPI(ViewTest):
     def testGetAllReleases(self):
-        ret = self.client.get('/releases')
+        ret = self.get('/releases')
         expected = {
-            'releases': ['foo-1-1', 'bar-1-2']
+            'releases': ['fennec-1-1', 'firefox-2-1', 'thunderbird-2-2']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
     def testGetIncompleteReleases(self):
-        ret = self.client.get('/releases', query_string={'incomplete': True})
+        ret = self.get('/releases', query_string={'incomplete': True})
         expected = {
-            'releases': ['foo-1-1']
+            'releases': ['fennec-1-1']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
 class TestReleaseAPI(ViewTest):
     def testGetRelease(self):
-        ret = self.client.get('/releases/bar-1-2')
+        ret = self.get('/releases/thunderbird-2-2')
         expected = {
-            'name': 'bar-1-2',
-            'submitter': 'joe',
-            'product': 'bar',
-            'version': '1',
+            'name': 'thunderbird-2-2',
+            'submitter': 'bob',
+            'version': '2',
             'buildNumber': 2,
-            'mozillaRevision': 'abcd',
-            'commRevision': None,
-            'l10nChangesets': 'http://bar',
-            'partials': '1,2',
+            'mozillaRevision': 'ghi',
+            'commRevision': 'ghi',
+            'l10nChangesets': 'http://baz',
+            'partials': '0',
             'whatsnew': True,
             'complete': True
         }
@@ -41,7 +40,7 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testMarkAsComplete(self):
-        ret = self.client.post('/releases/foo-1-1', data={'complete': True})
+        ret = self.post('/releases/firefox-2-1', data={'complete': True})
         self.assertEquals(ret.status_code, 200)
         with app.test_request_context():
-            self.assertEquals(Release.query.filter_by(name='foo-1-1').first().complete, True)
+            self.assertEquals(FirefoxRelease.query.filter_by(name='firefox-2-1').first().complete, True)
