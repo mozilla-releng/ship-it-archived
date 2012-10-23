@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     parser.add_option("-d", "--db", dest="db")
-    parser.add_option("-h", "--host", dest="host")
+    parser.add_option("--host", dest="host")
     parser.add_option("-p", "--port", dest="port", type="int")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true")
     options, args = parser.parse_args()
