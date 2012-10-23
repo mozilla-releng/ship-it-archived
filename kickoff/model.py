@@ -11,12 +11,14 @@ class Release(db.Model):
     mozillaRevision = db.Column(db.String(100), nullable=False)
     commRevision = db.Column(db.String(100))
     l10nChangesets = db.Column(db.String(250), nullable=False)
-    partials = db.Column(db.String(50), nullable=False)
+    firefoxPartials = db.Column(db.String(100))
+    thunderbirdPartials = db.Column(db.String(100))
     whatsnew = db.Column(db.Boolean(), nullable=False, default=False)
     complete = db.Column(db.Boolean(), nullable=False, default=False)
 
     def __init__(self, submitter, product, version, buildNumber,
-                 mozillaRevision, l10nChangesets, partials, whatsnew,
+                 mozillaRevision, l10nChangesets, whatsnew,
+                 firefoxPartials=None, thunderbirdPartials=None,
                  commRevision=None):
         self.name = getReleaseName(product, version, buildNumber)
         self.submitter = submitter
@@ -25,8 +27,11 @@ class Release(db.Model):
         self.buildNumber = buildNumber
         self.mozillaRevision = mozillaRevision
         self.l10nChangesets = l10nChangesets
-        self.partials = partials
         self.whatsnew = whatsnew
+        if firefoxPartials:
+            self.firefoxPartials = firefoxPartials
+        if thunderbirdPartials:
+            self.thunderbirdPartials = thunderbirdPartials
         if commRevision:
             self.commRevision = commRevision
     

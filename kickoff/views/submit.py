@@ -1,4 +1,4 @@
-from flask import request, render_template, Response, redirect
+from flask import request, render_template, Response, redirect, make_response
 from flask.views import MethodView
 
 from flask.ext.wtf import Form, TextField, DataRequired, BooleanField, IntegerField
@@ -10,14 +10,15 @@ class ReleaseForm(Form):
     fennec = BooleanField('Fennec')
     firefox = BooleanField('Firefox')
     thunderbird = BooleanField('Thunderbird')
-    version = TextField('Version:', validators=[DataRequired()])
-    buildNumber = IntegerField('Build Number:', validators=[DataRequired()])
-    mozillaRevision = TextField('Mozilla Revision:', validators=[DataRequired()])
+    version = TextField('Version:', validators=[DataRequired('Version is required.')])
+    buildNumber = IntegerField('Build Number:', validators=[DataRequired('Build number is required.')])
+    mozillaRevision = TextField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
     commRevision = TextField('Comm Revision:')
     fennecL10nChangesets = TextField('Fennec L10n Changesets:')
     firefoxL10nChangesets = TextField('Firefox L10n Changesets:')
     thunderbirdL10nChangesets = TextField('Thunderbird L10n Changesets:')
-    partials = TextField('Partial versions (comma separated):')
+    firefoxPartials = TextField('Firefox partial versions (comma separated):')
+    thunderbirdPartials = TextField('Thunderbird partial versions (comma separated):')
     whatsnew = BooleanField('Show whatsnew page?')
 
 class SubmitRelease(MethodView):
@@ -27,29 +28,46 @@ class SubmitRelease(MethodView):
     def post(self):
         submitter = request.environ.get('REMOTE_USER')
         form = ReleaseForm()
+        errors = []
         if not form.validate():
-            return Response(status=400, response=form.errors)
+            for errlist in form.errors.values():
+                errors.extend(errlist)
         if not form.fennec.data and not form.firefox.data and not form.thunderbird.data:
-            return Response(status=400, response="Must select at least one product.")
+            errors.append("Must select at least one product.")
 
         if form.fennec.data:
+            if not form.fennecL10nChangesets.data:
+                errors.append("L10n changesets is required for Fennec")
             release = Release(submitter, 'fennec', form.version.data,
                 form.buildNumber.data, form.mozillaRevision.data,
-                form.fennecL10nChangesets.data, form.partials.data,
-                form.whatsnew.data)
+                form.fennecL10nChangesets.data, form.whatsnew.data)
             db.session.add(release)
         if form.firefox.data:
+            if not form.firefoxL10nChangesets.data:
+                errors.append("L10n changesets are requried for Firefox.")
+            if not form.firefoxPartials.data:
+                errors.append("Partial versions are required for Firefox.")
             release = Release(submitter, 'firefox', form.version.data,
                 form.buildNumber.data, form.mozillaRevision.data,
-                form.firefoxL10nChangesets.data, form.partials.data,
-                form.whatsnew.data)
+                form.firefoxL10nChangesets.data, form.whatsnew.data,
+                firefoxPartials=form.firefoxPartials.data)
             db.session.add(release)
         if form.thunderbird.data:
+            if not form.commRevision.data:
+                errors.append("Comm revision is required for Thunderbird.")
+            if not form.thunderbirdL10nChangesets.data:
+                errors.append("L10n changesets are required for Thunderbird.")
+            if not form.thunderbirdPartials.data:
+                errors.append("Partial versions are required for Thunderbird.")
             release = Release(submitter, 'thunderbird', form.version.data,
                 form.buildNumber.data, form.mozillaRevision.data,
-                form.firefoxL10nChangesets.data, form.partials.data,
-                form.whatsnew.data, commRevision=form.commRevision.data)
+                form.firefoxL10nChangesets.data, form.whatsnew.data,
+                thunderbirdPartials=form.thunderbirdPartials.data,
+                commRevision=form.commRevision.data)
             db.session.add(release)
 
-        db.session.commit()
-        return redirect('releases.html')
+        if errors:
+            return make_response(render_template('submit_release.html', errors=errors, form=ReleaseForm()), 400)
+        else:
+            db.session.commit()
+            return redirect('releases.html')

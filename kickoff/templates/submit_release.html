@@ -5,6 +5,11 @@
 <link rel='stylesheet' type='text/css' href='{{ url_for('static', filename='kickoff.css') }}' />
 </head>
 <body>
+<div id='errors'>
+    {% for e in errors %}
+    <div class='error'>{{ e }}</div>
+    {% endfor %}
+</div>
 <form id='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
 <div>Products:
     {{ form.fennec.label()|safe }}
@@ -43,8 +48,12 @@
     {{ form.thunderbirdL10nChangesets()|safe }}
 </div>
 <div>
-    {{ form.partials.label()|safe }}
-    {{ form.partials()|safe }}
+    {{ form.firefoxPartials.label()|safe }}
+    {{ form.firefoxPartials()|safe }}
+</div>
+<div>
+    {{ form.thunderbirdPartials.label()|safe }}
+    {{ form.thunderbirdPartials()|safe }}
 </div>
 <div>
     {{ form.whatsnew.label()|safe }}
