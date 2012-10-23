@@ -9,18 +9,21 @@ from kickoff.model import Release
 class CompleteForm(Form):
     complete = BooleanField('complete')
 
-class RequestsAPI(MethodView):
+class ReleasesAPI(MethodView):
     def get(self):
-        releases = {}
+        releases = []
         if request.args.get('incomplete'):
             for r in Release.query.filter_by(complete=False):
-                releases[r.name] = r.toDict()
+                releases.append(r.name)
         else:
             for r in Release.query.all():
-                releases[r.name] = r.toDict()
-        return jsonify(releases)
+                releases.append(r.name)
+        return jsonify({'releases': releases})
 
 class ReleaseAPI(MethodView):
+    def get(self, releaseName):
+        return jsonify(Release.query.filter_by(name=releaseName).first().toDict())
+
     def post(self, releaseName):
         form = CompleteForm()
         if not form.validate():
@@ -32,6 +35,6 @@ class ReleaseAPI(MethodView):
         db.session.commit()
         return Response(200)
 
-class Requests(MethodView):
+class Releases(MethodView):
     def get(self):
-        return render_template('requests.html', releases=Release.query.all())
+        return render_template('releases.html', releases=Release.query.all())
