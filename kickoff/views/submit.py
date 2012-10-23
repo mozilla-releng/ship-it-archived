@@ -25,7 +25,7 @@ class SubmitRelease(MethodView):
         return render_template('submit_release.html', form=ReleaseForm())
 
     def post(self):
-        submitter = request.environ.get('REMOTE_USER', 'REMOVEME')
+        submitter = request.environ.get('REMOTE_USER')
         form = ReleaseForm()
         if not form.validate():
             return Response(status=400, response=form.errors)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, Response, request
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -7,6 +7,11 @@ db = SQLAlchemy()
 from kickoff.model import Release
 from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI
 from kickoff.views.submit import SubmitRelease
+
+@app.before_request
+def require_login():
+    if not request.environ.get('REMOTE_USER'):
+        return Response(status=401)
 
 @app.route('/', methods=['GET'])
 @app.route('/index.html', methods=['GET'])

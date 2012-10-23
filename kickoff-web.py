@@ -2,6 +2,8 @@ import logging
 from os import path
 import site
 
+from paste.auth.basic import AuthBasicHandler
+
 mydir = path.dirname(path.abspath(__file__))
 site.addsitedir(mydir)
 site.addsitedir(path.join(mydir, 'vendor/lib/python'))
@@ -31,4 +33,7 @@ if __name__ == '__main__':
     with app.test_request_context():
         db.init_app(app)
         db.create_all()
+    def auth(environ, username, password):
+        return username == password
+    app.wsgi_app = AuthBasicHandler(app.wsgi_app, "Release kick-off", auth)
     app.run(port=options.port, host=options.host)
