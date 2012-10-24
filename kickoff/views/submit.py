@@ -12,6 +12,7 @@ class ReleaseForm(Form):
     thunderbird = BooleanField('Thunderbird')
     version = TextField('Version:', validators=[DataRequired('Version is required.')])
     buildNumber = IntegerField('Build Number:', validators=[DataRequired('Build number is required.')])
+    branch = TextField('Branch:', validators=[DataRequired('Branch is required')])
     mozillaRevision = TextField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
     commRevision = TextField('Comm Revision:')
     fennecL10nChangesets = TextField('Fennec L10n Changesets:')

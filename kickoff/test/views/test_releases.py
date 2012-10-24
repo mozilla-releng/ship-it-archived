@@ -29,6 +29,7 @@ class TestReleaseAPI(ViewTest):
             'submitter': 'bob',
             'version': '2',
             'buildNumber': 2,
+            'branch': 'b',
             'mozillaRevision': 'ghi',
             'commRevision': 'ghi',
             'l10nChangesets': 'http://baz',

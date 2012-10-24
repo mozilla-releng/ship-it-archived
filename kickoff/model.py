@@ -17,16 +17,18 @@ class Release(object):
     submitter = db.Column(db.String(250), nullable=False)
     version = db.Column(db.String(10), nullable=False)
     buildNumber = db.Column(db.Integer(), nullable=False)
+    branch = db.Column(db.String(50), nullable=False)
     mozillaRevision = db.Column(db.String(100), nullable=False)
     l10nChangesets = db.Column(db.String(250), nullable=False)
     complete = db.Column(db.Boolean(), nullable=False, default=False)
 
-    def __init__(self, submitter, version, buildNumber,
+    def __init__(self, submitter, version, buildNumber, branch,
                  mozillaRevision, l10nChangesets):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version
         self.buildNumber = buildNumber
+        self.branch = branch
         self.mozillaRevision = mozillaRevision
         self.l10nChangesets = l10nChangesets
     

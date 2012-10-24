@@ -16,11 +16,11 @@ class ViewTest(unittest.TestCase):
         with app.test_request_context():
             db.init_app(app)
             db.create_all()
-            db.session.add(FennecRelease('joe', '1', 1, 'abc', 'http://foo'))
-            r = FirefoxRelease('0,1', 'joe', '2', 1, 'def', 'http://bar')
+            db.session.add(FennecRelease('joe', '1', 1, 'a', 'abc', 'http://foo'))
+            r = FirefoxRelease('0,1', 'joe', '2', 1, 'a', 'def', 'http://bar')
             r.complete = True
             db.session.add(r)
-            r = ThunderbirdRelease('ghi', '0', 'bob', '2', 2, 'ghi', 'http://baz')
+            r = ThunderbirdRelease('ghi', '0', 'bob', '2', 2, 'b', 'ghi', 'http://baz')
             r.complete = True
             db.session.add(r)
             db.session.commit()
