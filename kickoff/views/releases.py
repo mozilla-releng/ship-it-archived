@@ -45,4 +45,5 @@ class ReleaseAPI(MethodView):
 
 class Releases(MethodView):
     def get(self):
-        return render_template('releases.html', releases=getReleases())
+        releases=sorted(getReleases(), cmp=lambda x,y: cmp(x.complete, y.complete))
+        return render_template('releases.html', releases=releases)
