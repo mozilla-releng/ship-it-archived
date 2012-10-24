@@ -33,7 +33,6 @@ class TestReleaseAPI(ViewTest):
             'commRevision': 'ghi',
             'l10nChangesets': 'http://baz',
             'partials': '0',
-            'whatsnew': True,
             'complete': True
         }
         self.assertEquals(ret.status_code, 200)

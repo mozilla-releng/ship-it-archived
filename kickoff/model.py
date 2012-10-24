@@ -45,11 +45,9 @@ class FennecRelease(Release, db.Model):
 
 class DesktopRelease(Release):
     partials = db.Column(db.String(100))
-    whatsnew = db.Column(db.Boolean(), nullable=False, default=False)
 
-    def __init__(self, partials, whatsnew, *args, **kwargs):
+    def __init__(self, partials, *args, **kwargs):
         self.partials = partials
-        self.whatsnew = whatsnew
         Release.__init__(self, *args, **kwargs)
 
 class FirefoxRelease(DesktopRelease, db.Model):

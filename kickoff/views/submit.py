@@ -19,7 +19,6 @@ class ReleaseForm(Form):
     thunderbirdL10nChangesets = TextField('Thunderbird L10n Changesets:')
     firefoxPartials = TextField('Firefox partial versions (eg, 17.0b2build1):')
     thunderbirdPartials = TextField('Thunderbird partial versions:')
-    whatsnew = BooleanField('Show whatsnew page?')
 
 class SubmitRelease(MethodView):
     def get(self):
@@ -48,8 +47,8 @@ class SubmitRelease(MethodView):
                 errors.append("L10n changesets are requried for Firefox.")
             if not form.firefoxPartials.data:
                 errors.append("Partial versions are required for Firefox.")
-            release = FirefoxRelease(form.firefoxPartials.data, form.whatsnew.data,
-                submitter, form.version.data, form.buildNumber.data,
+            release = FirefoxRelease(form.firefoxPartials.data, submitter,
+                form.version.data, form.buildNumber.data,
                 form.mozillaRevision.data, form.firefoxL10nChangesets.data)
             db.session.add(release)
 
@@ -61,9 +60,9 @@ class SubmitRelease(MethodView):
             if not form.thunderbirdPartials.data:
                 errors.append("Partial versions are required for Thunderbird.")
             release = ThunderbirdRelease(form.commRevision.data,
-                form.thunderbirdPartials.data, form.whatsnew.data, submitter,
-                form.version.data, form.buildNumber.data,
-                form.mozillaRevision.data, form.thunderbirdL10nChangesets.data)
+                form.thunderbirdPartials.data, submitter, form.version.data,
+                form.buildNumber.data, form.mozillaRevision.data,
+                form.thunderbirdL10nChangesets.data)
             db.session.add(release)
 
         if errors:
