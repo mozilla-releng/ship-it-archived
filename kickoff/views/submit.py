@@ -17,7 +17,7 @@ class ReleaseForm(Form):
     fennecL10nChangesets = TextField('Fennec L10n Changesets:')
     firefoxL10nChangesets = TextField('Firefox L10n Changesets:')
     thunderbirdL10nChangesets = TextField('Thunderbird L10n Changesets:')
-    firefoxPartials = TextField('Firefox partial versions (eg, 17.0b2build1):')
+    firefoxPartials = TextField('Firefox partial versions (eg, 17.0b1build2,17.0b2build1):')
     thunderbirdPartials = TextField('Thunderbird partial versions:')
 
 class SubmitRelease(MethodView):
