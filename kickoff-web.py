@@ -18,14 +18,17 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-d", "--db", dest="db")
     parser.add_option("--host", dest="host")
-    parser.add_option("-p", "--port", dest="port", type="int")
+    parser.add_option("--port", dest="port", type="int")
+    parser.add_option("-l", "--logfile", dest="logfile")
+    parser.add_option("-u", "--username", dest="username")
+    parser.add_option("-p", "--password", dest="password")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true")
     options, args = parser.parse_args()
 
     log_level = logging.INFO
     if options.verbose:
         log_level = logging.DEBUG
-    logging.basicConfig(level=log_level)
+    logging.basicConfig(filename=options.logfile, level=log_level)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = options.db
     app.config['DEBUG'] = True
@@ -34,6 +37,6 @@ if __name__ == '__main__':
         db.init_app(app)
         db.create_all()
     def auth(environ, username, password):
-        return username == password
+        return options.username == username and options.password == password
     app.wsgi_app = AuthBasicHandler(app.wsgi_app, "Release kick-off", auth)
     app.run(port=options.port, host=options.host)
