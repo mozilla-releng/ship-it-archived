@@ -1,10 +1,5 @@
-<!DOCTYPE HTML>
-<html lang='en-US'>
-<head>
-<title>Release Kick-off!</title>
-<link rel='stylesheet' type='text/css' href='{{ url_for('static', filename='kickoff.css') }}' />
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 <table>
 <tr>
     <th>Release Name</th>
@@ -21,5 +16,4 @@
         <td>Started</td>
     {% endif %}
 {% endfor %}
-</body>
-</html>
+{% endblock %}

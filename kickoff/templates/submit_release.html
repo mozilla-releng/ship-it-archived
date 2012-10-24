@@ -1,10 +1,5 @@
-<!DOCTYPE HTML>
-<html lang='en-US'>
-<head>
-<title>Release Kick-off!</title>
-<link rel='stylesheet' type='text/css' href='{{ url_for('static', filename='kickoff.css') }}' />
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 <div id='errors'>
     {% for e in errors %}
     <div class='error'>{{ e }}</div>
@@ -58,5 +53,4 @@
 <div>
     <input type='submit' value='Gimme a release!' />
 </form>
-</body>
-</html>
+{% endblock %}
