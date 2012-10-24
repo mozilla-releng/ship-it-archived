@@ -7,7 +7,11 @@
     <th>Status</th>
 </tr>
 {% for rel in releases %}
-<tr>
+{% if not rel.complete %}
+<tr class='incomplete'>
+{% else %}
+<tr class='complete'>
+{% endif %}
     <td>{{ rel.name }}</td>
     <td>{{ rel.submitter }}</td>
     {% if not rel.complete %}
