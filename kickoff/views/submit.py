@@ -4,7 +4,7 @@ from flask.views import MethodView
 from flask.ext.wtf import Form, TextField, DataRequired, BooleanField, IntegerField
 
 from kickoff import app, db
-from kickoff.model import Release
+from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease
 
 class ReleaseForm(Form):
     fennec = BooleanField('Fennec')
@@ -17,8 +17,8 @@ class ReleaseForm(Form):
     fennecL10nChangesets = TextField('Fennec L10n Changesets:')
     firefoxL10nChangesets = TextField('Firefox L10n Changesets:')
     thunderbirdL10nChangesets = TextField('Thunderbird L10n Changesets:')
-    firefoxPartials = TextField('Firefox partial versions (comma separated):')
-    thunderbirdPartials = TextField('Thunderbird partial versions (comma separated):')
+    firefoxPartials = TextField('Firefox partial versions (eg, 17.0b2build1):')
+    thunderbirdPartials = TextField('Thunderbird partial versions:')
     whatsnew = BooleanField('Show whatsnew page?')
 
 class SubmitRelease(MethodView):
@@ -38,20 +38,21 @@ class SubmitRelease(MethodView):
         if form.fennec.data:
             if not form.fennecL10nChangesets.data:
                 errors.append("L10n changesets is required for Fennec")
-            release = Release(submitter, 'fennec', form.version.data,
+            release = FennecRelease(submitter, form.version.data,
                 form.buildNumber.data, form.mozillaRevision.data,
-                form.fennecL10nChangesets.data, form.whatsnew.data)
+                form.fennecL10nChangesets.data)
             db.session.add(release)
+
         if form.firefox.data:
             if not form.firefoxL10nChangesets.data:
                 errors.append("L10n changesets are requried for Firefox.")
             if not form.firefoxPartials.data:
                 errors.append("Partial versions are required for Firefox.")
-            release = Release(submitter, 'firefox', form.version.data,
-                form.buildNumber.data, form.mozillaRevision.data,
-                form.firefoxL10nChangesets.data, form.whatsnew.data,
-                firefoxPartials=form.firefoxPartials.data)
+            release = FirefoxRelease(form.firefoxPartials.data, form.whatsnew.data,
+                submitter, form.version.data, form.buildNumber.data,
+                form.mozillaRevision.data, form.firefoxL10nChangesets.data)
             db.session.add(release)
+
         if form.thunderbird.data:
             if not form.commRevision.data:
                 errors.append("Comm revision is required for Thunderbird.")
@@ -59,11 +60,10 @@ class SubmitRelease(MethodView):
                 errors.append("L10n changesets are required for Thunderbird.")
             if not form.thunderbirdPartials.data:
                 errors.append("Partial versions are required for Thunderbird.")
-            release = Release(submitter, 'thunderbird', form.version.data,
-                form.buildNumber.data, form.mozillaRevision.data,
-                form.firefoxL10nChangesets.data, form.whatsnew.data,
-                thunderbirdPartials=form.thunderbirdPartials.data,
-                commRevision=form.commRevision.data)
+            release = ThunderbirdRelease(form.commRevision.data,
+                form.thunderbirdPartials.data, form.whatsnew.data, submitter,
+                form.version.data, form.buildNumber.data,
+                form.mozillaRevision.data, form.thunderbirdL10nChangesets.data)
             db.session.add(release)
 
         if errors:

@@ -3,11 +3,11 @@ from mozilla.release.info import getReleaseName
 from kickoff import db
 
 def getReleaseTable(release):
-    if release.startswith('fennec'):
+    if release.startswith('Fennec'):
         return FennecRelease
-    elif release.startswith('firefox'):
+    elif release.startswith('Firefox'):
         return FirefoxRelease
-    elif release.startswith('thunderbird'):
+    elif release.startswith('Thunderbird'):
         return ThunderbirdRelease
     else:
         raise ValueError("Can't find release table for release %s" % release)
@@ -41,7 +41,7 @@ class Release(object):
 
 class FennecRelease(Release, db.Model):
     __tablename__ = 'fennec_release'
-    product = 'fennec'
+    product = 'Fennec'
 
 class DesktopRelease(Release):
     partials = db.Column(db.String(100))
@@ -54,11 +54,11 @@ class DesktopRelease(Release):
 
 class FirefoxRelease(DesktopRelease, db.Model):
     __tablename__ = 'firefox_release'
-    product = 'firefox'
+    product = 'Firefox'
 
 class ThunderbirdRelease(DesktopRelease, db.Model):
     __tablename__ = 'thunderbird_release'
-    product = 'thunderbird'
+    product = 'Thunderbird'
     commRevision = db.Column(db.String(100))
 
     def __init__(self, commRevision, *args, **kwargs):

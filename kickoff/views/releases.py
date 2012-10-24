@@ -15,15 +15,16 @@ def getReleases(incompleteOnly=False):
     for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
         if incompleteOnly:
             for r in table.query.filter_by(complete=False):
-                releases.append(r.name)
+                releases.append(r)
         else:
             for r in table.query.all():
-                releases.append(r.name)
+                releases.append(r)
     return releases
 
 class ReleasesAPI(MethodView):
     def get(self):
-        return jsonify({'releases': getReleases(request.args.get('incomplete', False))})
+        releases = [r.name for r in getReleases(request.args.get('incomplete'))]
+        return jsonify({'releases': releases})
 
 class ReleaseAPI(MethodView):
     def get(self, releaseName):

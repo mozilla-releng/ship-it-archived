@@ -8,7 +8,7 @@ class TestRequestsAPI(ViewTest):
     def testGetAllReleases(self):
         ret = self.get('/releases')
         expected = {
-            'releases': ['fennec-1-1', 'firefox-2-1', 'thunderbird-2-2']
+            'releases': ['Fennec-1-build1', 'Firefox-2-build1', 'Thunderbird-2-build2']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -16,16 +16,16 @@ class TestRequestsAPI(ViewTest):
     def testGetIncompleteReleases(self):
         ret = self.get('/releases', query_string={'incomplete': True})
         expected = {
-            'releases': ['fennec-1-1']
+            'releases': ['Fennec-1-build1']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
 class TestReleaseAPI(ViewTest):
     def testGetRelease(self):
-        ret = self.get('/releases/thunderbird-2-2')
+        ret = self.get('/releases/Thunderbird-2-build2')
         expected = {
-            'name': 'thunderbird-2-2',
+            'name': 'Thunderbird-2-build2',
             'submitter': 'bob',
             'version': '2',
             'buildNumber': 2,
@@ -40,7 +40,7 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testMarkAsComplete(self):
-        ret = self.post('/releases/firefox-2-1', data={'complete': True})
+        ret = self.post('/releases/Firefox-2-build1', data={'complete': True})
         self.assertEquals(ret.status_code, 200)
         with app.test_request_context():
-            self.assertEquals(FirefoxRelease.query.filter_by(name='firefox-2-1').first().complete, True)
+            self.assertEquals(FirefoxRelease.query.filter_by(name='Firefox-2-build1').first().complete, True)
