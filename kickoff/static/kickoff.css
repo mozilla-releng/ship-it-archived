@@ -2,6 +2,9 @@ A {
     text-decoration: none;
 }
 
+hr {
+}
+
 table {
     border-collapse: collapse;
 }
@@ -17,10 +20,12 @@ td {
 }
 
 #nav {
-    border-bottom-style: solid;
-    border-bottom-width: thin;
     padding: 0;
     margin: 0;
+    border-spacing: 0;
+    float: left;
+    list-style: none;
+    width: 100%;
 }
 
 #nav li {
@@ -28,10 +33,15 @@ td {
     padding-right: .5em;
     padding-left: .5em;
     border-right: 1px solid;
+    float: left;
 }
 
 #nav :last-child {
     border-right: none;
+}
+
+#nav li a {
+    display: block;
 }
 
 .complete {
