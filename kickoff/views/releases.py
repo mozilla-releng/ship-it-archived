@@ -41,7 +41,7 @@ class ReleaseAPI(MethodView):
         release.complete = form.complete.data
         db.session.add(release)
         db.session.commit()
-        return Response(200)
+        return Response(status=200)
 
 class Releases(MethodView):
     def get(self):

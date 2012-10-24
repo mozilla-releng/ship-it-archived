@@ -39,8 +39,8 @@ class SubmitRelease(MethodView):
             if not form.fennecL10nChangesets.data:
                 errors.append("L10n changesets is required for Fennec")
             release = FennecRelease(submitter, form.version.data,
-                form.buildNumber.data, form.mozillaRevision.data,
-                form.fennecL10nChangesets.data)
+                form.buildNumber.data, form.branch.data,
+                form.mozillaRevision.data, form.fennecL10nChangesets.data)
             db.session.add(release)
 
         if form.firefox.data:
@@ -50,7 +50,8 @@ class SubmitRelease(MethodView):
                 errors.append("Partial versions are required for Firefox.")
             release = FirefoxRelease(form.firefoxPartials.data, submitter,
                 form.version.data, form.buildNumber.data,
-                form.mozillaRevision.data, form.firefoxL10nChangesets.data)
+                form.branch.data, form.mozillaRevision.data,
+                form.firefoxL10nChangesets.data)
             db.session.add(release)
 
         if form.thunderbird.data:
@@ -62,8 +63,8 @@ class SubmitRelease(MethodView):
                 errors.append("Partial versions are required for Thunderbird.")
             release = ThunderbirdRelease(form.commRevision.data,
                 form.thunderbirdPartials.data, submitter, form.version.data,
-                form.buildNumber.data, form.mozillaRevision.data,
-                form.thunderbirdL10nChangesets.data)
+                form.buildNumber.data, form.branch.data,
+                form.mozillaRevision.data, form.thunderbirdL10nChangesets.data)
             db.session.add(release)
 
         if errors:
