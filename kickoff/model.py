@@ -33,7 +33,7 @@ class Release(object):
         self.l10nChangesets = l10nChangesets
     
     def toDict(self):
-        me = {}
+        me = {'product': self.product}
         for c in self.__table__.columns:
             me[c.name] = getattr(self, c.name)
         return me
@@ -43,7 +43,7 @@ class Release(object):
 
 class FennecRelease(Release, db.Model):
     __tablename__ = 'fennec_release'
-    product = 'Fennec'
+    product = 'fennec'
 
 class DesktopRelease(Release):
     partials = db.Column(db.String(100))
@@ -54,11 +54,11 @@ class DesktopRelease(Release):
 
 class FirefoxRelease(DesktopRelease, db.Model):
     __tablename__ = 'firefox_release'
-    product = 'Firefox'
+    product = 'firefox'
 
 class ThunderbirdRelease(DesktopRelease, db.Model):
     __tablename__ = 'thunderbird_release'
-    product = 'Thunderbird'
+    product = 'thunderbird'
     commRevision = db.Column(db.String(100))
 
     def __init__(self, commRevision, *args, **kwargs):

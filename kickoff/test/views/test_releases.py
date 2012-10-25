@@ -26,6 +26,7 @@ class TestReleaseAPI(ViewTest):
         ret = self.get('/releases/Thunderbird-2-build2')
         expected = {
             'name': 'Thunderbird-2-build2',
+            'product': 'thunderbird',
             'submitter': 'bob',
             'version': '2',
             'buildNumber': 2,
