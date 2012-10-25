@@ -2,9 +2,6 @@ A {
     text-decoration: none;
 }
 
-hr {
-}
-
 table {
     border-collapse: collapse;
 }
@@ -19,21 +16,29 @@ td {
     padding: .25em 1ex .25em .5ex;
 }
 
+h2 {
+    margin: 0;
+}
+
 #nav {
     padding: 0;
     margin: 0;
-    border-spacing: 0;
+    margin-bottom: 1em;
     float: left;
     list-style: none;
     width: 100%;
+    background: #cccccc;
+    border: solid #a6a6a6 thin
 }
 
 #nav li {
     display: inline;
-    padding-right: .5em;
-    padding-left: .5em;
     border-right: 1px solid;
     float: left;
+}
+
+#nav li a:hover {
+    background: white;
 }
 
 #nav :last-child {
@@ -41,11 +46,13 @@ td {
 }
 
 #nav li a {
-    display: block;
+    padding-right: .5em;
+    padding-left: .5em;
+    width: 100%;
 }
 
 .complete {
-    background-color: green;
+    background-color: lime;
 }
 
 .incomplete {
