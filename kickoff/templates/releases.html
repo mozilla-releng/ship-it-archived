@@ -1,20 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Releases:</h2>
+<form id='release_readyness' action='{{ url_for('releases') }}' method='post'>
 <table>
 <tr>
     <th>Name</th>
     <th>Submitted By</th>
+    <th>Mozilla Revision</th>
+    <th>Comm Revision</th>
+    <th>L10n Changesets</th>
+    <th>Partials Versions</th>
+    <th>Ready</th>
     <th>Status</th>
 </tr>
 {% for rel in releases %}
-{% if not rel.complete %}
+{% if not rel.ready %}
+<tr class='notready'>
+{% elif not rel.complete %}
 <tr class='incomplete'>
 {% else %}
 <tr class='complete'>
 {% endif %}
     <td>{{ rel.name }}</td>
     <td>{{ rel.submitter }}</td>
+    <td>{{ rel.mozillaRevision }}</td>
+    <td>{{ rel.commRevision }}</td>
+    <td><a href="{{ rel.l10nChangesets }}">Link</a></td>
+    <td>{{ rel.partials }}</td>
+    <td>
+    {% if rel.ready %}
+        <input type='checkbox' name='{{ rel.name }}' value='{{ rel.name }}' checked='checked' disabled='disabled' />
+    {% else %}
+        <input type='checkbox' name='{{ rel.name }}' value='{{ rel.name }}' />
+    {% endif %}
+    </td>
     <td>{{ rel.status }}</td>
 {% endfor %}
+</table>
+<input type='submit' value='Update' />
+</form>
 {% endblock %}

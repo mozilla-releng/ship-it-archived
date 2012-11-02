@@ -22,7 +22,7 @@ class Release(object):
     l10nChangesets = db.Column(db.String(250), nullable=False)
     ready = db.Column(db.Boolean(), nullable=False, default=False)
     complete = db.Column(db.Boolean(), nullable=False, default=False)
-    status = db.Column(db.String(250))
+    status = db.Column(db.String(250), default="")
 
     def __init__(self, submitter, version, buildNumber, branch,
                  mozillaRevision, l10nChangesets):
