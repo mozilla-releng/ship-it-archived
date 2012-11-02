@@ -21,9 +21,10 @@ class Release(object):
     mozillaRevision = db.Column(db.String(100), nullable=False)
     l10nChangesets = db.Column(db.String(250), nullable=False)
     complete = db.Column(db.Boolean(), nullable=False, default=False)
+    status = db.Column(db.String(250))
 
     def __init__(self, submitter, version, buildNumber, branch,
-                 mozillaRevision, l10nChangesets):
+                 mozillaRevision, l10nChangesets, status=None):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version
@@ -31,6 +32,7 @@ class Release(object):
         self.branch = branch
         self.mozillaRevision = mozillaRevision
         self.l10nChangesets = l10nChangesets
+        self.status = status
     
     def toDict(self):
         me = {'product': self.product}

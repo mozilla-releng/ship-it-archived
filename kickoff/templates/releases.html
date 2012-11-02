@@ -15,10 +15,6 @@
 {% endif %}
     <td>{{ rel.name }}</td>
     <td>{{ rel.submitter }}</td>
-    {% if not rel.complete %}
-        <td>Not started</td>
-    {% else %}
-        <td>Started</td>
-    {% endif %}
+    <td>{{ rel.status }}</td>
 {% endfor %}
 {% endblock %}

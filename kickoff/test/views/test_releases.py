@@ -1,7 +1,7 @@
 import simplejson as json
 
 from kickoff import app
-from kickoff.model import FirefoxRelease
+from kickoff.model import FennecRelease, FirefoxRelease
 from kickoff.test.views.base import ViewTest
 
 class TestRequestsAPI(ViewTest):
@@ -35,7 +35,8 @@ class TestReleaseAPI(ViewTest):
             'commRevision': 'ghi',
             'l10nChangesets': 'http://baz',
             'partials': '0',
-            'complete': True
+            'complete': True,
+            'status': None
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -45,3 +46,9 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         with app.test_request_context():
             self.assertEquals(FirefoxRelease.query.filter_by(name='Firefox-2-build1').first().complete, True)
+
+    def testUpdateStatus(self):
+        ret = self.post('/releases/Fennec-1-build1', data={'status': 'omg!'})
+        self.assertEquals(ret.status_code, 200)
+        with app.test_request_context():
+            self.assertEquals(FennecRelease.query.filter_by(name='Fennec-1-build1').first().status, 'omg!')

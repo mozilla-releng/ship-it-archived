@@ -1,7 +1,7 @@
 from flask import request, jsonify, render_template, Response
 from flask.views import MethodView
 
-from flask.ext.wtf import Form, BooleanField
+from flask.ext.wtf import Form, BooleanField, StringField
 
 from kickoff import app, db
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, \
@@ -9,6 +9,7 @@ from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, \
 
 class CompleteForm(Form):
     complete = BooleanField('complete')
+    status = StringField('status')
 
 def getReleases(incompleteOnly=False):
     releases = []
@@ -38,7 +39,10 @@ class ReleaseAPI(MethodView):
             return Response(status=400, response=form.errors)
 
         release = table.query.filter_by(name=releaseName).first()
-        release.complete = form.complete.data
+        if form.complete.data:
+            release.complete = form.complete.data
+        if form.status.data:
+            release.status = form.status.data
         db.session.add(release)
         db.session.commit()
         return Response(status=200)
