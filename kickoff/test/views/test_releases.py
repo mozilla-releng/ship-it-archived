@@ -14,7 +14,7 @@ class TestRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testGetReadyReleases(self):
-        ret = self.get('/releases', query_string={'ready': True})
+        ret = self.get('/releases', query_string={'ready': True, 'complete': False})
         expected = {
             'releases': ['Fennec-1-build1']
         }
@@ -37,7 +37,7 @@ class TestReleaseAPI(ViewTest):
             'partials': '0',
             'ready': True,
             'complete': True,
-            'status': None
+            'status': ''
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)

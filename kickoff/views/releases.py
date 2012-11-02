@@ -5,26 +5,17 @@ from flask.ext.wtf import Form, BooleanField, StringField
 
 from kickoff import app, db
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, \
-  getReleaseTable
+  getReleaseTable, getReleases
 
 class CompleteForm(Form):
     complete = BooleanField('complete')
     status = StringField('status')
 
-def getReleases(ready=False):
-    releases = []
-    for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
-        if ready:
-            for r in table.query.filter_by(complete=False, ready=True):
-                releases.append(r)
-        else:
-            for r in table.query.all():
-                releases.append(r)
-    return releases
-
 class ReleasesAPI(MethodView):
     def get(self):
-        releases = [r.name for r in getReleases(request.args.get('ready'))]
+        ready = request.args.get('ready', None)
+        complete = request.args.get('complete', None)
+        releases = [r.name for r in getReleases(ready, complete)]
         return jsonify({'releases': releases})
 
 class ReleaseAPI(MethodView):
@@ -68,7 +59,8 @@ class Releases(MethodView):
             elif y.complete:
                 return -1
             return cmp(x.name, y.name)
-        releases=sorted(getReleases(), cmp=sortReleases)
+        releases=sorted(getAllReleases(), cmp=sortReleases)
+        print releases
         return render_template('releases.html', releases=releases)
 
     def post(self):

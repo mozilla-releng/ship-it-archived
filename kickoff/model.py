@@ -66,3 +66,19 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
     def __init__(self, commRevision, *args, **kwargs):
         self.commRevision = commRevision
         DesktopRelease.__init__(self, *args, **kwargs)
+
+def getReleases(ready, complete):
+    filters = {}
+    if ready:
+        filters['ready'] = ready
+    if complete:
+        filters['complete'] = complete
+    releases = []
+    for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
+        if filters:
+            for r in table.query.filter_by(**filters):
+                releases.append(r)
+        else:
+            for r in table.query.all():
+                releases.append(r)
+    return releases
