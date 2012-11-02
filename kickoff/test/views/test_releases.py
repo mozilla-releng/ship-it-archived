@@ -13,8 +13,8 @@ class TestRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
-    def testGetIncompleteReleases(self):
-        ret = self.get('/releases', query_string={'incomplete': True})
+    def testGetReadyReleases(self):
+        ret = self.get('/releases', query_string={'ready': True})
         expected = {
             'releases': ['Fennec-1-build1']
         }
@@ -35,6 +35,7 @@ class TestReleaseAPI(ViewTest):
             'commRevision': 'ghi',
             'l10nChangesets': 'http://baz',
             'partials': '0',
+            'ready': True,
             'complete': True,
             'status': None
         }

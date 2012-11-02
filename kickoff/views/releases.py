@@ -11,11 +11,11 @@ class CompleteForm(Form):
     complete = BooleanField('complete')
     status = StringField('status')
 
-def getReleases(incompleteOnly=False):
+def getReleases(ready=False):
     releases = []
     for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
-        if incompleteOnly:
-            for r in table.query.filter_by(complete=False):
+        if ready:
+            for r in table.query.filter_by(complete=False, ready=True):
                 releases.append(r)
         else:
             for r in table.query.all():
@@ -24,7 +24,7 @@ def getReleases(incompleteOnly=False):
 
 class ReleasesAPI(MethodView):
     def get(self):
-        releases = [r.name for r in getReleases(request.args.get('incomplete'))]
+        releases = [r.name for r in getReleases(request.args.get('ready'))]
         return jsonify({'releases': releases})
 
 class ReleaseAPI(MethodView):
