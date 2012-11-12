@@ -13,8 +13,8 @@ class CompleteForm(Form):
 
 class ReleasesAPI(MethodView):
     def get(self):
-        ready = request.args.get('ready', None)
-        complete = request.args.get('complete', None)
+        ready = request.args.get('ready', None, type=int)
+        complete = request.args.get('complete', None, type=int)
         releases = [r.name for r in getReleases(ready, complete)]
         return jsonify({'releases': releases})
 

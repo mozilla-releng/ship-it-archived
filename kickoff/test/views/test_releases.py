@@ -14,7 +14,7 @@ class TestRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testGetReadyReleases(self):
-        ret = self.get('/releases', query_string={'ready': True, 'complete': False})
+        ret = self.get('/releases', query_string={'ready': 1, 'complete': 0})
         expected = {
             'releases': ['Fennec-1-build1']
         }

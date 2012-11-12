@@ -69,13 +69,14 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
 
 def getReleases(ready, complete):
     filters = {}
-    if ready:
-        filters['ready'] = ready
-    if complete:
-        filters['complete'] = complete
+    if ready is not None:
+        filters['ready'] = bool(ready)
+    if complete is not None:
+        filters['complete'] = bool(complete)
     releases = []
     for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
         if filters:
+            print filters
             for r in table.query.filter_by(**filters):
                 releases.append(r)
         else:
