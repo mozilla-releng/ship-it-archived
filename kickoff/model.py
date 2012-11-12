@@ -67,7 +67,7 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
         self.commRevision = commRevision
         DesktopRelease.__init__(self, *args, **kwargs)
 
-def getReleases(ready, complete):
+def getReleases(ready=None, complete=None):
     filters = {}
     if ready is not None:
         filters['ready'] = bool(ready)

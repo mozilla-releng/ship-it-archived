@@ -43,24 +43,19 @@ class Releases(MethodView):
         def sortReleases(x, y):
             # Not ready releases should come before ready ones.
             # Incomplete releases should come before completed ones.
-            # After that, sort by name
+            # After that, sort by name.
             if x.ready:
-                if y.ready:
-                    return cmp(x.name, y.name)
-                else:
+                if not y.ready:
                     return 1
             elif y.ready:
                 return -1
             if x.complete:
-                if y.complete:
-                    return cmp(x.name, y.name)
-                else:
+                if not y.complete:
                     return 1
             elif y.complete:
                 return -1
             return cmp(x.name, y.name)
-        releases=sorted(getAllReleases(), cmp=sortReleases)
-        print releases
+        releases=sorted(getReleases(), cmp=sortReleases)
         return render_template('releases.html', releases=releases)
 
     def post(self):
