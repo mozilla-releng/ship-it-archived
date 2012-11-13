@@ -19,7 +19,5 @@ secretKey = cfg.get('app', 'secret_key')
 logging.basicConfig(filename=logfile, level=loglevel, format='%(asctime)s - %(name)s.%(funcName)s#%(lineno)s: %(message)s')
 application.config['SQLALCHEMY_DATABASE_URI'] = dburi
 application.config['SECRET_KEY'] = secretKey
-# TODO: turn this on
-application.config['CSRF_ENABLED'] = False
 with application.test_request_context():
     db.init_app(application)
