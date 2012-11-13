@@ -65,6 +65,7 @@ class Releases(MethodView):
                 table = getReleaseTable(release)
                 r = table.query.filter_by(name=release).first()
                 r.ready = True
+                r.status = 'Pending'
                 db.session.add(r)
         db.session.commit()
         return redirect('releases.html')
