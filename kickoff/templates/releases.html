@@ -2,6 +2,7 @@
 {% block content %}
 <h2>Releases:</h2>
 <form id='release_readyness' action='{{ url_for('releases') }}' method='post'>
+{{ form.hidden_tag() }}
 <table>
 <tr>
     <th>Name</th>
@@ -29,9 +30,9 @@
     <td>{{ rel.partials }}</td>
     <td>
     {% if rel.ready %}
-        <input type='checkbox' name='{{ rel.name }}' value='{{ rel.name }}' checked='checked' disabled='disabled' />
+        <input type='checkbox' name='readyReleases' value='{{ rel.name }}' checked='checked' disabled='disabled' />
     {% else %}
-        <input type='checkbox' name='{{ rel.name }}' value='{{ rel.name }}' />
+        <input type='checkbox' name='readyReleases' value='{{ rel.name }}' />
     {% endif %}
     </td>
     <td>{{ rel.status }}</td>

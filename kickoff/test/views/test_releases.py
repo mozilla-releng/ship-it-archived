@@ -8,7 +8,7 @@ class TestRequestsAPI(ViewTest):
     def testGetAllReleases(self):
         ret = self.get('/releases')
         expected = {
-            'releases': ['Fennec-1-build1', 'Firefox-2-build1', 'Thunderbird-2-build2']
+            'releases': ['Fennec-1-build1', 'Fennec-4-build4', 'Fennec-4-build5', 'Firefox-2-build1', 'Thunderbird-2-build2']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -53,3 +53,12 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         with app.test_request_context():
             self.assertEquals(FennecRelease.query.filter_by(name='Fennec-1-build1').first().status, 'omg!')
+
+
+class TestReleasesView(ViewTest):
+    def testMakeReady(self):
+        ret = self.post('/releases.html', data='readyReleases=Fennec-4-build4&readyReleases=Fennec-4-build5', content_type='application/x-www-form-urlencoded')
+        self.assertEquals(ret.status_code, 302, ret.data)
+        with app.test_request_context():
+            self.assertEquals(FennecRelease.query.filter_by(name='Fennec-4-build4').first().ready, True)
+            self.assertEquals(FennecRelease.query.filter_by(name='Fennec-4-build5').first().ready, True)

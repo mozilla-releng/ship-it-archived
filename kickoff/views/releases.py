@@ -1,11 +1,22 @@
 from flask import request, jsonify, render_template, Response, redirect
 from flask.views import MethodView
 
-from flask.ext.wtf import Form, BooleanField, StringField
+from flask.ext.wtf import Form, BooleanField, StringField, SelectMultipleField, \
+  ListWidget, CheckboxInput
 
 from kickoff import app, db
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, \
   getReleaseTable, getReleases
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
+
+class ReadyForm(Form):
+    readyReleases = MultiCheckboxField('readyReleases')
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
 
 class CompleteForm(Form):
     complete = BooleanField('complete')
@@ -56,16 +67,27 @@ class Releases(MethodView):
                 return -1
             return cmp(x.name, y.name)
         releases=sorted(getReleases(), cmp=sortReleases)
-        return render_template('releases.html', releases=releases)
+        # We should really be creating a Form here and letting it render
+        # rather than rendering by hand in the template, but it seems that's
+        # not possible without some heavy handed subclassing. For our simple
+        # case it's not worthwhile
+        # http://stackoverflow.com/questions/8463421/how-to-render-my-select-field-with-wtforms
+        #form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
+        form = ReadyForm()
+        return render_template('releases.html', releases=releases, form=form)
 
     def post(self):
         submitter = request.environ.get('REMOTE_USER')
-        for release, ready in request.form.iteritems():
-            if ready:
-                table = getReleaseTable(release)
-                r = table.query.filter_by(name=release).first()
-                r.ready = True
-                r.status = 'Pending'
-                db.session.add(r)
+        form = ReadyForm()
+        form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
+        if not form.validate():
+            return Response(status=400, response=form.errors)
+
+        for release in form.readyReleases.data:
+            table = getReleaseTable(release)
+            r = table.query.filter_by(name=release).first()
+            r.ready = True
+            r.status = 'Pending'
+            db.session.add(r)
         db.session.commit()
         return redirect('releases.html')
