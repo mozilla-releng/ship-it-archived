@@ -6,6 +6,7 @@
     {% endfor %}
 </ul>
 <form id='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
+{{ form.hidden_tag() }}
 <div>Products:
     {{ form.fennec.label()|safe }}
     {{ form.fennec()|safe }}

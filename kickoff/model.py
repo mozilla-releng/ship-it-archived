@@ -76,7 +76,6 @@ def getReleases(ready=None, complete=None):
     releases = []
     for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
         if filters:
-            print filters
             for r in table.query.filter_by(**filters):
                 releases.append(r)
         else:
