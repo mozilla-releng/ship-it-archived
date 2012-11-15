@@ -9,6 +9,7 @@
     <th>Submitted By</th>
     <th>Mozilla Revision</th>
     <th>Comm Revision</th>
+    <th>Check Dashboard?</th>
     <th>L10n Changesets</th>
     <th>Partials Versions</th>
     <th>Ready</th>
@@ -26,6 +27,13 @@
     <td>{{ rel.submitter }}</td>
     <td>{{ rel.mozillaRevision }}</td>
     <td>{{ rel.commRevision }}</td>
+    <td>
+    {% if rel.dashboardCheck %}
+        <input type='checkbox' checked='checked' disabled='disabled' />
+    {% else %}
+        <input type='checkbox' disabled='disabled' />
+    {% endif %}
+    </td>
     <td><a href="{{ rel.l10nChangesets }}">Link</a></td>
     <td>{{ rel.partials }}</td>
     <td>
