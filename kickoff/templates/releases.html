@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Releases:</h2>
+<h2 class="title">Releases:</h2>
 <form id='release_readyness' action='{{ url_for('releases') }}' method='post'>
 {{ form.hidden_tag() }}
-<table>
+<table id="releases">
 <tr>
     <th>Name</th>
     <th>Submitted By</th>
@@ -25,9 +25,17 @@
     <td>{{ rel.name }}</td>
     <td>{{ rel.submitter }}</td>
     <td>{{ rel.mozillaRevision }}</td>
+    {% if 'Thunderbird' in rel.name %}
     <td>{{ rel.commRevision }}</td>
+    {% else %}
+    <td class="irrelevant">N/A</td>
+    {% endif %}
     <td><a href="/releases/{{ rel.name }}/l10n">Link</a></td>
+    {% if 'Fennec' in rel.name %}
+    <td class="irrelevant">N/A</td>
+    {% else %}
     <td>{{ rel.partials }}</td>
+    {% endif %}
     <td>
     {% if rel.ready %}
         <input type='checkbox' name='readyReleases' value='{{ rel.name }}' checked='checked' disabled='disabled' />

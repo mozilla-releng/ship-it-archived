@@ -6,10 +6,15 @@ table {
     border-collapse: collapse;
 }
 
-tr td {
+tr, td, th {
     border-color: black;
     border-style: solid;
     border-width: 1px;
+}
+
+th {
+    background-color: #cccccc;
+    padding: .25em 1ex .25em .5ex;
 }
 
 td {
@@ -18,6 +23,7 @@ td {
 
 h2 {
     margin: 0;
+    margin-bottom: 1ex;
 }
 
 #nav {
@@ -57,4 +63,12 @@ h2 {
 
 .notready {
     background-color: yellow;
+}
+
+.title {
+    border-bottom: solid #a6a6a6 thin;
+}
+
+td.disabled {
+    background-color: #ccc;
 }
