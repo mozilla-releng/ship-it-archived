@@ -16,18 +16,18 @@ class ViewTest(unittest.TestCase):
         with app.test_request_context():
             db.init_app(app)
             db.create_all()
-            r = FennecRelease('joe', '1', 1, 'a', 'abc', 'af de')
+            r = FennecRelease('joe', '1', 1, 'a', 'abc', 'af de', True)
             r.ready = True
             db.session.add(r)
-            r = FennecRelease('joe', '4', 4, 'a', 'abc', 'gh ij')
+            r = FennecRelease('joe', '4', 4, 'a', 'abc', 'gh ij', True)
             db.session.add(r)
-            r = FennecRelease('joe', '4', 5, 'a', 'abc', 'kl mn')
+            r = FennecRelease('joe', '4', 5, 'a', 'abc', 'kl mn', False)
             db.session.add(r)
-            r = FirefoxRelease('0,1', 'joe', '2', 1, 'a', 'def', 'ja zu')
+            r = FirefoxRelease('0,1', 'joe', '2', 1, 'a', 'def', 'ja zu', True)
             r.complete = True
             r.ready = True
             db.session.add(r)
-            r = ThunderbirdRelease('ghi', '0', 'bob', '2', 2, 'b', 'ghi', 'li')
+            r = ThunderbirdRelease('ghi', '0', 'bob', '2', 2, 'b', 'ghi', 'li', True)
             r.complete = True
             r.ready = True
             db.session.add(r)

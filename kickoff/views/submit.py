@@ -18,6 +18,7 @@ class ReleaseForm(Form):
     fennecL10nChangesets = TextAreaField('Fennec L10n Changesets:')
     firefoxL10nChangesets = TextAreaField('Firefox L10n Changesets:')
     thunderbirdL10nChangesets = TextAreaField('Thunderbird L10n Changesets:')
+    dashboardCheck = BooleanField('Check l10n revisions against dashboard?', default=True)
     firefoxPartials = TextField('Firefox partial versions (eg, 17.0b1build2,17.0b2build1):')
     thunderbirdPartials = TextField('Thunderbird partial versions:')
 
@@ -40,7 +41,8 @@ class SubmitRelease(MethodView):
                 errors.append("L10n changesets is required for Fennec")
             release = FennecRelease(submitter, form.version.data,
                 form.buildNumber.data, form.branch.data,
-                form.mozillaRevision.data, form.fennecL10nChangesets.data)
+                form.mozillaRevision.data, form.fennecL10nChangesets.data,
+                form.dashboardCheck.data)
             db.session.add(release)
 
         if form.firefox.data:
@@ -51,7 +53,7 @@ class SubmitRelease(MethodView):
             release = FirefoxRelease(form.firefoxPartials.data, submitter,
                 form.version.data, form.buildNumber.data,
                 form.branch.data, form.mozillaRevision.data,
-                form.firefoxL10nChangesets.data)
+                form.firefoxL10nChangesets.data, form.dashboardCheck.data)
             db.session.add(release)
 
         if form.thunderbird.data:
@@ -64,7 +66,8 @@ class SubmitRelease(MethodView):
             release = ThunderbirdRelease(form.commRevision.data,
                 form.thunderbirdPartials.data, submitter, form.version.data,
                 form.buildNumber.data, form.branch.data,
-                form.mozillaRevision.data, form.thunderbirdL10nChangesets.data)
+                form.mozillaRevision.data, form.thunderbirdL10nChangesets.data,
+                form.dashboardCheck.data)
             db.session.add(release)
 
         if errors:

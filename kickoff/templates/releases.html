@@ -9,6 +9,7 @@
     <th>Submitted By</th>
     <th>Mozilla Revision</th>
     <th>Comm Revision</th>
+    <th>Check Dashboard?</th>
     <th>L10n Changesets</th>
     <th>Partials Versions</th>
     <th>Ready</th>
@@ -26,15 +27,20 @@
     <td>{{ rel.submitter }}</td>
     <td>{{ rel.mozillaRevision }}</td>
     {% if 'Thunderbird' in rel.name %}
-    <td>{{ rel.commRevision }}</td>
+        <td>{{ rel.commRevision }}</td>
     {% else %}
-    <td class="irrelevant">N/A</td>
+        <td class="irrelevant">N/A</td>
+    {% endif %}
+    {% if rel.dashboardCheck %}
+        <td>Yes</td>
+    {% else %}
+        <td>No</td>
     {% endif %}
     <td><a href="/releases/{{ rel.name }}/l10n">Link</a></td>
     {% if 'Fennec' in rel.name %}
-    <td class="irrelevant">N/A</td>
+        <td class="irrelevant">N/A</td>
     {% else %}
-    <td>{{ rel.partials }}</td>
+        <td>{{ rel.partials }}</td>
     {% endif %}
     <td>
     {% if rel.ready %}
