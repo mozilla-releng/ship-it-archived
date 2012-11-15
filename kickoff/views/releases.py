@@ -49,6 +49,12 @@ class ReleaseAPI(MethodView):
         db.session.commit()
         return Response(status=200)
 
+class ReleaseL10nAPI(MethodView):
+    def get(self, releaseName):
+        table = getReleaseTable(releaseName)
+        l10n = table.query.filter_by(name=releaseName).first().l10nChangesets
+        return Response(status=200, response=l10n, content_type='text/plain')
+
 class Releases(MethodView):
     def get(self):
         def sortReleases(x, y):

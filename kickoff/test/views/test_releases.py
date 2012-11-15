@@ -33,7 +33,7 @@ class TestReleaseAPI(ViewTest):
             'branch': 'b',
             'mozillaRevision': 'ghi',
             'commRevision': 'ghi',
-            'l10nChangesets': 'http://baz',
+            'l10nChangesets': 'li',
             'partials': '0',
             'ready': True,
             'complete': True,
@@ -54,6 +54,11 @@ class TestReleaseAPI(ViewTest):
         with app.test_request_context():
             self.assertEquals(FennecRelease.query.filter_by(name='Fennec-1-build1').first().status, 'omg!')
 
+    def testGetL10n(self):
+        ret = self.get('/releases/Firefox-2-build1/l10n')
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(ret.content_type, 'text/plain')
+        self.assertEquals(ret.data, 'ja zu')
 
 class TestReleasesView(ViewTest):
     def testMakeReady(self):

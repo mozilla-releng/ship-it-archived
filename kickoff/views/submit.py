@@ -1,7 +1,7 @@
 from flask import request, render_template, Response, redirect, make_response
 from flask.views import MethodView
 
-from flask.ext.wtf import Form, TextField, DataRequired, BooleanField, IntegerField
+from flask.ext.wtf import Form, TextField, DataRequired, BooleanField, IntegerField, TextAreaField
 
 from kickoff import app, db
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease
@@ -15,9 +15,9 @@ class ReleaseForm(Form):
     branch = TextField('Branch:', validators=[DataRequired('Branch is required')])
     mozillaRevision = TextField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
     commRevision = TextField('Comm Revision:')
-    fennecL10nChangesets = TextField('Fennec L10n Changesets:')
-    firefoxL10nChangesets = TextField('Firefox L10n Changesets:')
-    thunderbirdL10nChangesets = TextField('Thunderbird L10n Changesets:')
+    fennecL10nChangesets = TextAreaField('Fennec L10n Changesets:')
+    firefoxL10nChangesets = TextAreaField('Firefox L10n Changesets:')
+    thunderbirdL10nChangesets = TextAreaField('Thunderbird L10n Changesets:')
     firefoxPartials = TextField('Firefox partial versions (eg, 17.0b1build2,17.0b2build1):')
     thunderbirdPartials = TextField('Thunderbird partial versions:')
 
