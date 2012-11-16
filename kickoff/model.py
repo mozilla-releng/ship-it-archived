@@ -2,16 +2,6 @@ from mozilla.release.info import getReleaseName
 
 from kickoff import db
 
-def getReleaseTable(release):
-    if release.startswith('Fennec'):
-        return FennecRelease
-    elif release.startswith('Firefox'):
-        return FirefoxRelease
-    elif release.startswith('Thunderbird'):
-        return ThunderbirdRelease
-    else:
-        raise ValueError("Can't find release table for release %s" % release)
-
 class Release(object):
     name = db.Column(db.String(100), primary_key=True)
     submitter = db.Column(db.String(250), nullable=False)
@@ -68,6 +58,16 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
     def __init__(self, commRevision, *args, **kwargs):
         self.commRevision = commRevision
         DesktopRelease.__init__(self, *args, **kwargs)
+
+def getReleaseTable(release):
+    if release.startswith('Fennec'):
+        return FennecRelease
+    elif release.startswith('Firefox'):
+        return FirefoxRelease
+    elif release.startswith('Thunderbird'):
+        return ThunderbirdRelease
+    else:
+        raise ValueError("Can't find release table for release %s" % release)
 
 def getReleases(ready=None, complete=None):
     filters = {}
