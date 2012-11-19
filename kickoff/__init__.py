@@ -9,6 +9,13 @@ from kickoff.views.csrf import CSRFView
 from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI
 from kickoff.views.submit import SubmitRelease
 
+# Ensure X-Frame-Options is set to protect against clickjacking attacks:
+# https://wiki.mozilla.org/WebAppSec/Secure_Coding_QA_Checklist#Test:_X-Frame-Options
+@app.after_request
+def add_xframe_options(response):
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    return response
+
 @app.before_request
 def require_login():
     if not request.environ.get('REMOTE_USER'):
