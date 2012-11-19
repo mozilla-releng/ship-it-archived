@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+<ul id='errors'>
+    {% for e in errors %}
+    <li class='error'>{{ e }}</li>
+    {% endfor %}
+</ul>
 <h2 class="title">Releases:</h2>
 <form id='release_readyness' action='{{ url_for('releases') }}' method='post'>
 {{ form.hidden_tag() }}
@@ -7,6 +12,7 @@
 <tr>
     <th>Name</th>
     <th>Submitted By</th>
+    <th>Branch</th>
     <th>Mozilla Revision</th>
     <th>Comm Revision</th>
     <th>Check Dashboard?</th>
@@ -25,6 +31,7 @@
 {% endif %}
     <td>{{ rel.name }}</td>
     <td>{{ rel.submitter }}</td>
+    <td>{{ rel.branch }}</td>
     <td>{{ rel.mozillaRevision }}</td>
     {% if 'Thunderbird' in rel.name %}
         <td>{{ rel.commRevision }}</td>

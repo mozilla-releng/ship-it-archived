@@ -10,7 +10,7 @@ site.addsitedir(path.join(mydir, 'vendor/lib/python'))
 from kickoff import db, app as application
 
 cfg = RawConfigParser()
-cfg.read('/etc/kickoff.ini')
+cfg.read(path.join(mydir, 'kickoff.ini'))
 dburi = cfg.get('database', 'dburi')
 logfile = cfg.get('logging', 'logfile')
 loglevel = cfg.get('logging', 'level')
