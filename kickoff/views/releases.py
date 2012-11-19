@@ -2,7 +2,7 @@ from flask import request, jsonify, render_template, Response, redirect
 from flask.views import MethodView
 
 from flask.ext.wtf import Form, BooleanField, StringField, SelectMultipleField, \
-  ListWidget, CheckboxInput
+  ListWidget, CheckboxInput, Length
 
 from kickoff import app, db
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, \
@@ -25,8 +25,16 @@ class CompleteForm(Form):
 
 class ReleasesAPI(MethodView):
     def get(self):
-        ready = request.args.get('ready', None, type=int)
-        complete = request.args.get('complete', None, type=int)
+        # We can't get request.args to convert directly to a bool because
+        # it will convert even if the arg isn't present! In these cases
+        # we need to be able to pass along a None, so we must be a bit
+        # roundabout here.
+        ready = request.args.get('ready', type=int)
+        if ready is not None:
+            ready = bool(ready)
+        complete = request.args.get('complete', type=int)
+        if complete is not None:
+            complete = bool(complete)
         releases = [r.name for r in getReleases(ready, complete)]
         return jsonify({'releases': releases})
 

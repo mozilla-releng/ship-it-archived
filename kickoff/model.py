@@ -72,9 +72,9 @@ def getReleaseTable(release):
 def getReleases(ready=None, complete=None):
     filters = {}
     if ready is not None:
-        filters['ready'] = bool(ready)
+        filters['ready'] = ready
     if complete is not None:
-        filters['complete'] = bool(complete)
+        filters['complete'] = complete
     releases = []
     for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
         if filters:
