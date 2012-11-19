@@ -6,7 +6,7 @@ from flask.ext.wtf import Form, BooleanField, StringField, SelectMultipleField, 
 
 from kickoff import app, db
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, \
-  getReleaseTable, getReleases
+  getReleaseTable, getReleases, Release
 
 class MultiCheckboxField(SelectMultipleField):
     widget = ListWidget(prefix_label=False)
@@ -20,7 +20,8 @@ class ReadyForm(Form):
 
 class CompleteForm(Form):
     complete = BooleanField('complete')
-    status = StringField('status')
+    # Use the Column length directly rather than duplicating its value.
+    status = StringField('status', [Length(max=Release.status.type.length)])
 
 class ReleasesAPI(MethodView):
     def get(self):
