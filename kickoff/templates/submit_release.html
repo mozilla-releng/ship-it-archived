@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<ul id='errors'>
+    {% for e in errors %}
+    <li class='error'>{{ e }}</li>
+    {% endfor %}
+</ul>
+<form id='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
+{{ form.hidden_tag() }}
+<div>Products:
+    {{ form.fennec.label()|safe }}
+    {{ form.fennec()|safe }}
+    {{ form.firefox.label()|safe }}
+    {{ form.firefox()|safe }}
+    {{ form.thunderbird.label()|safe }}
+    {{ form.thunderbird()|safe }}
+</div>
+<div>
+    {{ form.version.label()|safe }}
+    {{ form.version()|safe }}
+</div>
+<div>
+    {{ form.buildNumber.label()|safe }}
+    {{ form.buildNumber()|safe }}
+</div>
+<div>
+    {{ form.branch.label()|safe }}
+    {{ form.branch()|safe }}
+</div>
+<div>
+    {{ form.mozillaRevision.label()|safe }}
+    {{ form.mozillaRevision()|safe }}
+</div>
+<div>
+    {{ form.commRevision.label()|safe }}
+    {{ form.commRevision()|safe }}
+</div>
+<div>
+    {{ form.dashboardCheck.label()|safe }}
+    {{ form.dashboardCheck()|safe }}
+</div>
+<div>
+    {{ form.fennecL10nChangesets.label()|safe }}
+    {{ form.fennecL10nChangesets()|safe }}
+</div>
+<div>
+    {{ form.firefoxL10nChangesets.label()|safe }}
+    {{ form.firefoxL10nChangesets()|safe }}
+</div>
+<div>
+    {{ form.thunderbirdL10nChangesets.label()|safe }}
+    {{ form.thunderbirdL10nChangesets()|safe }}
+</div>
+<div>
+    {{ form.firefoxPartials.label()|safe }}
+    {{ form.firefoxPartials()|safe }}
+</div>
+<div>
+    {{ form.thunderbirdPartials.label()|safe }}
+    {{ form.thunderbirdPartials()|safe }}
+</div>
+<div>
+    <input type='submit' value='Gimme a release!' />
+</form>
+{% endblock %}
