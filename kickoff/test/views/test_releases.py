@@ -33,6 +33,7 @@ class TestReleaseAPI(ViewTest):
             'branch': 'b',
             'mozillaRevision': 'ghi',
             'commRevision': 'ghi',
+            'dashboardCheck': True,
             'l10nChangesets': 'li',
             'partials': '0',
             'ready': True,
