@@ -1,3 +1,5 @@
+import simplejson as json
+
 from flask import request, render_template, Response, redirect, make_response
 from flask.views import MethodView
 
@@ -10,6 +12,20 @@ from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease
 
 PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+),(%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
 
+class JSONField(TextAreaField):
+    def process_formdata(self, valuelist):
+        if valuelist and valuelist[0]:
+            self.data = valuelist[0]
+            try:
+                # We only care about whether the JSON validates or not, so
+                # we don't save this anywhere. Consumers of the form want the
+                # raw string version, not the parsed object.
+                json.loads(self.data)
+            except ValueError, e:
+                self.process_errors.append(e.args[0])
+        else:
+            self.data = None
+
 class ReleaseForm(Form):
     fennec = BooleanField('Fennec')
     firefox = BooleanField('Firefox')
@@ -20,9 +36,9 @@ class ReleaseForm(Form):
     mozillaRevision = TextField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
     # TODO: make these required/validated after splitting into 3 dfferent forms
     commRevision = TextField('Comm Revision:')
-    fennecL10nChangesets = TextAreaField('Fennec L10n Changesets:')
-    firefoxL10nChangesets = TextAreaField('Firefox L10n Changesets:')
-    thunderbirdL10nChangesets = TextAreaField('Thunderbird L10n Changesets:')
+    fennecL10nChangesets = JSONField('Fennec L10n Changesets:')
+    firefoxL10nChangesets = JSONField('Firefox L10n Changesets:')
+    thunderbirdL10nChangesets = JSONField('Thunderbird L10n Changesets:')
     dashboardCheck = BooleanField('Check l10n revisions against dashboard?', default=True)
     # TODO: Remove Optional validators when form is split into 3 different ones
     firefoxPartials = TextField('Firefox partial versions (eg, 17.0b1build2,17.0b2build1):',
