@@ -37,8 +37,8 @@ class ReleaseForm(Form):
     # TODO: make these required/validated after splitting into 3 dfferent forms
     commRevision = TextField('Comm Revision:')
     fennecL10nChangesets = JSONField('Fennec L10n Changesets:')
-    firefoxL10nChangesets = JSONField('Firefox L10n Changesets:')
-    thunderbirdL10nChangesets = JSONField('Thunderbird L10n Changesets:')
+    firefoxL10nChangesets = TextAreaField('Firefox L10n Changesets:')
+    thunderbirdL10nChangesets = TextAreaField('Thunderbird L10n Changesets:')
     dashboardCheck = BooleanField('Check l10n revisions against dashboard?', default=True)
     # TODO: Remove Optional validators when form is split into 3 different ones
     firefoxPartials = TextField('Firefox partial versions (eg, 17.0b1build2,17.0b2build1):',
