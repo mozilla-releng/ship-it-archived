@@ -1,29 +1,6 @@
-A {
+/* General stuff */
+a {
     text-decoration: none;
-}
-
-table {
-    border-collapse: collapse;
-}
-
-tr, td, th {
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
-}
-
-th {
-    background-color: #cccccc;
-    padding: .25em 1ex .25em .5ex;
-}
-
-td {
-    padding: .25em 1ex .25em .5ex;
-}
-
-h2 {
-    margin: 0;
-    margin-bottom: 1ex;
 }
 
 #nav {
@@ -55,6 +32,79 @@ h2 {
     padding-right: .5em;
     padding-left: .5em;
     width: 100%;
+}
+
+/* Release submission */
+#column_container {
+    width: 100%;
+}
+
+#column_container > h3 {
+}
+
+#column_container > div {
+    float: left;
+    width: 32%;
+    margin-right: 2%;
+}
+
+label {
+    float: left;
+    width: 200px;
+}
+
+#column_container > div > h3 {
+    text-align: center;
+}
+
+#column_container > div:last-child {
+    margin-right: 0;
+}
+
+#column_container > div > form > fieldset > div:last-child {
+    text-align: center;
+}
+
+input[type=text] {
+    width: 50%;
+}
+
+textarea {
+    width: 50%;
+    height: 10ex;
+}
+
+fieldset {
+    border: none;
+}
+
+fieldset > div:last-child {
+    background-color: inherit;
+}
+
+/* Release list */
+table {
+    border-collapse: collapse;
+}
+
+tr, td, th {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+}
+
+th {
+    background-color: #cccccc;
+    padding: .25em 1ex .25em .5ex;
+}
+
+td {
+    padding: .25em 1ex .25em .5ex;
+}
+
+h2 {
+    margin: 0;
+    margin-bottom: 1ex;
 }
 
 .complete {

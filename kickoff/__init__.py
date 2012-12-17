@@ -26,6 +26,12 @@ def require_login():
 def index():
     return render_template('base.html')
 
+@app.route('/favicon.ico')
+# The deployed app's web server expects the favicon here.
+@app.route('/static/images/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
+
 app.add_url_rule('/csrf_token', view_func=CSRFView.as_view('csrf_token'), methods=['GET'])
 app.add_url_rule('/submit_release.html', view_func=SubmitRelease.as_view('submit_release'), methods=['GET', 'POST'])
 app.add_url_rule('/releases', view_func=ReleasesAPI.as_view('releases_api'), methods=['GET'])

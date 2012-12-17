@@ -32,12 +32,22 @@ class Release(object):
             me[c.name] = getattr(self, c.name)
         return me
 
+    @staticmethod
+    def createFromForm(self):
+        raise NotImplementedError
+
     def __repr__(self):
         return '<Release %r>' % self.name
 
 class FennecRelease(Release, db.Model):
     __tablename__ = 'fennec_release'
     product = 'fennec'
+
+    @staticmethod
+    def createFromForm(submitter, form):
+        return FennecRelease(submitter, form.version.data,
+            form.buildNumber.data, form.branch.data, form.mozillaRevision.data,
+            form.l10nChangesets.data, form.dashboardCheck.data)
 
 class DesktopRelease(Release):
     partials = db.Column(db.String(100))
@@ -50,6 +60,12 @@ class FirefoxRelease(DesktopRelease, db.Model):
     __tablename__ = 'firefox_release'
     product = 'firefox'
 
+    @staticmethod
+    def createFromForm(submitter, form):
+        return FirefoxRelease(form.partials.data, submitter, form.version.data,
+            form.buildNumber.data, form.branch.data, form.mozillaRevision.data,
+            form.l10nChangesets.data, form.dashboardCheck.data)
+
 class ThunderbirdRelease(DesktopRelease, db.Model):
     __tablename__ = 'thunderbird_release'
     product = 'thunderbird'
@@ -59,12 +75,20 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
         self.commRevision = commRevision
         DesktopRelease.__init__(self, *args, **kwargs)
 
+    @staticmethod
+    def createFromForm(submitter, form):
+        return ThunderbirdRelease(form.commRevision.data, form.partials.data,
+            submitter, form.version.data, form.buildNumber.data,
+            form.branch.data, form.mozillaRevision.data,
+            form.l10nChangesets.data, form.dashboardCheck.data)
+
 def getReleaseTable(release):
-    if release.startswith('Fennec'):
+    release = release.lower()
+    if release.startswith('fennec'):
         return FennecRelease
-    elif release.startswith('Firefox'):
+    elif release.startswith('firefox'):
         return FirefoxRelease
-    elif release.startswith('Thunderbird'):
+    elif release.startswith('thunderbird'):
         return ThunderbirdRelease
     else:
         raise ValueError("Can't find release table for release %s" % release)
