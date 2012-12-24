@@ -1,14 +1,14 @@
 import simplejson as json
 
-from flask import request, render_template, Response, redirect, make_response
+from flask import request, render_template, redirect, make_response
 from flask.views import MethodView
 
-from flask.ext.wtf import Form, TextField, DataRequired, BooleanField, IntegerField, TextAreaField, HiddenField, Regexp, Optional
+from flask.ext.wtf import Form, TextField, DataRequired, BooleanField, IntegerField, TextAreaField, HiddenField, Regexp
 
 from mozilla.build.versions import ANY_VERSION_REGEX
 
-from kickoff import app, db
-from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease, getReleaseTable
+from kickoff import db
+from kickoff.model import getReleaseTable
 
 PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
 
@@ -65,6 +65,7 @@ class SubmitRelease(MethodView):
             firefoxForm=FirefoxReleaseForm(), thunderbirdForm=ThunderbirdReleaseForm())
 
     def post(self):
+        # This is checked for in a before_request hook.
         submitter = request.environ.get('REMOTE_USER')
         forms = {
             'fennecForm': FennecReleaseForm(formdata=None),

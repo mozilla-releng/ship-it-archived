@@ -32,7 +32,7 @@ class Release(object):
             me[c.name] = getattr(self, c.name)
         return me
 
-    @staticmethod
+    @classmethod
     def createFromForm(self):
         raise NotImplementedError
 
@@ -43,9 +43,9 @@ class FennecRelease(Release, db.Model):
     __tablename__ = 'fennec_release'
     product = 'fennec'
 
-    @staticmethod
-    def createFromForm(submitter, form):
-        return FennecRelease(submitter, form.version.data,
+    @classmethod
+    def createFromForm(cls, submitter, form):
+        return cls(submitter, form.version.data,
             form.buildNumber.data, form.branch.data, form.mozillaRevision.data,
             form.l10nChangesets.data, form.dashboardCheck.data)
 
@@ -60,9 +60,9 @@ class FirefoxRelease(DesktopRelease, db.Model):
     __tablename__ = 'firefox_release'
     product = 'firefox'
 
-    @staticmethod
-    def createFromForm(submitter, form):
-        return FirefoxRelease(form.partials.data, submitter, form.version.data,
+    @classmethod
+    def createFromForm(cls, submitter, form):
+        return cls(form.partials.data, submitter, form.version.data,
             form.buildNumber.data, form.branch.data, form.mozillaRevision.data,
             form.l10nChangesets.data, form.dashboardCheck.data)
 
@@ -75,9 +75,9 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
         self.commRevision = commRevision
         DesktopRelease.__init__(self, *args, **kwargs)
 
-    @staticmethod
-    def createFromForm(submitter, form):
-        return ThunderbirdRelease(form.commRevision.data, form.partials.data,
+    @classmethod
+    def createFromForm(cls, submitter, form):
+        return cls(form.commRevision.data, form.partials.data,
             submitter, form.version.data, form.buildNumber.data,
             form.branch.data, form.mozillaRevision.data,
             form.l10nChangesets.data, form.dashboardCheck.data)

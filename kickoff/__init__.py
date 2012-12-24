@@ -4,7 +4,6 @@ from flask.ext.sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 db = SQLAlchemy()
 
-from kickoff.model import Release
 from kickoff.views.csrf import CSRFView
 from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI
 from kickoff.views.submit import SubmitRelease
