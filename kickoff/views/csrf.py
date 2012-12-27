@@ -7,5 +7,6 @@ def get_csrf_headers():
     return {'X-CSRF-Token': form.csrf_token._value()}
 
 class CSRFView(MethodView):
+    """A simple view that allows an API client to get a CSRF token easily."""
     def get(self):
         return Response(headers=get_csrf_headers())

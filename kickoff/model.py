@@ -3,6 +3,7 @@ from mozilla.release.info import getReleaseName
 from kickoff import db
 
 class Release(object):
+    """A base class with all of the common columns for any release."""
     name = db.Column(db.String(100), primary_key=True)
     submitter = db.Column(db.String(250), nullable=False)
     version = db.Column(db.String(10), nullable=False)
@@ -83,6 +84,9 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
             form.l10nChangesets.data, form.dashboardCheck.data)
 
 def getReleaseTable(release):
+    """Helper method to figure out what type of release a request is for.
+       Because the API methods are not specific to the type of release, we
+       need this to make sure we operate on the correct table."""
     release = release.lower()
     if release.startswith('fennec'):
         return FennecRelease
