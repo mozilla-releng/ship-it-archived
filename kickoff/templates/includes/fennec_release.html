@@ -1,0 +1,25 @@
+{{ fennecForm.hidden_tag() }}
+<div>
+    {{ fennecForm.version.label()|safe }}
+    {{ fennecForm.version(placeholder='15.0b6')|safe }}
+</div>
+<div>
+    {{ fennecForm.buildNumber.label()|safe }}
+    {{ fennecForm.buildNumber(placeholder='1')|safe }}
+</div>
+<div>
+    {{ fennecForm.branch.label()|safe }}
+    {{ fennecForm.branch(placeholder='releases/mozilla-beta', title='The branch to build the release from, relative to the root of the VCS.')|safe }}
+</div>
+<div>
+    {{ fennecForm.mozillaRevision.label()|safe }}
+    {{ fennecForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+</div>
+<div>
+    {{ fennecForm.dashboardCheck.label()|safe }}
+    {{ fennecForm.dashboardCheck(title='Whether or not to ensure that the changesets given in the form match the ones on the dashboard. Generally only used for betas.')|safe }}
+</div>
+<div>
+    {{ fennecForm.l10nChangesets.label()|safe }}
+    {{ fennecForm.l10nChangesets(placeholder='{"ca": {"revision": "abcdef123456", "platforms": ["android"]}', title='The l10n changesets, in JSON format. Generally these are copied and pasted from elsewhere.')|safe }}
+</div>

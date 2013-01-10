@@ -3,6 +3,7 @@ from tempfile import mkstemp
 import unittest
 
 from kickoff import app, db
+from kickoff.log import cef_config
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease
 
 class ViewTest(unittest.TestCase):
@@ -10,9 +11,11 @@ class ViewTest(unittest.TestCase):
 
     def setUp(self):
         self.db_fd, self.db_file = mkstemp()
+        self.cef_fd, self.cef_file = mkstemp()
         app.config['DEBUG'] = True
         app.config['CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % self.db_file
+        app.config.update(cef_config(self.cef_file))
         with app.test_request_context():
             db.init_app(app)
             db.create_all()
@@ -40,6 +43,8 @@ class ViewTest(unittest.TestCase):
         app._got_first_request = False
         os.close(self.db_fd)
         os.remove(self.db_file)
+        os.close(self.cef_fd)
+        os.remove(self.cef_file)
 
     def get(self, *args, **kwargs):
         return self.client.get(*args, environ_base=self.auth, **kwargs)

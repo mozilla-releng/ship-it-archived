@@ -18,8 +18,9 @@
     <th>Check Dashboard?</th>
     <th>L10n Changesets</th>
     <th>Partial Versions</th>
-    <th>Ready</th>
+    <th>Ready?</th>
     <th>Status</th>
+    <th>Delete?</th>
 </tr>
 {% for rel in releases %}
 {% if not rel.ready %}
@@ -29,7 +30,11 @@
 {% else %}
 <tr class='complete'>
 {% endif %}
-    <td>{{ rel.name }}</td>
+    {% if not rel.ready %}
+        <td><a href="/release.html?name={{ rel.name }}">{{ rel.name }}</a></td>
+    {% else %}
+        <td>{{ rel.name }}</td>
+    {% endif %}
     <td>{{ rel.submitter }}</td>
     <td>{{ rel.branch }}</td>
     <td>{{ rel.mozillaRevision }}</td>
@@ -51,14 +56,35 @@
     {% endif %}
     <td>
     {% if rel.ready %}
-        <input type='checkbox' name='readyReleases' value='{{ rel.name }}' checked='checked' disabled='disabled' />
+        <input id='readyReleases_{{ rel.name }}' type='checkbox' name='readyReleases' value='{{ rel.name }}' checked='checked' disabled='disabled' />
     {% else %}
-        <input type='checkbox' name='readyReleases' value='{{ rel.name }}' />
+        <input id='readyReleases_{{ rel.name }}' type='checkbox' name='readyReleases' value='{{ rel.name }}' />
     {% endif %}
     </td>
     <td>{{ rel.status }}</td>
+    <td>
+    {% if not rel.complete and not rel.ready %}
+        <input id='deleteReleases_{{ rel.name }}' type='checkbox' name='deleteReleases' value='{{ rel.name }}' onclick='disableReady("{{ rel.name }}")' />
+    {% else %}
+        <input type='checkbox' name='deleteReleases' value='{{ rel.name }}' disabled='disabled' />
+    {% endif %}
+    </td>
 {% endfor %}
 </table>
 <input type='submit' value='Do eet!' />
 </form>
+
+<script type='text/javascript'>
+function disableReady(release) {
+    readyCheckbox = document.getElementById('readyReleases_' + release);
+    deleteCheckbox = document.getElementById('deleteReleases_' + release);
+    if (deleteCheckbox.checked) {
+        readyCheckbox.checked = false;
+        readyCheckbox.disabled = true;
+    }
+    else {
+        readyCheckbox.disabled = false;
+    }
+}
+</script>
 {% endblock %}

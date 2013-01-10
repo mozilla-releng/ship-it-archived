@@ -6,6 +6,7 @@
 [logging]
 ;Where to put the application log. No rotation is done on this file.
 logfile=/var/log/kickoff.log
+cef_logfile=syslog
 ;level=ERROR
 
 [app]

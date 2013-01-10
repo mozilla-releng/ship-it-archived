@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<ul id='errors'>
+    {% for e in errors %}
+    <li class='error'>{{ e }}</li>
+    {% endfor %}
+</ul>
+<div id='edit_container'>
+<h3>{{ release }}</h3>
+<form class='submit_release_form' action='{{ url_for('release', name=release) }}' method='post'>
+{% if form.product.data == 'fennec' %}
+    {% set fennecForm = form %}
+    {% include 'includes/fennec_release.html' %}
+{% elif form.product.data == 'firefox' %}
+    {% set firefoxForm = form %}
+    {% include 'includes/firefox_release.html' %}
+{% elif form.product.data == 'thunderbird' %}
+    {% set thunderbirdForm = form %}
+    {% include 'includes/thunderbird_release.html' %}
+{% endif %}
+<div>
+    <input type='submit' value='Update' />
+</div>
+</form>
+</div>
+{% endblock %}

@@ -34,8 +34,17 @@ class Release(object):
         return me
 
     @classmethod
-    def createFromForm(self):
+    def createFromForm(self, form):
         raise NotImplementedError
+
+    def updateFromForm(self, form):
+        self.version = form.version.data
+        self.buildNumber = form.buildNumber.data
+        self.branch = form.branch.data
+        self.mozillaRevision = form.mozillaRevision.data
+        self.l10nChangesets = form.l10nChangesets.data
+        self.dashboardCheck = form.dashboardCheck.data
+        self.name = getReleaseName(self.product, self.version, self.buildNumber)
 
     def __repr__(self):
         return '<Release %r>' % self.name
@@ -56,6 +65,10 @@ class DesktopRelease(Release):
     def __init__(self, partials, *args, **kwargs):
         self.partials = partials
         Release.__init__(self, *args, **kwargs)
+
+    def updateFromForm(self, form):
+        Release.updateFromForm(self, form)
+        self.partials = form.partials.data
 
 class FirefoxRelease(DesktopRelease, db.Model):
     __tablename__ = 'firefox_release'
@@ -82,6 +95,10 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
             submitter, form.version.data, form.buildNumber.data,
             form.branch.data, form.mozillaRevision.data,
             form.l10nChangesets.data, form.dashboardCheck.data)
+
+    def updateFromForm(self, form):
+        DesktopRelease.updateFromForm(self, form)
+        self.commRevision = form.commRevision.data
 
 def getReleaseTable(release):
     """Helper method to figure out what type of release a request is for.

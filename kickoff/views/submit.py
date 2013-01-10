@@ -1,63 +1,11 @@
-import simplejson as json
-
 from flask import request, render_template, redirect, make_response
 from flask.views import MethodView
 
-from flask.ext.wtf import Form, TextField, DataRequired, BooleanField, IntegerField, TextAreaField, HiddenField, Regexp
-
-from mozilla.build.versions import ANY_VERSION_REGEX
-
 from kickoff import db
+from kickoff.log import cef_event, CEF_ALERT, CEF_INFO
 from kickoff.model import getReleaseTable
-
-PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
-
-class JSONField(TextAreaField):
-    def process_formdata(self, valuelist):
-        if valuelist and valuelist[0]:
-            self.data = valuelist[0]
-            try:
-                # We only care about whether the JSON validates or not, so
-                # we don't save this anywhere. Consumers of the form want the
-                # raw string version, not the parsed object.
-                json.loads(self.data)
-            except ValueError, e:
-                self.process_errors.append(e.args[0])
-        else:
-            self.data = None
-
-class ReleaseForm(Form):
-    version = TextField('Version:', validators=[Regexp(ANY_VERSION_REGEX, message='Invalid version format.')])
-    buildNumber = IntegerField('Build Number:', validators=[DataRequired('Build number is required.')])
-    branch = TextField('Branch:', validators=[DataRequired('Branch is required')])
-    mozillaRevision = TextField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
-    dashboardCheck = BooleanField('Dashboard check?', default=True)
-
-class FennecReleaseForm(ReleaseForm):
-    product = HiddenField('product')
-    l10nChangesets = JSONField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
-
-    def __init__(self, *args, **kwargs):
-        ReleaseForm.__init__(self, prefix='fennec', product='fennec', *args, **kwargs)
-
-class DesktopReleaseForm(ReleaseForm):
-    partials = TextField('Partial versions:',
-        validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')]
-    )
-    l10nChangesets = TextAreaField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
-
-class FirefoxReleaseForm(DesktopReleaseForm):
-    product = HiddenField('product')
-
-    def __init__(self, *args, **kwargs):
-        ReleaseForm.__init__(self, prefix='firefox', product='firefox', *args, **kwargs)
-
-class ThunderbirdReleaseForm(DesktopReleaseForm):
-    product = HiddenField('product')
-    commRevision = TextField('Comm Revision:', validators=[DataRequired('Comm revision is required.')])
-
-    def __init__(self, *args, **kwargs):
-        ReleaseForm.__init__(self, prefix='thunderbird', product='thunderbird', *args, **kwargs)
+from kickoff.views.forms import FennecReleaseForm, FirefoxReleaseForm, \
+  ThunderbirdReleaseForm, getReleaseForm
 
 class SubmitRelease(MethodView):
     def get(self):
@@ -67,6 +15,9 @@ class SubmitRelease(MethodView):
     def post(self):
         # This is checked for in a before_request hook.
         submitter = request.environ.get('REMOTE_USER')
+        # We need copies of all the forms to reprint the page if there's any
+        # errors. The form that was actually submitted will get overridden with
+        # data later on.
         forms = {
             'fennecForm': FennecReleaseForm(formdata=None),
             'firefoxForm': FirefoxReleaseForm(formdata=None),
@@ -76,16 +27,17 @@ class SubmitRelease(MethodView):
             if field.endswith('product'):
                 product = value
                 break
-        if product == 'fennec':
-            form = forms['fennecForm'] = FennecReleaseForm()
-        elif product == 'firefox':
-            form = forms['firefoxForm'] = FirefoxReleaseForm()
-        elif product == 'thunderbird':
-            form = forms['thunderbirdForm'] = ThunderbirdReleaseForm()
+
+        try:
+            form = getReleaseForm(product)()
+        except ValueError:
+            cef_event('User Input Failed', CEF_ALERT, ProductName=product)
+            return Response(status=400, response="Unknown product name '%s'" % product)
         errors = []
         if not form.validate():
-            for errlist in form.errors.values():
-                errors.extend(errlist)
+            cef_event('User Input Failed', CEF_INFO, **form.errors)
+            for error in form.errors.values():
+                errors.extend(error)
         if errors:
             return make_response(render_template('submit_release.html', errors=errors, **forms), 400)
 

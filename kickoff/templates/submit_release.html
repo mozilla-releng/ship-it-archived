@@ -9,118 +9,28 @@
 <div>
     <h3>Fennec</h3>
     <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
-    <fieldset>
-        {{ fennecForm.hidden_tag() }}
-        <div>
-            {{ fennecForm.version.label()|safe }}
-            {{ fennecForm.version()|safe }}
-        </div>
-        <div>
-            {{ fennecForm.buildNumber.label()|safe }}
-            {{ fennecForm.buildNumber()|safe }}
-        </div>
-        <div>
-            {{ fennecForm.branch.label()|safe }}
-            {{ fennecForm.branch()|safe }}
-        </div>
-        <div>
-            {{ fennecForm.mozillaRevision.label()|safe }}
-            {{ fennecForm.mozillaRevision()|safe }}
-        </div>
-        <div>
-            {{ fennecForm.dashboardCheck.label()|safe }}
-            {{ fennecForm.dashboardCheck()|safe }}
-        </div>
-        <div>
-            {{ fennecForm.l10nChangesets.label()|safe }}
-            {{ fennecForm.l10nChangesets()|safe }}
-        </div>
-        <div>
-            <input type='submit' value='Gimme a Fennec!' />
-        </div>
-    </fieldset>
+    {% include 'includes/fennec_release.html' %}
+    <div>
+        <input type='submit' value='Gimme a Fennec!' />
+    </div>
     </form>
 </div>
 <div>
     <h3>Firefox</h3>
     <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
-    <fieldset>
-        {{ firefoxForm.hidden_tag() }}
-        <div>
-            {{ firefoxForm.version.label()|safe }}
-            {{ firefoxForm.version()|safe }}
-        </div>
-        <div>
-            {{ firefoxForm.buildNumber.label()|safe }}
-            {{ firefoxForm.buildNumber()|safe }}
-        </div>
-        <div>
-            {{ firefoxForm.branch.label()|safe }}
-            {{ firefoxForm.branch()|safe }}
-        </div>
-        <div>
-            {{ firefoxForm.mozillaRevision.label()|safe }}
-            {{ firefoxForm.mozillaRevision()|safe }}
-        </div>
-        <div>
-            {{ firefoxForm.partials.label()|safe }}
-            {{ firefoxForm.partials()|safe }}
-        </div>
-        <div>
-            {{ firefoxForm.dashboardCheck.label()|safe }}
-            {{ firefoxForm.dashboardCheck()|safe }}
-        </div>
-        <div>
-            {{ firefoxForm.l10nChangesets.label()|safe }}
-            {{ firefoxForm.l10nChangesets()|safe }}
-        </div>
-        <div>
-            <input type='submit' value='Gimme a Firefox!' />
-        </div>
-    </fieldset>
+    {% include 'includes/firefox_release.html' %}
+    <div>
+        <input type='submit' value='Gimme a Firefox!' />
+    </div>
     </form>
 </div>
 <div>
     <h3>Thunderbird</h3>
     <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
-    <fieldset>
-        {{ thunderbirdForm.hidden_tag() }}
-        <div>
-            {{ thunderbirdForm.version.label()|safe }}
-            {{ thunderbirdForm.version()|safe }}
-        </div>
-        <div>
-            {{ thunderbirdForm.buildNumber.label()|safe }}
-            {{ thunderbirdForm.buildNumber()|safe }}
-        </div>
-        <div>
-            {{ thunderbirdForm.branch.label()|safe }}
-            {{ thunderbirdForm.branch()|safe }}
-        </div>
-        <div>
-            {{ thunderbirdForm.mozillaRevision.label()|safe }}
-            {{ thunderbirdForm.mozillaRevision()|safe }}
-        </div>
-        <div>
-            {{ thunderbirdForm.commRevision.label()|safe }}
-            {{ thunderbirdForm.commRevision()|safe }}
-        </div>
-        <div>
-            {{ thunderbirdForm.partials.label()|safe }}
-            {{ thunderbirdForm.partials()|safe }}
-        </div>
-        <div>
-            {{ thunderbirdForm.dashboardCheck.label()|safe }}
-            {{ thunderbirdForm.dashboardCheck()|safe }}
-        </div>
-        <div>
-            {{ thunderbirdForm.l10nChangesets.label()|safe }}
-            {{ thunderbirdForm.l10nChangesets()|safe }}
-        </div>
-        <div>
-            <input type='submit' value='Gimme a Thunderbird!' />
-        </div>
-    </fieldset>
+    {% include 'includes/thunderbird_release.html' %}
+    <div>
+        <input type='submit' value='Gimme a Thunderbird!' />
+    </div>
     </form>
 </div>
 </div>

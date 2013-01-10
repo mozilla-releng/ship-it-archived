@@ -42,7 +42,7 @@ a {
 #column_container > h3 {
 }
 
-#column_container > div {
+#column_container > div, #edit_container {
     float: left;
     width: 32%;
     margin-right: 2%;
@@ -53,15 +53,15 @@ label {
     width: 200px;
 }
 
-#column_container > div > h3 {
-    text-align: center;
-}
-
 #column_container > div:last-child {
     margin-right: 0;
 }
 
-#column_container > div > form > fieldset > div:last-child {
+#column_container > div > form > div:last-child, #edit_container > div:last-child {
+    text-align: center;
+}
+
+h3 {
     text-align: center;
 }
 

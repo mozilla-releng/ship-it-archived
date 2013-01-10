@@ -1,0 +1,33 @@
+{{ thunderbirdForm.hidden_tag() }}
+<div>
+    {{ thunderbirdForm.version.label()|safe }}
+    {{ thunderbirdForm.version(placeholder='15.0b6')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.buildNumber.label()|safe }}
+    {{ thunderbirdForm.buildNumber(placeholder='1')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.branch.label()|safe }}
+    {{ thunderbirdForm.branch(placeholder='releases/comm-beta', title='The branch to the build the release from, relative to the root of the VCS.')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.mozillaRevision.label()|safe }}
+    {{ thunderbirdForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.commRevision.label()|safe }}
+    {{ thunderbirdForm.commRevision(placeholder='abcdef123456')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.partials.label()|safe }}
+    {{ thunderbirdForm.partials(placeholder='15.0b5build1', title='A comma separated list of previous releases to create partial updates for.')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.dashboardCheck.label()|safe }}
+    {{ thunderbirdForm.dashboardCheck(title='Whether or not to ensure that the changesets given in the form match the ones on the dashboard. Generally only used for betas.')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.l10nChangesets.label()|safe }}
+    {{ thunderbirdForm.l10nChangesets(placeholder='ru abcdef123456', title='The l10n changesets, in release automation format.')|safe }}
+</div>

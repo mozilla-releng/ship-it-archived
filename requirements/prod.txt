@@ -4,3 +4,4 @@ wtforms==1.0.2
 flask-wtf==0.8
 flask-sqlalchemy==0.16
 sqlalchemy-migrate==0.7.2
+cef==0.5

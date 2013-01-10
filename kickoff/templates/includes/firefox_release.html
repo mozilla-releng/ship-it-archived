@@ -1,0 +1,29 @@
+{{ firefoxForm.hidden_tag() }}
+<div>
+    {{ firefoxForm.version.label()|safe }}
+    {{ firefoxForm.version(placeholder='15.0b6')|safe }}
+</div>
+<div>
+    {{ firefoxForm.buildNumber.label()|safe }}
+    {{ firefoxForm.buildNumber(placeholder='1')|safe }}
+</div>
+<div>
+    {{ firefoxForm.branch.label()|safe }}
+    {{ firefoxForm.branch(placeholder='releases/mozilla-beta', title='The branch to build the release from, relative to the root of the VCS.')|safe }}
+</div>
+<div>
+    {{ firefoxForm.mozillaRevision.label()|safe }}
+    {{ firefoxForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+</div>
+<div>
+    {{ firefoxForm.partials.label()|safe }}
+    {{ firefoxForm.partials(placeholder='15.0b5build1,15.0b4build2', title='A comma separated list of previous releases to create partial updates for.')|safe }}
+</div>
+<div>
+    {{ firefoxForm.dashboardCheck.label()|safe }}
+    {{ firefoxForm.dashboardCheck(title='Whether or not to ensure that the changesets given in the form match the ones on the dashboard. Generally only used for betas.')|safe }}
+</div>
+<div>
+    {{ firefoxForm.l10nChangesets.label()|safe }}
+    {{ firefoxForm.l10nChangesets(placeholder='de abcdef123456', title='The l10n changesets, in release automation format.')|safe }}
+</div>
