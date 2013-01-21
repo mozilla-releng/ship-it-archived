@@ -3,7 +3,7 @@ import simplejson as json
 
 from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, Form, \
   BooleanField, StringField, Length, TextAreaField, DataRequired, IntegerField, \
-  HiddenField, Regexp, ValidationError
+  HiddenField, Regexp
 
 from mozilla.build.versions import ANY_VERSION_REGEX
 from mozilla.release.l10n import parsePlainL10nChangesets
@@ -98,9 +98,18 @@ class FennecReleaseForm(ReleaseForm):
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
 
+def collapseWhitespace(value):
+    # It's not clear to me why, but this filter sometimes gets passed empty
+    # None rather than a string. The tests confirm that the filter is working
+    # though...
+    if value:
+        value = value.replace(' ', '')
+    return value
+
 class DesktopReleaseForm(ReleaseForm):
     partials = StringField('Partial versions:',
-        validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')]
+        validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
+        filters=[collapseWhitespace],
     )
     l10nChangesets = PlainChangesetsField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
 
