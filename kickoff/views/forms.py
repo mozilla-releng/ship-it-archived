@@ -76,12 +76,22 @@ class PlainChangesetsField(TextAreaField):
         else:
             self.data = None
 
+
+def noneFilter(value):
+    """Filters empty strings into null values. Used for non-required fields
+       like relbranches where "None" means "use the default"."""
+    if not value:
+        value = None
+    return value
+
+
 class ReleaseForm(Form):
     version = StringField('Version:', validators=[Regexp(ANY_VERSION_REGEX, message='Invalid version format.')])
     buildNumber = IntegerField('Build Number:', validators=[DataRequired('Build number is required.')])
     branch = StringField('Branch:', validators=[DataRequired('Branch is required')])
     mozillaRevision = StringField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
     dashboardCheck = BooleanField('Dashboard check?', default=True)
+    mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
 
 class FennecReleaseForm(ReleaseForm):
     product = HiddenField('product')
@@ -97,8 +107,11 @@ class FennecReleaseForm(ReleaseForm):
         self.mozillaRevision.data = row.mozillaRevision
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
+        self.mozillaRelbranch.data = row.mozillaRelbranch
 
-def collapseWhitespace(value):
+def collapseSpaces(value):
+    """A filter that collapses spaces within a string. Used for the "partials"
+       field to make the formatting slightly less strict."""
     # It's not clear to me why, but this filter sometimes gets passed empty
     # None rather than a string. The tests confirm that the filter is working
     # though...
@@ -106,11 +119,20 @@ def collapseWhitespace(value):
         value = value.replace(' ', '')
     return value
 
+
+class NullableIntegerField(IntegerField):
+    """Just like an IntegerField, except an empty value is allowed."""
+    def process_formdata(self, valuelist):
+        if valuelist and not valuelist[0]:
+            valuelist = None
+        return IntegerField.process_formdata(self, valuelist)
+
 class DesktopReleaseForm(ReleaseForm):
     partials = StringField('Partial versions:',
         validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
-        filters=[collapseWhitespace],
+        filters=[collapseSpaces],
     )
+    promptWaitTime = NullableIntegerField('Update prompt wait time:')
     l10nChangesets = PlainChangesetsField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
 
 class FirefoxReleaseForm(DesktopReleaseForm):
@@ -125,12 +147,15 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         self.branch.data = row.branch
         self.mozillaRevision.data = row.mozillaRevision
         self.partials.data = row.partials
+        self.promptWaitTime.data = row.promptWaitTime
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
+        self.mozillaRelbranch.data = row.mozillaRelbranch
 
 class ThunderbirdReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
     commRevision = StringField('Comm Revision:', validators=[DataRequired('Comm revision is required.')])
+    commRelbranch = StringField('Comm Relbranch:', filters=[noneFilter])
 
     def __init__(self, *args, **kwargs):
         ReleaseForm.__init__(self, prefix='thunderbird', product='thunderbird', *args, **kwargs)
@@ -142,8 +167,11 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
         self.mozillaRevision.data = row.mozillaRevision
         self.commRevision.data = row.commRevision
         self.partials.data = row.partials
+        self.promptWaitTime.data = row.promptWaitTime
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
+        self.mozillaRelbranch.data = row.mozillaRelbranch
+        self.commRelbranch.data = row.commRelbranch
 
 def getReleaseForm(release):
     """Helper method to figure out which form is needed for a release, based

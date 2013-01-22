@@ -14,10 +14,13 @@
     <th>Submitted By</th>
     <th>Branch</th>
     <th>Mozilla Revision</th>
+    <th>Mozilla Relbranch</th>
     <th>Comm Revision</th>
+    <th>Comm Relbranch</th>
     <th>Check Dashboard?</th>
     <th>L10n Changesets</th>
     <th>Partial Versions</th>
+    <th>Update Prompt Wait Time</th>
     <th>Ready?</th>
     <th>Status</th>
     <th>Delete?</th>
@@ -38,9 +41,12 @@
     <td>{{ rel.submitter }}</td>
     <td>{{ rel.branch }}</td>
     <td>{{ rel.mozillaRevision }}</td>
+    <td>{{ rel.mozillaRelbranch }}</td>
     {% if 'Thunderbird' in rel.name %}
         <td>{{ rel.commRevision }}</td>
+        <td>{{ rel.commRelbranch }}</td>
     {% else %}
+        <td class="irrelevant">N/A</td>
         <td class="irrelevant">N/A</td>
     {% endif %}
     {% if rel.dashboardCheck %}
@@ -53,6 +59,15 @@
         <td class="irrelevant">N/A</td>
     {% else %}
         <td>{{ rel.partials }}</td>
+    {% endif %}
+    {% if 'Fennec' in rel.name %}
+        <td class="irrelevant">N/A</td>
+    {% else %}
+        {% if not rel.promptWaitTime %}
+            <td>Default</td>
+        {% else %}
+            <td>{{ rel.promptWaitTime }}</td>
+        {% endif %}
     {% endif %}
     <td>
     {% if rel.ready %}

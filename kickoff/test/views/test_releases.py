@@ -38,7 +38,32 @@ class TestReleaseAPI(ViewTest):
             'partials': '0',
             'ready': True,
             'complete': True,
-            'status': ''
+            'status': '',
+            'promptWaitTime': None,
+            'mozillaRelbranch': None,
+            'commRelbranch': None,
+        }
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(json.loads(ret.data), expected)
+
+    def testGetReleaseWithPromptWaitTime(self):
+        ret = self.get('/releases/Firefox-2-build1')
+        expected = {
+            'name': 'Firefox-2-build1',
+            'product': 'firefox',
+            'submitter': 'joe',
+            'version': '2',
+            'buildNumber': 1,
+            'branch': 'a',
+            'mozillaRevision': 'def',
+            'dashboardCheck': True,
+            'l10nChangesets': 'ja zu',
+            'partials': '0,1',
+            'ready': True,
+            'complete': True,
+            'status': '',
+            'promptWaitTime': 5,
+            'mozillaRelbranch': 'FOO',
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -97,6 +122,7 @@ class TestReleaseView(ViewTest):
             'fennec-dashboardCheck=y',
             'fennec-l10nChangesets={"af":"de"}',
             'fennec-product=fennec',
+            'fennec-mozillaRelbranch=',
         ]
         ret = self.post('/release.html', query_string={'name': 'Fennec-4-build4'}, data='&'.join(data), content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 302, ret.data)
@@ -115,6 +141,7 @@ class TestReleaseView(ViewTest):
             'fennec-dashboardCheck=y',
             'fennec-l10nChangesets=xxxx',
             'fennec-product=fennec',
+            'fennec-mozillaRelbranch=',
         ]
         ret = self.post('/release.html', query_string={'name': 'Fennec-4-build4'}, data='&'.join(data), content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 400)
@@ -142,6 +169,7 @@ class TestReleaseView(ViewTest):
             'fennec-dashboardCheck=y',
             'fennec-l10nChangesets=xxxx',
             'fennec-product=fennec',
+            'fennec-mozillaRelbranch=BAR',
         ]
         ret = self.post('/release.html', query_string={'name': 'Thunderbird-2-build2'}, data='&'.join(data), content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 403)
@@ -157,6 +185,8 @@ class TestReleaseView(ViewTest):
             'thunderbird-partials=1.0build1',
             'thunderbird-l10nChangesets=xxxx',
             'thunderbird-product=thunderbird',
+            'thunderbird-mozillaRelbranch=',
+            'thunderbird-commRelbranch=',
         ]
         ret = self.post('/release.html', query_string={'name': 'Thunderbird-2-build2'}, data='&'.join(data), content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 403)

@@ -16,12 +16,24 @@
     {{ thunderbirdForm.mozillaRevision(placeholder='abcdef123456')|safe }}
 </div>
 <div>
+    {{ thunderbirdForm.mozillaRelbranch.label()|safe }}
+    {{ thunderbirdForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+</div>
+<div>
     {{ thunderbirdForm.commRevision.label()|safe }}
     {{ thunderbirdForm.commRevision(placeholder='abcdef123456')|safe }}
 </div>
 <div>
+    {{ thunderbirdForm.commRelbranch.label()|safe }}
+    {{ thunderbirdForm.commRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+</div>
+<div>
     {{ thunderbirdForm.partials.label()|safe }}
     {{ thunderbirdForm.partials(placeholder='15.0b5build1', title='A comma separated list of previous releases to create partial updates for.')|safe }}
+</div>
+<div>
+    {{ thunderbirdForm.promptWaitTime.label()|safe }}
+    {{ thunderbirdForm.promptWaitTime(title='Amount of time to wait before prompting users to apply the update to this release. Not specifying this will use the default value as specified in the application.')|safe }}
 </div>
 <div>
     {{ thunderbirdForm.dashboardCheck.label()|safe }}

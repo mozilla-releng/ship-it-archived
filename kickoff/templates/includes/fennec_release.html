@@ -16,6 +16,10 @@
     {{ fennecForm.mozillaRevision(placeholder='abcdef123456')|safe }}
 </div>
 <div>
+    {{ fennecForm.mozillaRelbranch.label()|safe }}
+    {{ fennecForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+</div>
+<div>
     {{ fennecForm.dashboardCheck.label()|safe }}
     {{ fennecForm.dashboardCheck(title='Whether or not to ensure that the changesets given in the form match the ones on the dashboard. Generally only used for betas.')|safe }}
 </div>

@@ -16,8 +16,16 @@
     {{ firefoxForm.mozillaRevision(placeholder='abcdef123456')|safe }}
 </div>
 <div>
+    {{ firefoxForm.mozillaRelbranch.label()|safe }}
+    {{ firefoxForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+</div>
+<div>
     {{ firefoxForm.partials.label()|safe }}
     {{ firefoxForm.partials(placeholder='15.0b5build1,15.0b4build2', title='A comma separated list of previous releases to create partial updates for.')|safe }}
+</div>
+<div>
+    {{ firefoxForm.promptWaitTime.label()|safe }}
+    {{ firefoxForm.promptWaitTime(title='Amount of time to wait before prompting users to apply the update to this release. Not specifying this will use the default value as specified in the application.')|safe }}
 </div>
 <div>
     {{ firefoxForm.dashboardCheck.label()|safe }}
