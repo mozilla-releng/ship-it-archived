@@ -4,7 +4,8 @@ from flask.views import MethodView
 from kickoff import db
 from kickoff.log import cef_event, CEF_WARN, CEF_INFO
 from kickoff.model import getReleaseTable, getReleases
-from kickoff.views.forms import CompleteForm, ReadyForm, getReleaseForm
+from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm
+
 
 def sortedReleases():
     def cmpReleases(x, y):
@@ -23,6 +24,7 @@ def sortedReleases():
             return -1
         return cmp(x.name, y.name)
     return sorted(getReleases(), cmp=cmpReleases)
+
 
 class ReleasesAPI(MethodView):
     def get(self):
@@ -43,6 +45,7 @@ class ReleasesAPI(MethodView):
         releases = [r.name for r in getReleases(ready, complete)]
         return jsonify({'releases': releases})
 
+
 class ReleaseAPI(MethodView):
     def get(self, releaseName):
         table = getReleaseTable(releaseName)
@@ -50,25 +53,33 @@ class ReleaseAPI(MethodView):
 
     def post(self, releaseName):
         table = getReleaseTable(releaseName)
-        form = CompleteForm()
-        if not form.validate():
-            cef_event('User Input Failed', CEF_INFO, **form.errors)
-            return Response(status=400, response=form.errors)
-
         release = table.query.filter_by(name=releaseName).first()
-        if form.complete.data:
+        form = ReleaseAPIForm()
+        if not form.validate(release):
+            errors = form.errors
+            cef_event('User Input Failed', CEF_INFO, **errors)
+            return Response(status=400, response=errors.values())
+
+        # All of the validation has already been done by the form so we can
+        # safely assume that the values we have are valid.
+        if form.ready.data is not None:
+            release.ready = form.ready.data
+        if form.complete.data is not None:
             release.complete = form.complete.data
         if form.status.data:
             release.status = form.status.data
+
         db.session.add(release)
         db.session.commit()
         return Response(status=200)
+
 
 class ReleaseL10nAPI(MethodView):
     def get(self, releaseName):
         table = getReleaseTable(releaseName)
         l10n = table.query.filter_by(name=releaseName).first().l10nChangesets
         return Response(status=200, response=l10n, content_type='text/plain')
+
 
 class Releases(MethodView):
     def get(self):
@@ -78,11 +89,11 @@ class Releases(MethodView):
         # case it's not worthwhile
         # http://stackoverflow.com/questions/8463421/how-to-render-my-select-field-with-wtforms
         #form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
-        form = ReadyForm()
+        form = ReleasesForm()
         return render_template('releases.html', releases=sortedReleases(), form=form)
 
     def post(self):
-        form = ReadyForm()
+        form = ReleasesForm()
         form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
         # Don't include completed or ready releases, because they aren't allowed to be deleted
         form.deleteReleases.choices = [(r.name, r.name) for r in getReleases(complete=False, ready=False)]
@@ -102,6 +113,7 @@ class Releases(MethodView):
             db.session.add(r)
         db.session.commit()
         return render_template('releases.html', releases=sortedReleases(), form=form)
+
 
 class Release(MethodView):
     def get(self):

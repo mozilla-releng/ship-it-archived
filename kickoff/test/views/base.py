@@ -6,6 +6,7 @@ from kickoff import app, db
 from kickoff.log import cef_config
 from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease
 
+
 class ViewTest(unittest.TestCase):
     auth = {'REMOTE_USER': 'bob'}
 

@@ -1,9 +1,10 @@
+from ast import literal_eval
 import logging
 import simplejson as json
 
-from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, Form, \
-  BooleanField, StringField, Length, TextAreaField, DataRequired, IntegerField, \
-  HiddenField, Regexp
+from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
+    Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
+    IntegerField, HiddenField, Regexp
 
 from mozilla.build.versions import ANY_VERSION_REGEX
 from mozilla.release.l10n import parsePlainL10nChangesets
@@ -11,6 +12,7 @@ from mozilla.release.l10n import parsePlainL10nChangesets
 from kickoff.model import Release
 
 log = logging.getLogger(__name__)
+
 
 # From http://wtforms.simplecodes.com/docs/1.0.2/specific_problems.html#specialty-field-tricks
 class MultiCheckboxField(SelectMultipleField):
@@ -20,12 +22,22 @@ class MultiCheckboxField(SelectMultipleField):
     widget = ListWidget(prefix_label=False)
     option_widget = CheckboxInput()
 
-class ReadyForm(Form):
+
+class ThreeStateField(StringField):
+    """Similar to a BooleanField, but supports the abscence of data. If the
+       field is absent completely data is None. Otherwise ast.literal_eval
+       is used to get a boolean value from the data."""
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self.data = bool(literal_eval(valuelist[0]))
+        else:
+            self.data = None
+
+
+class ReleasesForm(Form):
     readyReleases = MultiCheckboxField('readyReleases')
     deleteReleases = MultiCheckboxField('deleteReleases')
-
-    def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
 
     def validate(self, *args, **kwargs):
         valid = Form.validate(self, *args, **kwargs)
@@ -40,12 +52,37 @@ class ReadyForm(Form):
 
         return valid
 
-class CompleteForm(Form):
-    complete = BooleanField('complete')
+
+class ReleaseAPIForm(Form):
+    ready = ThreeStateField('ready')
+    complete = ThreeStateField('complete')
     # Use the Column length directly rather than duplicating its value.
     status = StringField('status', [Length(max=Release.status.type.length)])
 
+    def validate(self, release, *args, **kwargs):
+        valid = Form.validate(self, *args, **kwargs)
+        # Completed releases shouldn't be altered in terms of readyness or
+        # completeness. Status updates are OK though.
+        if release.complete:
+            if self.ready.data is False or self.complete.data is False:
+                valid = False
+                if 'ready' not in self.errors:
+                    self.errors['ready'] = []
+                self.errors['ready'].append('Cannot make a completed release not ready or incomplete.')
+        # If the release isn't complete, we can accept changes to readyness or
+        # completeness, but marking a release as not ready *and* complete at
+        # the same time is invalid.
+        else:
+            if self.ready.data is False and self.complete.data is True:
+                valid = False
+                if 'ready' not in self.errors:
+                    self.errors['ready'] = []
+                self.errors['ready'].append('A release cannot be made ready and complete at the same time')
+
+        return valid
+
 PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
+
 
 class JSONField(TextAreaField):
     def process_formdata(self, valuelist):
@@ -62,6 +99,7 @@ class JSONField(TextAreaField):
                 self.process_errors.append(e.args[0])
         else:
             self.data = None
+
 
 class PlainChangesetsField(TextAreaField):
     def process_formdata(self, valuelist):
@@ -93,6 +131,7 @@ class ReleaseForm(Form):
     dashboardCheck = BooleanField('Dashboard check?', default=True)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
 
+
 class FennecReleaseForm(ReleaseForm):
     product = HiddenField('product')
     l10nChangesets = JSONField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
@@ -108,6 +147,7 @@ class FennecReleaseForm(ReleaseForm):
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
+
 
 def collapseSpaces(value):
     """A filter that collapses spaces within a string. Used for the "partials"
@@ -127,6 +167,7 @@ class NullableIntegerField(IntegerField):
             valuelist = None
         return IntegerField.process_formdata(self, valuelist)
 
+
 class DesktopReleaseForm(ReleaseForm):
     partials = StringField('Partial versions:',
         validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
@@ -134,6 +175,7 @@ class DesktopReleaseForm(ReleaseForm):
     )
     promptWaitTime = NullableIntegerField('Update prompt wait time:')
     l10nChangesets = PlainChangesetsField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
+
 
 class FirefoxReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
@@ -151,6 +193,7 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
+
 
 class ThunderbirdReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
@@ -172,6 +215,7 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.commRelbranch.data = row.commRelbranch
+
 
 def getReleaseForm(release):
     """Helper method to figure out which form is needed for a release, based
