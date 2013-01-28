@@ -1,3 +1,8 @@
+import datetime
+import mock
+
+import pytz
+
 import simplejson as json
 
 from kickoff import app
@@ -32,6 +37,7 @@ class TestReleaseAPI(ViewTest):
             'name': 'Thunderbird-2-build2',
             'product': 'thunderbird',
             'submitter': 'bob',
+            'submittedAt': pytz.utc.localize(datetime.datetime(2005, 1, 1, 1, 1, 1, 1)).isoformat(),
             'version': '2',
             'buildNumber': 2,
             'branch': 'b',
@@ -56,6 +62,7 @@ class TestReleaseAPI(ViewTest):
             'name': 'Firefox-2-build1',
             'product': 'firefox',
             'submitter': 'joe',
+            'submittedAt': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat(),
             'version': '2',
             'buildNumber': 1,
             'branch': 'a',

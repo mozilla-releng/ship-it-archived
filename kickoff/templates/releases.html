@@ -12,6 +12,7 @@
 <tr>
     <th>Name</th>
     <th>Submitted By</th>
+    <th>Submitted At</th>
     <th>Branch</th>
     <th>Mozilla Revision</th>
     <th>Mozilla Relbranch</th>
@@ -39,6 +40,17 @@
         <td>{{ rel.name }}</td>
     {% endif %}
     <td>{{ rel.submitter }}</td>
+    <td id='{{ rel.name }}_submittedAt'>
+        <script type='text/javascript'>
+            document.addEventListener('readystatechange', function() {
+                if (document.readyState == 'complete') {
+                    localdate = new Date('{{ rel.submittedAt }}');
+                    var e = document.getElementById('{{ rel.name }}_submittedAt');
+                    e.textContent = localdate.toLocaleString();
+                }
+            })
+        </script>
+    </td>
     <td>{{ rel.branch }}</td>
     <td>{{ rel.mozillaRevision }}</td>
     <td>{{ rel.mozillaRelbranch }}</td>
