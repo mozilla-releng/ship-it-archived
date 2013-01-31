@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 
+from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from mozilla.release.info import getReleaseName
@@ -57,7 +58,7 @@ class Release(object):
         return me
 
     @classmethod
-    def createFromForm(self, form):
+    def createFromForm(cls, form):
         raise NotImplementedError
 
     def updateFromForm(self, form):
@@ -69,6 +70,20 @@ class Release(object):
         self.dashboardCheck = form.dashboardCheck.data
         self.mozillaRelbranch = form.mozillaRelbranch.data
         self.name = getReleaseName(self.product, self.version, self.buildNumber)
+
+    @classmethod
+    def getRecent(cls, age=timedelta(weeks=7)):
+        """Returns all releases of 'age' or newer."""
+        since = datetime.now() - age
+        return cls.query.filter(cls._submittedAt > since).all()
+
+    @classmethod
+    def getMaxBuildNumber(cls, version):
+        """Returns the highest build number known for the version provided."""
+        return cls.query \
+            .with_entities(func.max(cls.buildNumber)) \
+            .filter_by(version=version) \
+            .one()[0]
 
     def __repr__(self):
         return '<Release %r>' % self.name

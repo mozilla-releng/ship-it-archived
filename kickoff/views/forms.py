@@ -4,12 +4,12 @@ import simplejson as json
 
 from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
     Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
-    IntegerField, HiddenField, Regexp
+    IntegerField, HiddenField, Regexp, TextInput
 
-from mozilla.build.versions import ANY_VERSION_REGEX
+from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
 
-from kickoff.model import Release
+from kickoff.model import Release, getReleaseTable
 
 log = logging.getLogger(__name__)
 
@@ -131,6 +131,45 @@ class ReleaseForm(Form):
     dashboardCheck = BooleanField('Dashboard check?', default=True)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
 
+    def __init__(self, suggest=True, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+        if suggest:
+            self.addSuggestions()
+
+    def addSuggestions(self):
+        table = getReleaseTable(self.product.data)
+        recentReleases = table.getRecent()
+        recentVersions = [r.version for r in recentReleases]
+        # We don't want to suggest the same branch or version multiple
+        # times. Using a set deals with this nicely.
+        branches = set()
+        versions = set()
+        buildNumbers = {}
+
+        for release in recentReleases:
+            # Any branch we see should be suggested.
+            branches.add(release.branch)
+            # Every version we see will have its potential next versions
+            # suggested, except if we already have that version.
+            # Note that we don't look through the entire table for every
+            # version (because that could be expensive) but any versions
+            # which are suggested and have already happened should be in
+            # 'recentVersions', so it's unlikely we'll be suggesting
+            # something that has already happened.
+            for v in getPossibleNextVersions(release.version):
+                if v not in recentVersions:
+                    versions.add(v)
+            # We want the UI to be able to automatically set build number
+            # to the next available one for whatever version is entered.
+            # To make this work we need to tell it what the next available
+            # one is for all existing versions. We don't need to add versions
+            # that are on build1, because it uses that as the default.
+            if release.version not in buildNumbers:
+                maxBuildNumber = table.getMaxBuildNumber(release.version)
+                buildNumbers[release.version] = maxBuildNumber + 1
+        self.branch.suggestions = json.dumps(list(branches))
+        self.version.suggestions = json.dumps(list(versions))
+        self.buildNumber.suggestions = json.dumps(buildNumbers)
 
 class FennecReleaseForm(ReleaseForm):
     product = HiddenField('product')
@@ -175,6 +214,22 @@ class DesktopReleaseForm(ReleaseForm):
     )
     promptWaitTime = NullableIntegerField('Update prompt wait time:')
     l10nChangesets = PlainChangesetsField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
+
+    def addSuggestions(self):
+        ReleaseForm.addSuggestions(self)
+        table = getReleaseTable(self.product.data)
+        recentReleases = table.getRecent()
+        seenVersions = []
+        partials = {}
+        # The UI will suggest any versions which are on the same branch as
+        # the one given, but only the highest build number for that version.
+        for release in reversed(recentReleases):
+            if release.branch not in partials:
+                partials[release.branch] = []
+            if release.version not in seenVersions:
+                partials[release.branch].append('%sbuild%d' % (release.version, release.buildNumber))
+                seenVersions.append(release.version)
+        self.partials.suggestions = json.dumps(partials)
 
 
 class FirefoxReleaseForm(DesktopReleaseForm):

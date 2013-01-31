@@ -1,3 +1,19 @@
+<script type='text/javascript'>
+$(document).ready(function() {
+    setupVersionSuggestions(
+        $('#{{ thunderbirdForm.version.id }}'),
+        {{ thunderbirdForm.version.suggestions|safe }},
+        $('#{{ thunderbirdForm.buildNumber.id }}'),
+        {{ thunderbirdForm.buildNumber.suggestions|safe }}
+    );
+    setupBranchSuggestions(
+        $('#{{ thunderbirdForm.branch.id }}'),
+        {{ thunderbirdForm.branch.suggestions|safe }},
+        $('#{{ thunderbirdForm.partials.id }}'),
+        {{ thunderbirdForm.partials.suggestions|safe }}
+    );
+})
+</script>
 {{ thunderbirdForm.hidden_tag() }}
 <div>
     {{ thunderbirdForm.version.label()|safe }}

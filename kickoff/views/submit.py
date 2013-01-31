@@ -10,7 +10,8 @@ from kickoff.views.forms import FennecReleaseForm, FirefoxReleaseForm, \
 class SubmitRelease(MethodView):
     def get(self):
         return render_template('submit_release.html', fennecForm=FennecReleaseForm(),
-            firefoxForm=FirefoxReleaseForm(), thunderbirdForm=ThunderbirdReleaseForm())
+                               firefoxForm=FirefoxReleaseForm(),
+                               thunderbirdForm=ThunderbirdReleaseForm())
 
     def post(self):
         # This is checked for in a before_request hook.

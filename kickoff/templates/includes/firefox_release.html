@@ -1,3 +1,19 @@
+<script type='text/javascript'>
+$(document).ready(function() {
+    setupVersionSuggestions(
+        $('#{{ firefoxForm.version.id }}'),
+        {{ firefoxForm.version.suggestions|safe }},
+        $('#{{ firefoxForm.buildNumber.id }}'),
+        {{ firefoxForm.buildNumber.suggestions|safe }}
+    );
+    setupBranchSuggestions(
+        $('#{{ firefoxForm.branch.id }}'),
+        {{ firefoxForm.branch.suggestions|safe }},
+        $('#{{ firefoxForm.partials.id }}'),
+        {{ firefoxForm.partials.suggestions|safe }}
+    );
+})
+</script>
 {{ firefoxForm.hidden_tag() }}
 <div>
     {{ firefoxForm.version.label()|safe }}

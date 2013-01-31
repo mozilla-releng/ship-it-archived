@@ -213,7 +213,7 @@ class TestReleaseView(ViewTest):
             'fennec-product=fennec',
             'fennec-mozillaRelbranch=BAR',
         ])
-        ret = self.post('/release.html', query_string={'name': 'Thunderbird-2-build2'}, data=data, content_type='application/x-www-form-urlencoded')
+        ret = self.post('/release.html', query_string={'name': 'Fennec-1-build1'}, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 403)
 
     def testEditCompletedReleasePost(self):
