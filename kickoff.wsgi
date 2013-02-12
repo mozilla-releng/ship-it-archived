@@ -14,7 +14,7 @@ cfg = RawConfigParser()
 cfg.read(path.join(mydir, 'kickoff.ini'))
 dburi = cfg.get('database', 'dburi')
 logfile = cfg.get('logging', 'logfile')
-loglevel = cfg.get('logging', 'level')
+loglevel = logging.getLevelName(cfg.get('logging', 'level'))
 cef_logfile = cfg.get('logging', 'cef_logfile')
 secretKey = cfg.get('app', 'secret_key')
 
