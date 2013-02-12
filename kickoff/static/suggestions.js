@@ -105,3 +105,14 @@ function setupBranchSuggestions(branchElement, branches, partialsElement, partia
 function extractLast(term) {
     return term.split(/,\s*/).pop();
 }
+
+function setupRevisionDisabling(relbranchElement, revisionElement) {
+    relbranchElement.blur(function() {
+        if ($(this).val() == '') {
+            revisionElement.removeAttr('disabled');
+        }
+        else {
+            revisionElement.attr('disabled', 'disabled');
+        }
+    });
+}

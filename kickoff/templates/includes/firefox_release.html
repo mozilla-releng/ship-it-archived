@@ -12,6 +12,10 @@ $(document).ready(function() {
         $('#{{ firefoxForm.partials.id }}'),
         {{ firefoxForm.partials.suggestions|safe }}
     );
+    setupRevisionDisabling(
+        $('#{{ firefoxForm.mozillaRelbranch.id }}'),
+        $('#{{ firefoxForm.mozillaRevision.id }}')
+    );
 })
 </script>
 {{ firefoxForm.hidden_tag() }}

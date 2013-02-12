@@ -10,6 +10,10 @@ $(document).ready(function() {
         $('#{{ fennecForm.branch.id }}'),
         {{ fennecForm.branch.suggestions|safe }}
     );
+    setupRevisionDisabling(
+        $('#{{ fennecForm.mozillaRelbranch.id }}'),
+        $('#{{ fennecForm.mozillaRevision.id }}')
+    );
 })
 </script>
 {{ fennecForm.hidden_tag() }}

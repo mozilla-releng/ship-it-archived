@@ -12,6 +12,14 @@ $(document).ready(function() {
         $('#{{ thunderbirdForm.partials.id }}'),
         {{ thunderbirdForm.partials.suggestions|safe }}
     );
+    setupRevisionDisabling(
+        $('#{{ thunderbirdForm.mozillaRelbranch.id }}'),
+        $('#{{ thunderbirdForm.mozillaRevision.id }}')
+    );
+    setupRevisionDisabling(
+        $('#{{ thunderbirdForm.commRelbranch.id }}'),
+        $('#{{ thunderbirdForm.commRevision.id }}')
+    );
 })
 </script>
 {{ thunderbirdForm.hidden_tag() }}
