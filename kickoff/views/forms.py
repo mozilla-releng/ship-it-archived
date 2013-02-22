@@ -1,4 +1,6 @@
 from ast import literal_eval
+from collections import defaultdict
+from distutils.version import LooseVersion
 import logging
 import simplejson as json
 
@@ -139,36 +141,55 @@ class ReleaseForm(Form):
     def addSuggestions(self):
         table = getReleaseTable(self.product.data)
         recentReleases = table.getRecent()
-        recentVersions = [r.version for r in recentReleases]
-        # We don't want to suggest the same branch or version multiple
-        # times. Using a set deals with this nicely.
-        branches = set()
-        versions = set()
+
+        # Before we make any suggestions we need to do some preprocessing of
+        # the data to get it into useful structures. Specifically, we need a
+        # set containing all of the recent versions, and a dict that associates
+        # them with the branch they were built on.
+        recentVersions = set()
+        recentBranches = defaultdict(list)
+        for release in recentReleases:
+            recentVersions.add(release.version)
+            recentBranches[release.branch].append(LooseVersion(release.version))
+
+        # Now that we have the data in the format we want it in we can start
+        # making suggestions.
+        suggestedVersions = set()
         buildNumbers = {}
 
-        for release in recentReleases:
-            # Any branch we see should be suggested.
-            branches.add(release.branch)
-            # Every version we see will have its potential next versions
-            # suggested, except if we already have that version.
-            # Note that we don't look through the entire table for every
-            # version (because that could be expensive) but any versions
-            # which are suggested and have already happened should be in
-            # 'recentVersions', so it's unlikely we'll be suggesting
-            # something that has already happened.
-            for v in getPossibleNextVersions(release.version):
-                if v not in recentVersions:
-                    versions.add(v)
+        # This wrapper method is used to centralize the build number suggestion
+        # logic in one place, because there's more than one spot below that
+        # adds a version suggestion.
+        def addVersionSuggestion(version):
+            suggestedVersions.add(v)
             # We want the UI to be able to automatically set build number
             # to the next available one for whatever version is entered.
             # To make this work we need to tell it what the next available
             # one is for all existing versions. We don't need to add versions
             # that are on build1, because it uses that as the default.
-            if release.version not in buildNumbers:
-                maxBuildNumber = table.getMaxBuildNumber(release.version)
-                buildNumbers[release.version] = maxBuildNumber + 1
-        self.branch.suggestions = json.dumps(list(branches))
-        self.version.suggestions = json.dumps(list(versions))
+            maxBuildNumber = table.getMaxBuildNumber(latestVersion)
+            buildNumbers[latestVersion] = maxBuildNumber + 1
+
+        # Every version we see will have its potential next versions
+        # suggested, except if we already have that version.
+        # Note that we don't look through the entire table for every
+        # version (because that could be expensive) but any versions
+        # which are suggested and have already happened should be in
+        # 'recentVersions', so it's unlikely we'll be suggesting
+        # something that has already happened.
+        for version in recentVersions:
+            for v in getPossibleNextVersions(version):
+                if v not in recentVersions:
+                    addVersionSuggestion(v)
+
+        # Additional, we need to suggest the most recent version for each
+        # branch, because we may want a build2 (or higher) of it.
+        for branchVersions in recentBranches.values():
+            addVersionSuggestion(str(max(branchVersions)))
+
+        # Finally, attach the suggestions to their fields.
+        self.branch.suggestions = json.dumps(list(recentBranches.keys()))
+        self.version.suggestions = json.dumps(list(suggestedVersions))
         self.buildNumber.suggestions = json.dumps(buildNumbers)
 
 class FennecReleaseForm(ReleaseForm):

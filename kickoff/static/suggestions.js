@@ -25,7 +25,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             my: 'left',
             at: 'right',
             of: versionElement,
-            collision: 'flip',
+            collision: 'flipfit',
         },
         select: function(event, ui) {
             populateBuildNumber(ui.item.value);
@@ -49,7 +49,7 @@ function setupBranchSuggestions(branchElement, branches, partialsElement, partia
             my: 'left',
             at: 'right',
             of: branchElement,
-            collision: 'flip',
+            collision: 'flipfit',
         },
     }).focus(function() {
         $(this).autocomplete('search');
@@ -78,7 +78,7 @@ function setupBranchSuggestions(branchElement, branches, partialsElement, partia
                     my: 'left',
                     at: 'right',
                     of: partialsElement,
-                    collision: 'flip',
+                    collision: 'flipfit',
                 },
                 select: function(event, ui) {
                     var terms = this.value.split(/,\s*/);
