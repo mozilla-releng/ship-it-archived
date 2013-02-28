@@ -167,8 +167,8 @@ class ReleaseForm(Form):
             # To make this work we need to tell it what the next available
             # one is for all existing versions. We don't need to add versions
             # that are on build1, because it uses that as the default.
-            maxBuildNumber = table.getMaxBuildNumber(latestVersion)
-            buildNumbers[latestVersion] = maxBuildNumber + 1
+            maxBuildNumber = table.getMaxBuildNumber(version)
+            buildNumbers[version] = maxBuildNumber + 1
 
         # Every version we see will have its potential next versions
         # suggested, except if we already have that version.
