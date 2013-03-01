@@ -13,7 +13,8 @@ def sortedReleases():
     def cmpReleases(x, y):
         # Not ready releases should come before ready ones.
         # Incomplete releases should come before completed ones.
-        # After that, sort by name.
+        # After that, sort by submission time
+        # Newer releases should be at the top.
         if x.ready:
             if not y.ready:
                 return 1
@@ -24,7 +25,7 @@ def sortedReleases():
                 return 1
         elif y.complete:
             return -1
-        return cmp(x.name, y.name)
+        return cmp(y._submittedAt, x._submittedAt)
     return sorted(getReleases(), cmp=cmpReleases)
 
 
