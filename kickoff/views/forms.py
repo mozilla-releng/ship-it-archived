@@ -130,7 +130,7 @@ class ReleaseForm(Form):
     buildNumber = IntegerField('Build Number:', validators=[DataRequired('Build number is required.')])
     branch = StringField('Branch:', validators=[DataRequired('Branch is required')])
     mozillaRevision = StringField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
-    dashboardCheck = BooleanField('Dashboard check?', default=True)
+    dashboardCheck = BooleanField('Dashboard check?', default=False)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
 
     def __init__(self, suggest=True, *args, **kwargs):

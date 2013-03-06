@@ -19,7 +19,7 @@ class Release(object):
     branch = db.Column(db.String(50), nullable=False)
     mozillaRevision = db.Column(db.String(100), nullable=False)
     l10nChangesets = db.Column(db.Text(), nullable=False)
-    dashboardCheck = db.Column(db.Boolean(), nullable=False, default=True)
+    dashboardCheck = db.Column(db.Boolean(), nullable=False, default=False)
     ready = db.Column(db.Boolean(), nullable=False, default=False)
     complete = db.Column(db.Boolean(), nullable=False, default=False)
     status = db.Column(db.String(250), default="")
