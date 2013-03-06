@@ -24,6 +24,7 @@ class SubmitRelease(MethodView):
             'firefoxForm': FirefoxReleaseForm(formdata=None),
             'thunderbirdForm': ThunderbirdReleaseForm(formdata=None)
         }
+
         for field, value in request.form.items():
             if field.endswith('product'):
                 product = value
@@ -33,14 +34,17 @@ class SubmitRelease(MethodView):
             form = getReleaseForm(product)()
         except ValueError:
             cef_event('User Input Failed', CEF_ALERT, ProductName=product)
-            return Response(status=400, response="Unknown product name '%s'" % product)
+            return Response(status=400,
+                            response="Unknown product name '%s'" % product)
         errors = []
         if not form.validate():
             cef_event('User Input Failed', CEF_INFO, **form.errors)
             for error in form.errors.values():
                 errors.extend(error)
         if errors:
-            return make_response(render_template('submit_release.html', errors=errors, **forms), 400)
+            forms['%sForm' % product] = getReleaseForm(product)()
+            return make_response(render_template('submit_release.html',
+                                                 errors=errors, **forms), 400)
 
         table = getReleaseTable(form.product.data)
         release = table.createFromForm(submitter, form)
