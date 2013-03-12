@@ -16,6 +16,8 @@ from kickoff.model import Release, getReleaseTable
 log = logging.getLogger(__name__)
 
 
+PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
+
 # From http://wtforms.simplecodes.com/docs/1.0.2/specific_problems.html#specialty-field-tricks
 class MultiCheckboxField(SelectMultipleField):
     """A multiple-select, except displays a list of checkboxes. Iterating the
@@ -35,55 +37,6 @@ class ThreeStateField(StringField):
             self.data = bool(literal_eval(valuelist[0]))
         else:
             self.data = None
-
-
-class ReleasesForm(Form):
-    readyReleases = MultiCheckboxField('readyReleases')
-    deleteReleases = MultiCheckboxField('deleteReleases')
-
-    def validate(self, *args, **kwargs):
-        valid = Form.validate(self, *args, **kwargs)
-        readyAndDeleted = set(self.readyReleases.data).intersection(self.deleteReleases.data)
-        if readyAndDeleted:
-            valid = False
-            msg = 'Cannot delete releases that were also marked as ready: '
-            msg += ', '.join([r[0] for r in readyAndDeleted])
-            if 'deleteReleases' not in self.errors:
-                self.errors['deleteReleases'] = []
-            self.errors['deleteReleases'].append(msg)
-
-        return valid
-
-
-class ReleaseAPIForm(Form):
-    ready = ThreeStateField('ready')
-    complete = ThreeStateField('complete')
-    # Use the Column length directly rather than duplicating its value.
-    status = StringField('status', [Length(max=Release.status.type.length)])
-
-    def validate(self, release, *args, **kwargs):
-        valid = Form.validate(self, *args, **kwargs)
-        # Completed releases shouldn't be altered in terms of readyness or
-        # completeness. Status updates are OK though.
-        if release.complete:
-            if self.ready.data is False or self.complete.data is False:
-                valid = False
-                if 'ready' not in self.errors:
-                    self.errors['ready'] = []
-                self.errors['ready'].append('Cannot make a completed release not ready or incomplete.')
-        # If the release isn't complete, we can accept changes to readyness or
-        # completeness, but marking a release as not ready *and* complete at
-        # the same time is invalid.
-        else:
-            if self.ready.data is False and self.complete.data is True:
-                valid = False
-                if 'ready' not in self.errors:
-                    self.errors['ready'] = []
-                self.errors['ready'].append('A release cannot be made ready and complete at the same time')
-
-        return valid
-
-PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
 
 
 class JSONField(TextAreaField):
@@ -117,12 +70,90 @@ class PlainChangesetsField(TextAreaField):
             self.data = None
 
 
+class NullableIntegerField(IntegerField):
+    """Just like an IntegerField, except an empty value is allowed."""
+    def process_formdata(self, valuelist):
+        if valuelist and not valuelist[0]:
+            valuelist = None
+        return IntegerField.process_formdata(self, valuelist)
+
+
 def noneFilter(value):
     """Filters empty strings into null values. Used for non-required fields
        like relbranches where "None" means "use the default"."""
     if not value:
         value = None
     return value
+
+
+def truncateFilter(max_):
+    """A filter that truncates the value to `max_' length
+       if its initial length exceeds `max_'"""
+    def filter(value):
+        if len(value) > max_:
+            return value[:max_]
+        return value
+    return filter
+
+
+def collapseSpaces(value):
+    """A filter that collapses spaces within a string. Used for the "partials"
+       field to make the formatting slightly less strict."""
+    # It's not clear to me why, but this filter sometimes gets passed empty
+    # None rather than a string. The tests confirm that the filter is working
+    # though...
+    if value:
+        value = value.replace(' ', '')
+    return value
+
+
+class ReleasesForm(Form):
+    readyReleases = MultiCheckboxField('readyReleases')
+    deleteReleases = MultiCheckboxField('deleteReleases')
+
+    def validate(self, *args, **kwargs):
+        valid = Form.validate(self, *args, **kwargs)
+        readyAndDeleted = set(self.readyReleases.data).intersection(self.deleteReleases.data)
+        if readyAndDeleted:
+            valid = False
+            msg = 'Cannot delete releases that were also marked as ready: '
+            msg += ', '.join([r[0] for r in readyAndDeleted])
+            if 'deleteReleases' not in self.errors:
+                self.errors['deleteReleases'] = []
+            self.errors['deleteReleases'].append(msg)
+
+        return valid
+
+
+class ReleaseAPIForm(Form):
+    ready = ThreeStateField('ready')
+    complete = ThreeStateField('complete')
+    # If the client sends us a really long status we'd rather truncate
+    # it than complain, because it's purely informational.
+    # Use the Column length directly rather than duplicating its value.
+    status = StringField('status', filters=[truncateFilter(Release.status.type.length)])
+
+    def validate(self, release, *args, **kwargs):
+        valid = Form.validate(self, *args, **kwargs)
+        # Completed releases shouldn't be altered in terms of readyness or
+        # completeness. Status updates are OK though.
+        if release.complete:
+            if self.ready.data is False or self.complete.data is False:
+                valid = False
+                if 'ready' not in self.errors:
+                    self.errors['ready'] = []
+                self.errors['ready'].append('Cannot make a completed release not ready or incomplete.')
+        # If the release isn't complete, we can accept changes to readyness or
+        # completeness, but marking a release as not ready *and* complete at
+        # the same time is invalid.
+        else:
+            if self.ready.data is False and self.complete.data is True:
+                valid = False
+                if 'ready' not in self.errors:
+                    self.errors['ready'] = []
+                self.errors['ready'].append('A release cannot be made ready and complete at the same time')
+
+        return valid
 
 
 class ReleaseForm(Form):
@@ -210,25 +241,6 @@ class FennecReleaseForm(ReleaseForm):
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
-
-
-def collapseSpaces(value):
-    """A filter that collapses spaces within a string. Used for the "partials"
-       field to make the formatting slightly less strict."""
-    # It's not clear to me why, but this filter sometimes gets passed empty
-    # None rather than a string. The tests confirm that the filter is working
-    # though...
-    if value:
-        value = value.replace(' ', '')
-    return value
-
-
-class NullableIntegerField(IntegerField):
-    """Just like an IntegerField, except an empty value is allowed."""
-    def process_formdata(self, valuelist):
-        if valuelist and not valuelist[0]:
-            valuelist = None
-        return IntegerField.process_formdata(self, valuelist)
 
 
 class DesktopReleaseForm(ReleaseForm):

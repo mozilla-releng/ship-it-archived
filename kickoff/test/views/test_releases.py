@@ -1,5 +1,7 @@
 import datetime
 import mock
+import random
+import string
 
 import pytz
 
@@ -92,6 +94,14 @@ class TestReleaseAPI(ViewTest):
         with app.test_request_context():
             got = FennecRelease.query.filter_by(name='Fennec-1-build1').first().status
             self.assertEquals(got, 'omg!')
+
+    def testUpdateStatusTruncate(self):
+        longStatus = ''.join(random.choice(string.letters) for i in xrange(270))
+        ret = self.post('/releases/Fennec-1-build1', data={'status': longStatus})
+        self.assertEquals(ret.status_code, 200)
+        with app.test_request_context():
+            got = FennecRelease.query.filter_by(name='Fennec-1-build1').first().status
+            self.assertEquals(got, longStatus[:250])
 
     def testGetL10n(self):
         ret = self.get('/releases/Firefox-2-build1/l10n')
