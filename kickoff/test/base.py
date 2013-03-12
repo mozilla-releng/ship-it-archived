@@ -55,6 +55,14 @@ class TestBase(unittest.TestCase):
             r.complete = True
             r.ready = True
             db.session.add(r)
+            r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
+                                   partials='1.0build1', promptWaitTime=None,
+                                   submitter='bob', version='4.0', buildNumber=1,
+                                   branch='b', mozillaRevision='yyy',
+                                   l10nChangesets='yy zz', dashboardCheck=True,
+                                   mozillaRelbranch=None,
+                                   submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1))
+            db.session.add(r)
             db.session.commit()
 
     def tearDown(self):

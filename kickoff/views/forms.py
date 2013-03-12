@@ -160,7 +160,7 @@ class ReleaseForm(Form):
     version = StringField('Version:', validators=[Regexp(ANY_VERSION_REGEX, message='Invalid version format.')])
     buildNumber = IntegerField('Build Number:', validators=[DataRequired('Build number is required.')])
     branch = StringField('Branch:', validators=[DataRequired('Branch is required')])
-    mozillaRevision = StringField('Mozilla Revision:', validators=[DataRequired('Mozilla revision is required.')])
+    mozillaRevision = StringField('Mozilla Revision:')
     dashboardCheck = BooleanField('Dashboard check?', default=False)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
 
@@ -168,6 +168,19 @@ class ReleaseForm(Form):
         Form.__init__(self, *args, **kwargs)
         if suggest:
             self.addSuggestions()
+
+    def validate(self, *args, **kwargs):
+        valid = Form.validate(self, *args, **kwargs)
+        # If a relbranch has been passed revision is ignored.
+        if self.mozillaRelbranch.data:
+            self.mozillaRevision.data = self.mozillaRelbranch.data
+        # However, if a relbranch hasn't been passed, revision is required.
+        else:
+            if not self.mozillaRevision.data:
+                valid = False
+                self.errors['mozillaRevision'] = ['Mozilla revision is required']
+
+        return valid
 
     def addSuggestions(self):
         table = getReleaseTable(self.product.data)
@@ -237,7 +250,10 @@ class FennecReleaseForm(ReleaseForm):
         self.version.data = row.version
         self.buildNumber.data = row.buildNumber
         self.branch.data = row.branch
-        self.mozillaRevision.data = row.mozillaRevision
+        # Revision is a disabled field if relbranch is present, so we shouldn't
+        # put any data in it.
+        if not row.mozillaRelbranch:
+            self.mozillaRevision.data = row.mozillaRevision
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
@@ -278,7 +294,8 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         self.version.data = row.version
         self.buildNumber.data = row.buildNumber
         self.branch.data = row.branch
-        self.mozillaRevision.data = row.mozillaRevision
+        if not row.mozillaRelbranch:
+            self.mozillaRevision.data = row.mozillaRevision
         self.partials.data = row.partials
         self.promptWaitTime.data = row.promptWaitTime
         self.dashboardCheck.data = row.dashboardCheck
@@ -288,18 +305,31 @@ class FirefoxReleaseForm(DesktopReleaseForm):
 
 class ThunderbirdReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
-    commRevision = StringField('Comm Revision:', validators=[DataRequired('Comm revision is required.')])
+    commRevision = StringField('Comm Revision:')
     commRelbranch = StringField('Comm Relbranch:', filters=[noneFilter])
 
     def __init__(self, *args, **kwargs):
         ReleaseForm.__init__(self, prefix='thunderbird', product='thunderbird', *args, **kwargs)
 
+    def validate(self, *args, **kwargs):
+        valid = DesktopReleaseForm.validate(self, *args, **kwargs)
+        if self.commRelbranch.data:
+            self.commRevision.data = self.commRelbranch.data
+        else:
+            if not self.commRevision.data:
+                valid = False
+                self.errors['commRevision'] = ['Comm revision is required']
+
+        return valid
+
     def updateFromRow(self, row):
         self.version.data = row.version
         self.buildNumber.data = row.buildNumber
         self.branch.data = row.branch
-        self.mozillaRevision.data = row.mozillaRevision
-        self.commRevision.data = row.commRevision
+        if not row.mozillaRelbranch:
+            self.mozillaRevision.data = row.mozillaRevision
+        if not row.commRelbranch:
+            self.commRevision.data = row.commRevision
         self.partials.data = row.partials
         self.promptWaitTime.data = row.promptWaitTime
         self.dashboardCheck.data = row.dashboardCheck

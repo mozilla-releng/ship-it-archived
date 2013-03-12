@@ -1,4 +1,4 @@
-from flask import request, render_template, redirect, make_response
+from flask import request, render_template, redirect, make_response, Response
 from flask.views import MethodView
 
 from kickoff import db

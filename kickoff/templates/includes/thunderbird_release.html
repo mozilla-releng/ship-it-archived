@@ -37,19 +37,35 @@ $(document).ready(function() {
 </div>
 <div>
     {{ thunderbirdForm.mozillaRevision.label()|safe }}
-    {{ thunderbirdForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+    {% if thunderbirdForm.mozillaRelbranch.data %}
+        {{ thunderbirdForm.mozillaRevision(disabled='disabled', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% else %}
+        {{ thunderbirdForm.mozillaRevision(placeholder='abcdef123456', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ thunderbirdForm.mozillaRelbranch.label()|safe }}
-    {{ thunderbirdForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% if thunderbirdForm.mozillaRevision.data %}
+        {{ thunderbirdForm.mozillaRelbranch(disabled='disabled', title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% else %}
+        {{ thunderbirdForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ thunderbirdForm.commRevision.label()|safe }}
-    {{ thunderbirdForm.commRevision(placeholder='abcdef123456')|safe }}
+    {% if thunderbirdForm.commRelbranch.data %}
+        {{ thunderbirdForm.commRevision(disabled='disabled', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% else %}
+        {{ thunderbirdForm.commRevision(placeholder='abcdef123456', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ thunderbirdForm.commRelbranch.label()|safe }}
-    {{ thunderbirdForm.commRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% if thunderbirdForm.commRevision.data %}
+        {{ thunderbirdForm.commRelbranch(disabled='disabled', title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% else %}
+        {{ thunderbirdForm.commRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ thunderbirdForm.partials.label()|safe }}

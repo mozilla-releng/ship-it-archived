@@ -31,11 +31,19 @@ $(document).ready(function() {
 </div>
 <div>
     {{ fennecForm.mozillaRevision.label()|safe }}
-    {{ fennecForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+    {% if fennecForm.mozillaRelbranch.data %}
+        {{ fennecForm.mozillaRevision(disabled='disabled', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% else %}
+        {{ fennecForm.mozillaRevision(placeholder='abcdef123456', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ fennecForm.mozillaRelbranch.label()|safe }}
-    {{ fennecForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% if fennecForm.mozillaRevision.data %}
+        {{ fennecForm.mozillaRelbranch(disabled='disabled', title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% else %}
+        {{ fennecForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ fennecForm.dashboardCheck.label()|safe }}

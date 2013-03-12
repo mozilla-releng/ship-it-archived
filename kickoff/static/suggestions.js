@@ -106,9 +106,20 @@ function setupRevisionDisabling(relbranchElement, revisionElement) {
     relbranchElement.blur(function() {
         if ($(this).val() == '') {
             revisionElement.removeAttr('disabled');
+            revisionElement.attr('placeholder', 'abcdef123456');
         }
         else {
+            revisionElement.removeAttr('placeholder');
             revisionElement.attr('disabled', 'disabled');
+        }
+    });
+    revisionElement.blur(function() {
+        if ($(this).val() == '') {
+            relbranchElement.removeAttr('disabled');
+        }
+        else {
+            relbranchElement.removeAttr('placeholder');
+            relbranchElement.attr('disabled', 'disabled');
         }
     });
 }

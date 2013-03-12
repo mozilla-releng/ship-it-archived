@@ -62,3 +62,29 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.complete, False)
             self.assertEquals(got.status, '')
             self.assertEquals(got.mozillaRelbranch, None)
+
+    def testSubmitWithRelbranch(self):
+        data = [
+            'firefox-version=9.0',
+            'firefox-buildNumber=1',
+            'firefox-branch=z',
+            'firefox-partials=1.0build1, 1.1build2',
+            'firefox-dashboardCheck=y',
+            'firefox-l10nChangesets=af%20def',
+            'firefox-product=firefox',
+            'firefox-mozillaRelbranch=FOO',
+        ]
+        ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
+        self.assertEquals(ret.status_code, 302, ret.data)
+        with app.test_request_context():
+            got = FirefoxRelease.query.filter_by(name='Firefox-9.0-build1').first()
+            self.assertEquals(got.version, '9.0')
+            self.assertEquals(got.buildNumber, 1)
+            self.assertEquals(got.branch, 'z')
+            self.assertEquals(got.mozillaRevision, 'FOO')
+            self.assertEquals(got.partials, '1.0build1,1.1build2')
+            self.assertEquals(got.l10nChangesets, 'af def')
+            self.assertEquals(got.ready, False)
+            self.assertEquals(got.complete, False)
+            self.assertEquals(got.status, '')
+            self.assertEquals(got.mozillaRelbranch, 'FOO')

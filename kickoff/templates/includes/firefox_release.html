@@ -33,11 +33,19 @@ $(document).ready(function() {
 </div>
 <div>
     {{ firefoxForm.mozillaRevision.label()|safe }}
-    {{ firefoxForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+    {% if firefoxForm.mozillaRelbranch.data %}
+        {{ firefoxForm.mozillaRevision(disabled='disabled', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% else %}
+        {{ firefoxForm.mozillaRevision(placeholder='abcdef123456', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ firefoxForm.mozillaRelbranch.label()|safe }}
-    {{ firefoxForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% if firefoxForm.mozillaRevision.data %}
+        {{ firefoxForm.mozillaRelbranch(disabled='disabled', title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% else %}
+        {{ firefoxForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+    {% endif %}
 </div>
 <div>
     {{ firefoxForm.partials.label()|safe }}

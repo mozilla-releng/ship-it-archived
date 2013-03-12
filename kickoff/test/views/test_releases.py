@@ -8,7 +8,7 @@ import pytz
 import simplejson as json
 
 from kickoff import app
-from kickoff.model import FennecRelease
+from kickoff.model import FennecRelease, ThunderbirdRelease
 from kickoff.test.views.base import ViewTest
 
 
@@ -18,7 +18,7 @@ class TestRequestsAPI(ViewTest):
         expected = {
             'releases': ['Fennec-1-build1', 'Fennec-4-build4',
                          'Fennec-4-build5', 'Firefox-2-build1',
-                         'Thunderbird-2-build2']
+                         'Thunderbird-2-build2', 'Thunderbird-4.0-build1']
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -179,6 +179,27 @@ class TestReleaseView(ViewTest):
             self.assertEquals(got.l10nChangesets, '{"af":"de"}')
             count = FennecRelease.query.filter_by(name='Fennec-4-build4').count()
             self.assertEquals(count, 0)
+
+    def testEditReleaseAddRelbranch(self):
+        data = '&'.join([
+            'thunderbird-version=4.0',
+            'thunderbird-buildNumber=1',
+            'thunderbird-branch=b',
+            'thunderbird-mozillaRevision=yyy',
+            'thunderbird-l10nChangesets=yy zz',
+            'thunderbird-dashboardCheck=y',
+            'thunderbird-mozillaRelbranch=',
+            'thunderbird-commRelbranch=BAR',
+            'thunderbird-partials=1.0build1',
+            'thunderbird-promptWaitTime=',
+            'thunderbird-product=thunderbird',
+        ])
+        ret = self.post('/release.html', query_string={'name': 'Thunderbird-4.0-build1'}, data=data, content_type='application/x-www-form-urlencoded')
+        self.assertEquals(ret.status_code, 302, ret.data)
+        with app.test_request_context():
+            got = ThunderbirdRelease.query.filter_by(name='Thunderbird-4.0-build1').first()
+            self.assertEquals(got.commRelbranch, 'BAR')
+            self.assertEquals(got.commRevision, 'BAR')
 
     def testEditReleaseInvalid(self):
         data = '&'.join([
