@@ -1,3 +1,5 @@
+import logging
+
 from flask import request, render_template, redirect, make_response, Response
 from flask.views import MethodView
 
@@ -6,6 +8,8 @@ from kickoff.log import cef_event, CEF_ALERT, CEF_INFO
 from kickoff.model import getReleaseTable
 from kickoff.views.forms import FennecReleaseForm, FirefoxReleaseForm, \
   ThunderbirdReleaseForm, getReleaseForm
+
+log = logging.getLogger(__name__)
 
 class SubmitRelease(MethodView):
     def get(self):
@@ -50,4 +54,5 @@ class SubmitRelease(MethodView):
         release = table.createFromForm(submitter, form)
         db.session.add(release)
         db.session.commit()
+        log.debug('%s added to the database' % release.name)
         return redirect('releases.html')

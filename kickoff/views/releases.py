@@ -1,3 +1,5 @@
+import logging
+
 import pytz
 
 from flask import request, jsonify, render_template, Response, redirect, make_response, abort
@@ -8,6 +10,7 @@ from kickoff.log import cef_event, CEF_WARN, CEF_INFO
 from kickoff.model import getReleaseTable, getReleases
 from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm
 
+log = logging.getLogger(__name__)
 
 def sortedReleases():
     def cmpReleases(x, y):
@@ -66,10 +69,13 @@ class ReleaseAPI(MethodView):
         # All of the validation has already been done by the form so we can
         # safely assume that the values we have are valid.
         if form.ready.data is not None:
+            log.debug('%s: ready being changed to: %s' % (releaseName, form.ready.data))
             release.ready = form.ready.data
         if form.complete.data is not None:
+            log.debug('%s: complete being changed to: %s' % (releaseName, form.complete.data))
             release.complete = form.complete.data
         if form.status.data:
+            log.debug('%s: status being changed to: %s' % (releaseName, form.status.data))
             release.status = form.status.data
 
         db.session.add(release)
@@ -105,10 +111,12 @@ class Releases(MethodView):
             return make_response(render_template('releases.html', errors=form.errors, releases=sortedReleases(), form=form), 400)
 
         for release in form.deleteReleases.data:
+            log.debug('%s is being deleted' % release)
             table = getReleaseTable(release)
             r = table.query.filter_by(name=release).first()
             db.session.delete(r)
         for release in form.readyReleases.data:
+            log.debug('%s is being marked as ready' % release)
             table = getReleaseTable(release)
             r = table.query.filter_by(name=release).first()
             r.ready = True
@@ -156,4 +164,5 @@ class Release(MethodView):
         release.updateFromForm(form)
         db.session.add(release)
         db.session.commit()
+        log.debug('%s has been edited' % name)
         return redirect('releases.html')
