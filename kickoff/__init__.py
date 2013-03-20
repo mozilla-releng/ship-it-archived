@@ -19,7 +19,6 @@ version = '1.1'
 # https://wiki.mozilla.org/WebAppSec/Secure_Coding_QA_Checklist#Test:_X-Frame-Options
 @app.after_request
 def add_xframe_options(response):
-    log.info('Adding X-Frame-Options: SAMEORIGIN to response')
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     return response
 
