@@ -5,113 +5,28 @@
     <li class='error'>{{ e }}</li>
     {% endfor %}
 </ul>
-<h2 class="title">Releases:</h2>
-<form id='release_readyness' action='{{ url_for('releases') }}' method='post'>
-{{ form.hidden_tag() }}
-<table id="releases">
-<tr>
-    <th>Name</th>
-    <th>Submitted By</th>
-    <th>Submitted At</th>
-    <th>Branch</th>
-    <th>Mozilla Revision</th>
-    <th>Mozilla Relbranch</th>
-    <th>Comm Revision</th>
-    <th>Comm Relbranch</th>
-    <th>Check Dashboard?</th>
-    <th>L10n Changesets</th>
-    <th>Partial Versions</th>
-    <th>Update Prompt Wait Time</th>
-    <th>Ready?</th>
-    <th>Status</th>
-    <th>Delete?</th>
-</tr>
-{% for rel in releases %}
-{% if not rel.ready %}
-<tr class='notready'>
-{% elif not rel.complete %}
-<tr class='incomplete'>
-{% else %}
-<tr class='complete'>
-{% endif %}
-    {% if not rel.ready %}
-        <td><a href="/release.html?name={{ rel.name }}">{{ rel.name }}</a></td>
-    {% else %}
-        <td>{{ rel.name }}</td>
-    {% endif %}
-    <td>{{ rel.submitter }}</td>
-    <td id='{{ rel.name }}_submittedAt'>
-        <script type='text/javascript'>
-            document.addEventListener('readystatechange', function() {
-                if (document.readyState == 'complete') {
-                    localdate = new Date('{{ rel.submittedAt }}');
-                    var e = document.getElementById('{{ rel.name }}_submittedAt');
-                    e.textContent = localdate.toLocaleString();
-                }
-            })
-        </script>
-    </td>
-    <td>{{ rel.branch }}</td>
-    <td>{{ rel.mozillaRevision }}</td>
-    <td>{{ rel.mozillaRelbranch }}</td>
-    {% if 'Thunderbird' in rel.name %}
-        <td>{{ rel.commRevision }}</td>
-        <td>{{ rel.commRelbranch }}</td>
-    {% else %}
-        <td class="irrelevant">N/A</td>
-        <td class="irrelevant">N/A</td>
-    {% endif %}
-    {% if rel.dashboardCheck %}
-        <td>Yes</td>
-    {% else %}
-        <td>No</td>
-    {% endif %}
-    <td><a href="/releases/{{ rel.name }}/l10n">Link</a></td>
-    {% if 'Fennec' in rel.name %}
-        <td class="irrelevant">N/A</td>
-    {% else %}
-        <td>{{ rel.partials }}</td>
-    {% endif %}
-    {% if 'Fennec' in rel.name %}
-        <td class="irrelevant">N/A</td>
-    {% else %}
-        {% if not rel.promptWaitTime %}
-            <td>Default</td>
-        {% else %}
-            <td>{{ rel.promptWaitTime }}</td>
-        {% endif %}
-    {% endif %}
-    <td>
-    {% if rel.ready %}
-        <input id='readyReleases_{{ rel.name }}' type='checkbox' name='readyReleases' value='{{ rel.name }}' checked='checked' disabled='disabled' />
-    {% else %}
-        <input id='readyReleases_{{ rel.name }}' type='checkbox' name='readyReleases' value='{{ rel.name }}' />
-    {% endif %}
-    </td>
-    <td>{{ rel.status }}</td>
-    <td>
-    {% if not rel.complete and not rel.ready %}
-        <input id='deleteReleases_{{ rel.name }}' type='checkbox' name='deleteReleases' value='{{ rel.name }}' onclick='disableReady("{{ rel.name }}")' />
-    {% else %}
-        <input type='checkbox' name='deleteReleases' value='{{ rel.name }}' disabled='disabled' />
-    {% endif %}
-    </td>
-{% endfor %}
-</table>
-<input type='submit' value='Do eet!' />
-</form>
-
-<script type='text/javascript'>
-function disableReady(release) {
-    readyCheckbox = document.getElementById('readyReleases_' + release);
-    deleteCheckbox = document.getElementById('deleteReleases_' + release);
-    if (deleteCheckbox.checked) {
-        readyCheckbox.checked = false;
-        readyCheckbox.disabled = true;
-    }
-    else {
-        readyCheckbox.disabled = false;
-    }
-}
+  <div id='accordion'>
+  <h3>Submitted</h3>
+  <div id='notready'>
+   {% include 'includes/releases_submitted.html' %}
+  </div><!-- submitted -->
+  <h3>Reviewed/Complete</h3>
+  <div id='tabs'>
+    <ul>
+      <li><a href="#reviewed-tab">Reviewed</a></li>
+      <li><a href="#complete-tab">Complete</a></li>
+    </ul>
+    <div id="reviewed-tab">
+     {% include 'includes/releases_reviewed.html' %}
+    </div> <!-- div id=incomplete -->
+    <div id="complete-tab">
+     {% include 'includes/releases_complete.html' %}
+    </div> <!-- div id=complete -->
+  </div> <!-- tabs -->
+  </div><!-- accordion -->
+<script>
+ $(document).ready(function() {
+   $( "#viewreleases" ).prop('checked', true);
+});
 </script>
 {% endblock %}

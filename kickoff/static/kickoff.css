@@ -1,124 +1,246 @@
-/* General stuff */
-a {
-    text-decoration: none;
+body {
+    font-size: 12px;
+    line-height: 1.5;
+    font-family: 'Open Sans',sans-serif;
+    color: rgb(51, 51, 51);
 }
 
-#nav {
-    padding: 0;
+/* release table */
+#releases {
+    font-size: 0.8em;
+}
+
+/* submit release form */
+.submit_release {
+   padding-bottom: 0.5em;
+}
+
+/* submit release form labels*/
+.submit_release label {
+    float: left;
+    width: 300px;
+}
+
+.submit_release textarea,
+.submit_release input[type=text] {
+    width: 30%;
+}
+
+
+/* submit release form advanced fileds*/
+.advanced {
+    border-top:2px solid LightGray;
+    margin-top:20px;
+    padding-top: 20px
+}
+
+table
+{
+   border-collapse:collapse;
+}
+
+#edit_container {
+    font-size: 1.1em;
+    width: 70%;
+    margin-left: 20px;
+}
+
+#radio {
+    text-align: center;
+}
+
+h1 {
     margin: 0;
-    margin-bottom: 1em;
-    float: left;
-    list-style: none;
-    width: 100%;
-    background: #cccccc;
-    border: solid #a6a6a6 thin
-}
-
-#nav li {
-    display: inline;
-    border-right: 1px solid;
-    float: left;
-}
-
-#nav li a:hover {
-    background: white;
-}
-
-#nav :last-child {
-    border-right: none;
-}
-
-#nav li a {
-    padding-right: .5em;
-    padding-left: .5em;
-    width: 100%;
-}
-
-/* Release submission */
-#column_container {
-    width: 100%;
-}
-
-#column_container > h3 {
-}
-
-#column_container > div, #edit_container {
-    float: left;
-    width: 32%;
-    margin-right: 2%;
-}
-
-label {
-    float: left;
-    width: 200px;
-}
-
-#column_container > div:last-child {
-    margin-right: 0;
-}
-
-#column_container > div > form > div:last-child, #edit_container > div:last-child {
+    margin-bottom: 1ex;
     text-align: center;
 }
 
-h3 {
-    text-align: center;
+.rel {
+    margin: 0 auto;
+    border-style:solid;
+    border-color: #C8C8C8;
+    border-width:1px;
+    min-width: 500px;
+    margin-bottom: 20px;
+    width: 95%;
 }
 
-input[type=text] {
-    width: 50%;
+.release_title {
+    font-size: 200%;
+    clear: left;
 }
 
-textarea {
-    width: 50%;
-    height: 10ex;
+.release_footer {
+    clear: left;
 }
 
-fieldset {
-    border: none;
+.release_buttons {
+    width: 20%;
+    padding: 0 2%;
+    float: left;
+    padding-top: 20px;
 }
 
-fieldset > div:last-child {
-    background-color: inherit;
+.release_data {
+    width: 70%;
+    margin: 0 0% 0 25%;
 }
 
-/* Release list */
-table {
-    border-collapse: collapse;
+body,
+html {
+    margin:0;
+    padding:0;
 }
 
-tr, td, th {
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
+
+/* ready and delte buttons on releases page*/
+div label input {
+   margin-right:100px;
+}
+body {
+    font-family: 'Open Sans', sans-serif;
 }
 
-th {
-    background-color: #cccccc;
-    padding: .25em 1ex .25em .5ex;
+
+.delete-button,
+.ready-button {
+    margin:4px;
+    background-color:#EFEFEF;
+    border-radius:4px;
+    border:1px solid #D0D0D0;
+    overflow:auto;
+    float:left;
 }
 
-td {
-    padding: .25em 1ex .25em .5ex;
+.delete-button label,
+.ready-button label {
+    float:left;
+    width:4.0em;
+}
+
+.delete-button label span,
+.ready-button label span {
+    text-align:center;
+    padding:3px 0px;
+    display:block;
+}
+
+.delete-button label input,
+.ready-button label input {
+    position:absolute;
+    top:-20px;
+}
+
+.ready-button input:checked + span {
+    background-color:#339933;
+    color:#fff;
+}
+
+.delete-button input:checked + span {
+    background-color:#911;
+    color:#fff;
+}
+
+.delete-button input:disabled + span,
+.ready-button input:disabled + span {
+    background-color:#EFEFEF;
+    color:#D0D0D0;
+}
+
+th.incomplete,
+th.complete {
+    font-size:12px;
+}
+tr.incomplete,
+tr.complete {
+    font-size:10px;
+}
+
+@font-face {
+    font-family: "OpenSans";
+    src: url(OpenSans-Light.ttf) format("truetype");
+}
+
+.huge, .large, h1, h2, h3, h4 {
+    font-family: 'OpenSans', "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
+    font-weight: normal;
+    text-shadow: 0px 1px 0px rgba(255,255,255,0.75);
+}
+
+.huge {
+    font-size: 108px;
+    letter-spacing: -4px;
+    line-height: 100%;
+}
+
+.large {
+    font-size: 72px;
+    letter-spacing: -3px;
+    line-height: 100%;
+}
+
+h1 {
+    font-size: 48px;
+    letter-spacing: -2px;
+    line-height: 100%;
 }
 
 h2 {
-    margin: 0;
-    margin-bottom: 1ex;
+    font-size: 32px;
+    letter-spacing: -1px;
+    line-height: 100%;
 }
 
-.complete {
-    background-color: lime;
+h3 {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    line-height: 100%;
 }
 
-.notready {
-    background-color: yellow;
+h4 {
+    font-size: 24px;
+    letter-spacing: -0.25px;
+    line-height: 100%;
 }
 
-.title {
-    border-bottom: solid #a6a6a6 thin;
+.small, small {
+    font-size: 12px;
+    line-height: 100%;
 }
 
-td.disabled {
-    background-color: #ccc;
+/* menu */
+#menu ul
+{
+    padding: 0px;
+    margin: 0px;
+    list-style-type: none;
+    text-align: center;
+    width: 100%;
+}
+
+#menu a
+{
+    text-decoration: none;
+    text-align: center;
+}
+
+#menu a:hover
+{
+    border-bottom: 5px solid;
+}
+
+#menu li
+{
+    color: black;
+    margin-right: 3em;
+    font-size: 150%;
+    color: black;
+    display: inline;
+    padding: 10px;
+}
+
+#menu {
+    padding-bottom: 30px;
+    text-align: center;
+    margin: auto;
 }

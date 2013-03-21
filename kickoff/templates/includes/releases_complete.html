@@ -1,0 +1,70 @@
+{% for rel in releases if rel.ready and rel.complete %}
+{% if loop.first %}
+<table id="completed">
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Submitted By</th>
+    <th>Submitted At</th>
+    <th>Branch</th>
+    <th>Mozilla Revision</th>
+    <th>Mozilla Relbranch</th>
+    <th>Comm Revision</th>
+    <th>Comm Relbranch</th>
+    <th>Check Dashboard?</th>
+    <th>L10n Changesets</th>
+    <th>Partial Versions</th>
+    <th>Update Prompt Wait Time</th>
+</tr>
+</thead>
+{% endif %}
+<tr class='complete'>
+  <td>{{ rel.name }}</td>
+  <td>{{ rel.submitter }}</td>
+  <td id='{{ rel.name }}_submittedAt_complete'>
+    <script type='text/javascript'>
+      document.addEventListener('readystatechange', function() {
+      if (document.readyState == 'complete') {
+        localdate = new Date('{{ rel.submittedAt }}');
+        var e = document.getElementById('{{ rel.name }}_submittedAt_complete');
+        e.textContent = localdate.toLocaleString();
+        }
+      })
+    </script>
+  </td>
+  <td>{{ rel.branch }}</td>
+  <td>{{ rel.mozillaRevision }}</td>
+  <td>{{ rel.mozillaRelbranch }}</td>
+  {% if 'Thunderbird' in rel.name %}
+    <td>{{ rel.commRevision }}</td>
+    <td>{{ rel.commRelbranch }}</td>
+  {% else %}
+    <td class="irrelevant">N/A</td>
+    <td class="irrelevant">N/A</td>
+  {% endif %}
+  {% if rel.dashboardCheck %}
+    <td>Yes</td>
+  {% else %}
+    <td>No</td>
+  {% endif %}
+  <td><a href="/releases/{{ rel.name }}/l10n">Link</a></td>
+  {% if 'Fennec' in rel.name %}
+    <td class="irrelevant">N/A</td>
+  {% else %}
+    <td>{{ rel.partials|replace(',', ' ') }}</td>
+  {% endif %}
+  {% if 'Fennec' in rel.name %}
+    <td class="irrelevant">N/A</td>
+  {% else %}
+    {% if not rel.promptWaitTime %}
+      <td>Default</td>
+    {% else %}
+      <td>{{ rel.promptWaitTime }}</td>
+    {% endif %}
+  {% endif %}
+{% if loop.last %}
+</table>
+{% endif %}
+{% else %}
+<h1>No completed releases!</h1>
+{% endfor %}

@@ -2,19 +2,35 @@
 <html lang='en-US'>
 <head>
 <title>Ship it!</title>
-<link rel='stylesheet' type='text/css' href='{{ url_for("static", filename="kickoff.css") }}' />
+<!-- favicon -->
 <link rel='icon' href="{{ url_for('static', filename='favicon.ico') }}" />
-<link rel='stylesheet' type='text/css' media='all' href='{{ url_for("static", filename="jquery-ui-1.10.0.custom.min.css") }}' />
-<script type='text/javascript' src='{{ url_for("static", filename="suggestions.js") }}'></script>
-<script type='text/javascript' src='{{ url_for("static", filename="jquery-1.9.0.js") }}'></script>
-<script type='text/javascript' src='{{ url_for("static", filename="jquery-ui-1.10.0.custom.min.js") }}'></script>
+<!-- js -->
+<script type='text/javascript' src="{{ url_for("static", filename="suggestions.js") }}"></script>
+<script type='text/javascript' src="{{ url_for("static", filename="jquery-ui-1.10.2.custom.min.js") }}"></script>
+<script type='text/javascript' src="{{ url_for("static", filename="jquery-1.9.1.min.js") }}"></script>
+<script type='text/javascript' src="{{ url_for("static", filename="jquery-ui.min.js") }}"></script>
+<script type='text/javascript' src="{{ url_for("static", filename="jquery.dataTables.min.js") }}"></script>
+<!-- css -->
+<link rel='stylesheet' type='text/css' href='{{ url_for("static", filename="jquery.dataTables.css") }}' />
+<link rel='stylesheet' type='text/css' href='{{ url_for("static", filename="jquery-ui-1.10.2.custom.min.css") }}' />
+<link rel='stylesheet' type='text/css' href='{{ url_for("static", filename="kickoff.css") }}' />
+<script>
+$(function() {
+  $( "#tabs" ).tabs();
+  $( "#accordion" ).accordion({ heightStyle: "content" });
+  $( "#reviewed" ).dataTable( { "bJQueryUI": true, });
+  $( "#completed" ).dataTable( { "bJQueryUI": true, });
+});
+</script>
 </head>
 <body>
-<ul id='nav'>
-    <li><a href='{{ url_for('submit_release') }}'>Submit a new release</a></li>
-    <li><a href='{{ url_for('releases') }}'>View releases</a></li>
+<h1>Ship it</h1>
+<div id="menu">
+<ul>
+<li><a href="{{ url_for('submit_release') }}">Submit a new release</a></li>
+<li><a href="{{ url_for('releases') }}">View releases</a></li>
 </ul>
-<br />
+</div><!-- topbar -->
 {% block content %}{% endblock %}
 </body>
 </html>

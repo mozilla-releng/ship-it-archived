@@ -5,33 +5,27 @@
     <li class='error'>{{ e }}</li>
     {% endfor %}
 </ul>
-<div id='column_container'>
-<div>
-    <h3>Fennec</h3>
+<div id='tabs'>
+  <ul>
+      {% for prod in ('fennec', 'firefox', 'thunderbird') %}
+      <li><a href="#{{ prod }}">{{ prod|capitalize }}</a></li>
+      {% endfor %}
+  </ul>
+  {% for prod in ('fennec', 'firefox', 'thunderbird') %}
+  <div id={{prod}} >
     <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
-    {% include 'includes/fennec_release.html' %}
+    {% set product_template = 'includes/' + prod + '_release.html' %}
+    {% include product_template %}
     <div>
-        <input type='submit' value='Gimme a Fennec!' />
+        <input type='submit' value="Gimme a {{ prod|capitalize }}"/>
     </div>
     </form>
+   </div>
+   {% endfor %}
 </div>
-<div>
-    <h3>Firefox</h3>
-    <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
-    {% include 'includes/firefox_release.html' %}
-    <div>
-        <input type='submit' value='Gimme a Firefox!' />
-    </div>
-    </form>
-</div>
-<div>
-    <h3>Thunderbird</h3>
-    <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
-    {% include 'includes/thunderbird_release.html' %}
-    <div>
-        <input type='submit' value='Gimme a Thunderbird!' />
-    </div>
-    </form>
-</div>
-</div>
+<script>
+ $(document).ready(function() {
+   $( "#submitrelease" ).prop('checked', true);
+});
+</script>
 {% endblock %}

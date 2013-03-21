@@ -1,0 +1,89 @@
+<form id='release_readyness' action='{{ url_for('releases') }}' method='post'>
+{{ form.hidden_tag() }}
+{% for rel in releases if not rel.ready %}
+<div class="rel">
+ <div class="release_container" id="{{ rel.name }}">
+ <div class="release_title"><a href="/release.html?name={{ rel.name }}">{{ rel.name }}</a></div>
+   <div class='release_buttons'>
+    {% for actions in ('ready', 'delete') %}
+    <div id="{{ rel.name }}" class="{{ actions }}-button">
+     <label>
+      <input id="{{ actions }}Releases_{{ rel.name }}" type="checkbox" name="{{ actions }}Releases" value="{{ rel.name }}" onclick='{{ actions }}Release("{{ rel.name }}")'/>
+      <span>{{ actions|capitalize }}</span>
+     </label>
+    </div> <!-- {{ actions }}-button -->
+    {% endfor %}
+  </div> <!-- release_buttons -->
+   <div class='release_data'>
+    <ul>
+     <li>Submitted by: {{ rel.submitter }}</li>
+     <li id="{{ rel.name }}_submittedAt">{{ rel.submittedAt }}</li>
+     <script type='text/javascript'>
+      document.addEventListener('readystatechange', function() {
+       if (document.readyState == 'complete') {
+        localdate = new Date('{{ rel.submittedAt }}');
+        var e = document.getElementById('{{ rel.name }}_submittedAt');
+        e.textContent = "Submitted at: " + localdate.toLocaleString();
+       }
+      })
+     </script>
+     <li>Branch: {{ rel.branch }}</li>
+     <li>Mozilla Revision: {{ rel.mozillaRevision }}</li>
+     <li>Mozilla Relbranch: {{ rel.mozillaRelbranch }}</li>
+     {% if 'Thunderbird' in rel.name %}
+     <li>Comm Revision: {{ rel.commRevision }}</li>
+     <li>Comm Relbranch: {{ rel.commRelbranch }}</li>
+     {% endif %}
+     {% if rel.dashboardCheck %}
+     <li>Check dashboard? Yes</li>
+     {% else %}
+     <li>Check dashboard? No</li>
+     {% endif %}
+     <li><a href="/releases/{{ rel.name }}/l10n">L10n Changeset</a></li>
+     {% if not 'Fennec' in rel.name %}
+     <li>Partial versions: {{ rel.partials }}</li>
+     {% if not rel.promptWaitTime %}
+     <li>Update prompt wait time: Default</li>
+     {% else %}
+     <li>Update prompt wait time:{{ rel.promptWaitTime }}</li>
+     {% endif %}
+     {% endif %}
+    </ul>
+   </div><!-- release_data -->
+ </div><!-- release_container id={{ rel.name }}-->
+ <div class="release_footer"></div>
+</div><!-- rel -->
+{% if loop.last %}
+<input type="submit" id="doeet" value="Do eet!">
+</form>
+{% endif %}
+{% else %}
+<h1>Hurray no releases waiting!</h1>
+{% endfor %}
+
+<script type='text/javascript'>
+function deleteRelease(release) {
+    readyCheckbox = document.getElementById( 'readyReleases_'  + release);
+    deleteCheckbox = document.getElementById( 'deleteReleases_' + release);
+    if (deleteCheckbox.checked) {
+        readyCheckbox.checked = false;
+        readyCheckbox.disabled = true;
+    }
+    else {
+        readyCheckbox.disabled = false;
+    }
+}
+
+function readyRelease(release) {
+    readyCheckbox = document.getElementById( 'readyReleases_'  + release);
+    deleteCheckbox = document.getElementById( 'deleteReleases_' + release);
+    if (readyCheckbox.checked) {
+        deleteCheckbox.checked = false;
+        deleteCheckbox.disabled = true;
+    }
+    else {
+        deleteCheckbox.disabled = false;
+    }
+}
+</script>
+
