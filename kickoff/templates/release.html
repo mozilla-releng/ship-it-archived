@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<ul id='errors'>
+{% if errors %}
+<div id='errors'>
+<ul>
     {% for e in errors %}
-    <li class='error'>{{ e }}</li>
+    <li>{{ e }}</li>
     {% endfor %}
 </ul>
+</div> <!-- id=errors -->
+{% endif %}
 <div id='edit_container'>
 <h3>{{ release }}</h3>
 <form class='submit_release_form' action='{{ url_for('release', name=release) }}' method='post'>

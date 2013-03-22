@@ -244,3 +244,22 @@ h4 {
     text-align: center;
     margin: auto;
 }
+
+#errors {
+    color:#fff;
+    font-weight:bold;
+    text-shadow:0 1px #333;
+    line-height:16px;
+    background-color:#aa1401;
+    background-image:-moz-linear-gradient(top,rgba(218,81,50,0.9),#a91300);
+    background-image:-ms-linear-gradient(top,rgba(218,81,50,0.9),#a91300);
+    background-image:-o-linear-gradient(top,rgba(218,81,50,0.9),#a91300);
+    background-image:linear-gradient(top,rgba(218,81,50,0.9),#a91300);
+    border-radius:4px;
+    padding:10px 15px;
+    box-shadow:0 1px #666;
+    max-width:275px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+}

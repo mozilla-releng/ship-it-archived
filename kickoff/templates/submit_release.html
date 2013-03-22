@@ -1,10 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<ul id='errors'>
+{% if errors %}
+<div id='errors'>
+<ul>
     {% for e in errors %}
-    <li class='error'>{{ e }}</li>
+    <li>{{ e }}</li>
     {% endfor %}
 </ul>
+</div> <!-- id=errors -->
+<script>
+  $(function(){
+     $('#tabs').tabs("select", "#{{ selectedProduct }}")
+});
+</script>
+{% endif %}
 <div id='tabs'>
   <ul>
       {% for prod in ('fennec', 'firefox', 'thunderbird') %}
@@ -23,9 +32,4 @@
    </div>
    {% endfor %}
 </div>
-<script>
- $(document).ready(function() {
-   $( "#submitrelease" ).prop('checked', true);
-});
-</script>
 {% endblock %}
