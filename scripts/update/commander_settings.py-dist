@@ -1,0 +1,18 @@
+#example values
+SRC_DIR = '/data/input-stage/src/input.allizom.org/input/'
+WWW_DIR = '/data/input-stage/www/input.allizom.org/input/'
+
+#CRON_NAME = ''
+
+DEPLOY_SCRIPT = '/data/input-stage/deploy -n input.allizom.org'
+REMOTE_UPDATE_SCRIPT = '/data/bin/update-www.sh input.allizom.org'
+
+WEB_HOSTGROUP = 'input-stage'
+CELERY_HOSTGROUP = 'input-celery-stage'
+CELERY_SERVICE = 'celeryd-input-stage'
+
+UPDATE_REF = ''
+SSH_KEY = '/root/.ssh/id_rsa'
+
+REMOTE_WSGI = '/data/input-stage/www/input.allizom.org/input/wsgi/playdoh.wsgi'
+REMOTE_HOSTNAME = 'input.allizom.org'
