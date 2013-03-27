@@ -39,12 +39,12 @@ def deploy_app(ctx):
 def update_info(ctx):
     """Write info about the current state to a publicly visible file."""
     with ctx.lcd(settings.SRC_DIR):
-        ctx.local('date > kickoff/media/revision_info.txt')
-        ctx.local('git branch >> kickoff/media/revision_info.txt')
-        ctx.local('git log -3 >> kickoff/media/revision_info.txt')
-        ctx.local('git status >> kickoff/media/revision_info.txt')
-        ctx.local('git rev-parse HEAD > kickoff/media/revision.txt')
-        ctx.local('git rev-parse HEAD > kickoff/media/revision')
+        ctx.local('date > kickoff/static/revision_info.txt')
+        ctx.local('git branch >> kickoff/static/revision_info.txt')
+        ctx.local('git log -3 >> kickoff/static/revision_info.txt')
+        ctx.local('git status >> kickoff/static/revision_info.txt')
+        ctx.local('git rev-parse HEAD > kickoff/static/revision.txt')
+        ctx.local('git rev-parse HEAD > kickoff/static/revision')
 
 
 @task
