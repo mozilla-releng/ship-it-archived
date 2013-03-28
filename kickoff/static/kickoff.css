@@ -12,20 +12,25 @@ body {
 
 /* submit release form */
 .submit_release {
-   padding-bottom: 0.5em;
+   padding-bottom: 1em;
 }
 
 /* submit release form labels*/
 .submit_release label {
     float: left;
-    width: 300px;
+    width: 20em;
 }
 
 .submit_release textarea,
-.submit_release input[type=text] {
-    width: 30%;
+.submit_release input {
+    float: left;
+    width: 25em;
 }
 
+.help {
+    margin-left: 45.5em;
+    color: red;
+}
 
 /* submit release form advanced fileds*/
 .advanced {

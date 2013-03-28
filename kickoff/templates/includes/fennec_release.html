@@ -20,39 +20,46 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ fennecForm.version.label()|safe }}
     {{ fennecForm.version(placeholder='15.0b6')|safe }}
+    <div>&nbsp;</div>
 </div>
 <div class="submit_release">
     {{ fennecForm.buildNumber.label()|safe }}
     {{ fennecForm.buildNumber(placeholder='1')|safe }}
+    <div class="help">Build number must be set to 1 for the first release with this version. If a previous build has already been attempted and it has tagged the source repositories, build 2 or higher should be used. Generally, the autofilled value for this is correct.</div>
 </div>
 <div class="submit_release">
     {{ fennecForm.branch.label()|safe }}
-    {{ fennecForm.branch(placeholder='releases/mozilla-beta', title='The branch to build the release from, relative to the root of the VCS.')|safe }}
+    {{ fennecForm.branch(placeholder='releases/mozilla-beta')|safe }}
+    <div class="help">The branch to build the release from, relative to the root of the VCS.</div>
 </div>
 <div class="submit_release">
     {{ fennecForm.mozillaRevision.label()|safe }}
     {% if fennecForm.mozillaRelbranch.data %}
-        {{ fennecForm.mozillaRevision(disabled='disabled', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+        {{ fennecForm.mozillaRevision(disabled='disabled')|safe }}
     {% else %}
-        {{ fennecForm.mozillaRevision(placeholder='abcdef123456', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+        {{ fennecForm.mozillaRevision(placeholder='abcdef123456')|safe }}
     {% endif %}
-</div>
-<div class="submit_release">
-    {{ fennecForm.dashboardCheck.label()|safe }}
-    {{ fennecForm.dashboardCheck(title='Whether or not to ensure that the changesets given in the form match the ones on the dashboard. Generally only used for betas.')|safe }}
+    <div class="help">If a relbranch is specified this field is disabled and ignored. The tip of the relbranch will be used instead.</div>
 </div>
 <div class="submit_release">
     {{ fennecForm.l10nChangesets.label()|safe }}
-    {{ fennecForm.l10nChangesets(placeholder='{"ca": {"revision": "abcdef123456", "platforms": ["android"]}', title='The l10n changesets, in JSON format. Generally these are copied and pasted from elsewhere.')|safe }}
+    {{ fennecForm.l10nChangesets(placeholder='{"ca": {"revision": "abcdef123456", "platforms": ["android"]}')|safe }}
+    <div class="help">The l10n changesets for this release, in JSON format. Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. ESR releases re-use the same changesets as the previous release on the same branch. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a></div>
+</div>
+<div class="submit_release">
+    {{ fennecForm.dashboardCheck.label()|safe }}
+    {{ fennecForm.dashboardCheck()|safe }}
+    <div class="help">Whether or not to ensure that the changesets given match the ones on the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. This is normally turned on for betas and turned off for all other releases.</div>
 </div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
 <div class="submit_release">
     {{ fennecForm.mozillaRelbranch.label()|safe }}
     {% if fennecForm.mozillaRevision.data %}
-        {{ fennecForm.mozillaRelbranch(disabled='disabled', title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+        {{ fennecForm.mozillaRelbranch(disabled='disabled')|safe }}
     {% else %}
-        {{ fennecForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+        {{ fennecForm.mozillaRelbranch()|safe }}
     {% endif %}
+    <div class="help">The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically during tagging. When provided the release will be created from tip of this branch thus it cannot be used in conjunction with revision.</div>
 </div>
 </div><!-- advanced -->

@@ -22,48 +22,57 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ firefoxForm.version.label()|safe }}
     {{ firefoxForm.version(placeholder='15.0b6')|safe }}
+    <div>&nbsp;</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.buildNumber.label()|safe }}
     {{ firefoxForm.buildNumber(placeholder='1')|safe }}
+    <div class="help">Build number must be set to 1 for the first release with this version. If a previous build has already been attempted and it has tagged the source repositories, build 2 or higher should be used. Generally, the autofilled value for this is correct.</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.branch.label()|safe }}
-    {{ firefoxForm.branch(placeholder='releases/mozilla-beta', title='The branch to build the release from, relative to the root of the VCS.')|safe }}
+    {{ firefoxForm.branch(placeholder='releases/mozilla-beta')|safe }}
+    <div class="help">The branch to build the release from, relative to the root of the VCS.</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.mozillaRevision.label()|safe }}
     {% if firefoxForm.mozillaRelbranch.data %}
-        {{ firefoxForm.mozillaRevision(disabled='disabled', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+        {{ firefoxForm.mozillaRevision(disabled='disabled')|safe }}
     {% else %}
-        {{ firefoxForm.mozillaRevision(placeholder='abcdef123456', title='If relbranch is specified this field is disabled and the tip of it will be used as the revision.')|safe }}
+        {{ firefoxForm.mozillaRevision(placeholder='abcdef123456')|safe }}
     {% endif %}
+    <div class="help">If a relbranch is specified this field is disabled and ignored. The tip of the relbranch will be used instead.</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.partials.label()|safe }}
-    {{ firefoxForm.partials(placeholder='15.0b5build1,15.0b4build2', title='A comma separated list of previous releases to create partial updates for.')|safe }}
-</div>
-<div class="submit_release">
-    {{ firefoxForm.dashboardCheck.label()|safe }}
-    {{ firefoxForm.dashboardCheck(title='Whether or not to ensure that the changesets given in the form match the ones on the dashboard. Generally only used for betas.')|safe }}
+    {{ firefoxForm.partials(placeholder='15.0b5build1,15.0b4build2')|safe }}
+    <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 3, for Betas it's 2, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.l10nChangesets.label()|safe }}
     {{ firefoxForm.l10nChangesets(placeholder='de abcdef123456', title='The l10n changesets, in release automation format.')|safe }}
+    <div class="help">The l10n changesets for this release, in JSON format. Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. ESR releases re-use the same changesets as the previous release on the same branch. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a></div>
+</div>
+<div class="submit_release">
+    {{ firefoxForm.dashboardCheck.label()|safe }}
+    {{ firefoxForm.dashboardCheck()|safe }}
+    <div class="help">Whether or not to ensure that the changesets given match the ones on the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. This is normally turned on for betas and turned off for all other releases.</div>
 </div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
 <div class="submit_release">
     {{ firefoxForm.mozillaRelbranch.label()|safe }}
     {% if firefoxForm.mozillaRevision.data %}
-        {{ firefoxForm.mozillaRelbranch(disabled='disabled', title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+        {{ firefoxForm.mozillaRelbranch(disabled='disabled')|safe }}
     {% else %}
-        {{ firefoxForm.mozillaRelbranch(title='The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically.')|safe }}
+        {{ firefoxForm.mozillaRelbranch()|safe }}
     {% endif %}
+    <div class="help">The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically during tagging. When provided the release will be created from tip of this branch thus it cannot be used in conjunction with revision.</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.promptWaitTime.label()|safe }}
-    {{ firefoxForm.promptWaitTime(title='Amount of time to wait before prompting users to apply the update to this release. Not specifying this will use the default value as specified in the application.')|safe }}
+    {{ firefoxForm.promptWaitTime()|safe }}
+    <div class="help">Amount of time to wait before prompting users to apply the update to this release. Not specifying this will use the default value as specified in the application.</div>
 </div>
 </div> <!-- advanced -->
 
