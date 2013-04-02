@@ -18,8 +18,14 @@
 $(function() {
   $( "#tabs" ).tabs();
   $( "#accordion" ).accordion({ heightStyle: "content" });
-  $( "#reviewed" ).dataTable( { "bJQueryUI": true, });
-  $( "#completed" ).dataTable( { "bJQueryUI": true, });
+  $( "#reviewed" ).dataTable(
+    { "bJQueryUI": true,
+      "aaSorting": [[ 2, "desc" ]], // sort by SubittedAt
+    });
+  $( "#completed" ).dataTable(
+    { "bJQueryUI": true,
+      "aaSorting": [[ 2, "desc" ]], // sort by SubittedAt
+    });
 });
 </script>
 </head>

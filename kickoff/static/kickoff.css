@@ -268,3 +268,8 @@ h4 {
     margin-bottom: 20px;
     padding-bottom: 5px;
 }
+
+/* disable column highlighting when selected */
+table.dataTable tr.odd td.sorting_1 { background-color: transparent; }
+table.dataTable tr.even td.sorting_1 { background-color: transparent; }
+
