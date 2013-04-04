@@ -10,24 +10,12 @@
 <script type='text/javascript' src="{{ url_for("static", filename="jquery-1.9.1.min.js") }}"></script>
 <script type='text/javascript' src="{{ url_for("static", filename="jquery-ui.min.js") }}"></script>
 <script type='text/javascript' src="{{ url_for("static", filename="jquery.dataTables.min.js") }}"></script>
+<script type='text/javascript' src="{{ url_for("static", filename="kickoff.js") }}"></script>
 <!-- css -->
 <link rel='stylesheet' type='text/css' href='{{ url_for("static", filename="jquery.dataTables.css") }}' />
 <link rel='stylesheet' type='text/css' href='{{ url_for("static", filename="jquery-ui-1.10.2.custom.min.css") }}' />
 <link rel='stylesheet' type='text/css' href='{{ url_for("static", filename="kickoff.css") }}' />
-<script>
-$(function() {
-  $( "#tabs" ).tabs();
-  $( "#accordion" ).accordion({ heightStyle: "content" });
-  $( "#reviewed" ).dataTable(
-    { "bJQueryUI": true,
-      "aaSorting": [[ 2, "desc" ]], // sort by SubittedAt
-    });
-  $( "#completed" ).dataTable(
-    { "bJQueryUI": true,
-      "aaSorting": [[ 2, "desc" ]], // sort by SubittedAt
-    });
-});
-</script>
+<script>$(function() { initialSetup(); });</script>
 </head>
 <body>
 <h1>Ship it</h1>

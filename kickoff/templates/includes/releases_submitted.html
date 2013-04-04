@@ -5,10 +5,10 @@
  <div class="release_container" id="{{ rel.name }}">
  <div class="release_title"><a href="/release.html?name={{ rel.name }}">{{ rel.name }}</a></div>
    <div class='release_buttons'>
-    {% for actions in ('ready', 'delete') %}
-    <div id="{{ rel.name }}" class="{{ actions }}-button">
+    {% for actions in ( 'ready', 'delete' ) %}
+    <div id="{{ rel.name }}-{{ actions }}" class="{{ actions }}-button">
      <label>
-      <input id="{{ actions }}Releases_{{ rel.name }}" type="checkbox" name="{{ actions }}Releases" value="{{ rel.name }}" onclick='{{ actions }}Release("{{ rel.name }}")'/>
+      <input id="{{ actions }}Releases_{{ rel.name }}" type="checkbox" name="{{ actions }}Releases" value="{{ rel.name }}" onclick='submittedReleaseButtons(this.id)'>
       <span>{{ actions|capitalize }}</span>
      </label>
     </div> <!-- {{ actions }}-button -->
@@ -17,16 +17,7 @@
    <div class='release_data'>
     <ul>
      <li>Submitted by: {{ rel.submitter }}</li>
-     <li id="{{ rel.name }}_submittedAt">{{ rel.submittedAt }}</li>
-     <script type='text/javascript'>
-      document.addEventListener('readystatechange', function() {
-       if (document.readyState == 'complete') {
-        localdate = new Date('{{ rel.submittedAt }}');
-        var e = document.getElementById('{{ rel.name }}_submittedAt');
-        e.textContent = "Submitted at: " + localdate.toLocaleString();
-       }
-      })
-     </script>
+     <li class="submittedAt">{{ rel.submittedAt }}</li>
      <li>Branch: {{ rel.branch }}</li>
      <li>Mozilla Revision: {{ rel.mozillaRevision }}</li>
      <li>Mozilla Relbranch: {{ rel.mozillaRelbranch }}</li>
@@ -60,30 +51,3 @@
 {% else %}
 <h1>Hurray no releases waiting!</h1>
 {% endfor %}
-
-<script type='text/javascript'>
-function deleteRelease(release) {
-    readyCheckbox = document.getElementById( 'readyReleases_'  + release);
-    deleteCheckbox = document.getElementById( 'deleteReleases_' + release);
-    if (deleteCheckbox.checked) {
-        readyCheckbox.checked = false;
-        readyCheckbox.disabled = true;
-    }
-    else {
-        readyCheckbox.disabled = false;
-    }
-}
-
-function readyRelease(release) {
-    readyCheckbox = document.getElementById( 'readyReleases_'  + release);
-    deleteCheckbox = document.getElementById( 'deleteReleases_' + release);
-    if (readyCheckbox.checked) {
-        deleteCheckbox.checked = false;
-        deleteCheckbox.disabled = true;
-    }
-    else {
-        deleteCheckbox.disabled = false;
-    }
-}
-</script>
-

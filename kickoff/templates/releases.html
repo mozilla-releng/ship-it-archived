@@ -13,7 +13,7 @@
   <h3>Submitted</h3>
   <div id='notready'>
    {% include 'includes/releases_submitted.html' %}
-  </div><!-- submitted -->
+  </div><!-- notready -->
   <h3>Reviewed/Complete</h3>
   <div id='tabs'>
     <ul>
@@ -22,10 +22,13 @@
     </ul>
     <div id="reviewed-tab">
      {% include 'includes/releases_reviewed.html' %}
-    </div> <!-- div id=incomplete -->
+    </div> <!-- reviewed-tab -->
     <div id="complete-tab">
      {% include 'includes/releases_complete.html' %}
-    </div> <!-- div id=complete -->
+    </div> <!-- complete-tab -->
   </div> <!-- tabs -->
   </div><!-- accordion -->
+<script>
+    $(document).ready(function(){ viewReleases(); });
+</script>
 {% endblock %}

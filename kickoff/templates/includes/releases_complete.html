@@ -1,6 +1,6 @@
 {% for rel in releases if rel.ready and rel.complete %}
 {% if loop.first %}
-<table id="completed">
+<table id="complete">
 <thead>
 <tr>
     <th>Name</th>
@@ -21,17 +21,7 @@
 <tr class='complete'>
   <td>{{ rel.name }}</td>
   <td>{{ rel.submitter }}</td>
-  <td id='{{ rel.name }}_submittedAt_complete'>
-    <script type='text/javascript'>
-      document.addEventListener('readystatechange', function() {
-      if (document.readyState == 'complete') {
-        localdate = new Date('{{ rel.submittedAt }}');
-        var e = document.getElementById('{{ rel.name }}_submittedAt_complete');
-        e.textContent = localdate.toLocaleString();
-        }
-      })
-    </script>
-  </td>
+  <td class='submittedAt'>{{ rel.submittedAt }}</td>
   <td>{{ rel.branch }}</td>
   <td>{{ rel.mozillaRevision }}</td>
   <td>{{ rel.mozillaRelbranch }}</td>
