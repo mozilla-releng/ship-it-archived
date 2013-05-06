@@ -1,18 +1,49 @@
 function initialSetup(){
-  $( "#tabs" ).tabs();
-  $( "#accordion" ).accordion({ heightStyle: "content" });
+  // initialize tabs and accordion.
+  // Saving last active element using localStorage
+  $( "#tabs" ).tabs({
+    activate: function (event, ui) {
+         localStorage.setItem("active_tab", $( "#tabs" )
+            .tabs("option", "active"));
+     },
+    active: parseInt(localStorage.getItem("active_tab")),
+  });
+
+  $( "#accordion" ).accordion({
+    heightStyle: "content",
+    change: function(event, ui) {
+        localStorage.setItem('active_accordion', $( "#accordion" )
+            .accordion("option", "active"));
+        },
+    active: parseInt(localStorage.getItem('active_accordion'))
+    });
 }
 
 function viewReleases(){
   toLocalDate();
-  // initilaize dataTables sort by SubmittedAt descending
+  // initial sorting by SubmittedAt (descending)
+  // and then saving user table state using localStorage
   $( "#reviewed" ).dataTable({
     "bJQueryUI": true,
     "aaSorting": [[ 2, "desc" ]],
+    "bStateSave": true,
+    "fnStateSave": function (oSettings, oData) {
+        localStorage.setItem( 'DataTables_reviewed'+window.location.pathname, JSON.stringify(oData) );
+    },
+    "fnStateLoad": function (oSettings) {
+        return JSON.parse( localStorage.getItem('DataTables_reviewed'+window.location.pathname) );
+    }
   });
   $( "#complete" ).dataTable({
     "bJQueryUI": true,
     "aaSorting": [[ 2, "desc" ]],
+    "bStateSave": true,
+    "fnStateSave": function (oSettings, oData) {
+        localStorage.setItem( 'DataTables_complete'+window.location.pathname, JSON.stringify(oData) );
+    },
+    "fnStateLoad": function (oSettings) {
+        return JSON.parse( localStorage.getItem('DataTables_complete'+window.location.pathname) );
+    }
   });
 }
 
