@@ -3,6 +3,7 @@
 <table id="reviewed">
 <thead>
 <tr>
+  <th>Status</th>
   <th>Name</th>
   <th>Submitted By</th>
   <th>Submitted At</th>
@@ -15,11 +16,11 @@
   <th>L10n Changesets</th>
   <th>Partial Versions</th>
   <th>Update Prompt Wait Time</th>
-  <th>Status</th>
 </tr>
 </thead>
 {% endif %}
 <tr class='incomplete'>
+  <td>{{ rel.status }}</td>
   <td>{{ rel.name }}</td>
   <td>{{ rel.submitter }}</td>
   <td class='submittedAt'>{{ rel.submittedAt }}</td>
@@ -53,7 +54,6 @@
           <td>{{ rel.promptWaitTime }}</td>
       {% endif %}
   {% endif %}
-  <td>{{ rel.status }}</td>
 {% if loop.last %}
 </table>
 {% endif %}

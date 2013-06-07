@@ -25,7 +25,7 @@ function viewReleases(){
   // and then saving user table state using localStorage
   $( "#reviewed" ).dataTable({
     "bJQueryUI": true,
-    "aaSorting": [[ 2, "desc" ]],
+    "aaSorting": [[ 3, "desc" ]],
     "bStateSave": true,
     "fnStateSave": function (oSettings, oData) {
         localStorage.setItem( 'DataTables_reviewed'+window.location.pathname, JSON.stringify(oData) );

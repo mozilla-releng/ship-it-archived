@@ -16,6 +16,9 @@
   </div> <!-- release_buttons -->
    <div class='release_data'>
     <ul>
+     {%- if rel.status != '' %}
+     <li>Status: <span class="errorText">{{ rel.status }}</span></li>
+    {% endif -%}
      <li>Submitted by: {{ rel.submitter }}</li>
      <li class="submittedAt">{{ rel.submittedAt }}</li>
      <li>Branch: {{ rel.branch }}</li>
