@@ -4,10 +4,24 @@ from mozilla.release.info import isFinalRelease
 
 # Regex that matches all possible versions and milestones
 ANY_VERSION_REGEX =\
-    ('(\d+\.\d[\d\.]*)'  # A version number
-    '((a|b)\d+)?'        # Might be an alpha or beta
-    '(esr)?'             # Might be an esr
-    '(pre)?')            # Might be a 'pre' (nightly) version
+    ('(\d+\.\d[\d\.]*)'    # A version number
+     '((a|b)\d+)?'        # Might be an alpha or beta
+     '(esr)?'             # Might be an esr
+     '(pre)?')            # Might be a 'pre' (nightly) version
+# The following function was copied from http://code.activestate.com/recipes/442460/
+# Written by Chris Olds
+lastNum = re.compile(r'(?:[^\d]*(\d+)[^\d]*)+')
+
+
+def increment(s):
+    """ look for the last sequence of number(s) in a string and increment """
+    m = lastNum.search(s)
+    if m:
+        next = str(int(m.group(1)) + 1)
+        start, end = m.span(1)
+        s = s[:max(end - len(next), start)] + next + s[end:]
+    return s
+
 
 def getPossibleNextVersions(version):
     """Return possibly next versions for a given version.
@@ -31,8 +45,16 @@ def getPossibleNextVersions(version):
     # The next major version is used in a couple of places, so we figure it out
     # ahead of time. Eg: 17.0 -> 18.0 or 15.0.3 -> 16.0
     nextMajorVersion = increment(base.split('.')[0]) + '.0'
-    # ESRs are easy, just increment the version to get the next minor version.
+    # Modern ESRs have two possibilities:
+    # 1) Bump the second digit for a planned release and reset the third digit
+    #    to 0.
+    # 2) Bump the last digit for an unexpected release
+    #
+    # Prior to ESR 24 we did #2 for all types of releases.
     if esr:
+        first, second, _ = version.split('.', 2)
+        if int(first) >= 24:
+            ret.add('%s.%s.0esr' % (first, increment(second)))
         ret.add(increment(version))
     # Betas are similar, except we need the next major version's beta 1, too.
     elif beta:
@@ -47,16 +69,3 @@ def getPossibleNextVersions(version):
         else:
             ret.add(increment(version))
     return ret
-
-
-# The following function was copied from http://code.activestate.com/recipes/442460/
-# Written by Chris Olds
-lastNum = re.compile(r'(?:[^\d]*(\d+)[^\d]*)+')
-def increment(s):
-    """ look for the last sequence of number(s) in a string and increment """
-    m = lastNum.search(s)
-    if m:
-        next = str(int(m.group(1))+1)
-        start, end = m.span(1)
-        s = s[:max(end-len(next), start)] + next + s[end:]
-    return s
