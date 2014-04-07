@@ -19,7 +19,7 @@ $(document).ready(function() {
 {{ fennecForm.hidden_tag() }}
 <div class="submit_release">
     {{ fennecForm.version.label()|safe }}
-    {{ fennecForm.version(placeholder='15.0b6')|safe }}
+    {{ fennecForm.version(placeholder='28.0b6')|safe }}
     <div>&nbsp;</div>
 </div>
 <div class="submit_release">
@@ -39,7 +39,7 @@ $(document).ready(function() {
     {% else %}
         {{ fennecForm.mozillaRevision(placeholder='abcdef123456')|safe }}
     {% endif %}
-    <div class="help">If a relbranch is specified this field is disabled and ignored. The tip of the relbranch will be used instead.</div>
+    <div class="help">If a relbranch is specified this field is disabled and ignored. The tip of the relbranch will be used instead. It is strongly recommended to select a changeset which has been fully built/tested on the TBPL tool (example for beta: <a href="https://tbpl.mozilla.org/?tree=Mozilla-Beta">https://tbpl.mozilla.org/?tree=Mozilla-Beta</a> or <a href="https://tbpl.mozilla.org/?tree=Mozilla-Release">Release</a>)</div>
 </div>
 <div class="submit_release">
     {{ fennecForm.l10nChangesets.label()|safe }}
