@@ -1,0 +1,23 @@
+                               Release Kick-off
+
+
+Release kick-off is a Mozilla "internal" tool used to start the release of
+Firefox Desktop, Android and Thunderbird.
+This tool is specific to Mozilla workflows and tools.
+
+
+Dependencies are listed in requirements/*.txt.
+* compiled+prod are required to run in production
+* compiled+prod+dev are required to run the standalone server/tests
+
+
+To get the list of options:
+$ python kickoff-web.py --help
+
+To run release-kickoff using a sqlite database:
+$ python kickoff-web.py -d sqlite://///var/www/update.db --username=foo --password=bar
+
+Open your Firefox on: http://127.0.0.1:5000/
+
+To have the auto completion in the various forms, please enter some releases to feed the database.
+
