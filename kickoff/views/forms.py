@@ -59,7 +59,7 @@ class JSONField(TextAreaField):
 class PlainChangesetsField(TextAreaField):
     def process_formdata(self, valuelist):
         if valuelist and valuelist[0]:
-            self.data = valuelist[0]
+            self.data = valuelist[0].strip()
             try:
                 # Like the JSON object, we merely care about if the data
                 # is valid or not, so we don't save the results anywhere.
