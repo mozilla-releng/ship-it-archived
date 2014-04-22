@@ -45,14 +45,20 @@ class SubmitRelease(MethodView):
             cef_event('User Input Failed', CEF_INFO, **form.errors)
             for error in form.errors.values():
                 errors.extend(error)
+
+        table = getReleaseTable(form.product.data)
+        release = table.createFromForm(submitter, form)
+
+        if db.session.query(table).filter(table.name==release.name).first():
+            msg = 'Release "%s" already exists' % release.name
+            cef_event('User Input Failed', CEF_INFO, ReleaseName=release.name)
+            errors.append(msg)
         if errors:
             forms['%sForm' % product] = getReleaseForm(product)()
             return make_response(
                     render_template('submit_release.html', errors=errors,
                                     selectedProduct=product, **forms), 400)
 
-        table = getReleaseTable(form.product.data)
-        release = table.createFromForm(submitter, form)
         db.session.add(release)
         db.session.commit()
         log.debug('%s added to the database' % release.name)
