@@ -21,3 +21,13 @@ Open your Firefox on: http://127.0.0.1:5000/
 
 To have the auto completion in the various forms, please enter some releases to feed the database.
 
+Troubleshooting
+* When running "vagrant up", I am getting a error which states, "The guest machine entered an invalid state while waiting for it to boot. Valid states are 'starting, running'. The machine is in the 'poweroff' state. Please verify everything is configured properly and try again."
+	There are a few possibilities:
+		- OS X Mavericks may be causing problems with the 64-bit vagrant boxes (https://github.com/mitchellh/vagrant/issues/2157)
+			- could be a missing kernel driver, there is a hidden virtualbox GUI window that will give more information on errors
+		- Make sure you are running
+			Vagrant 1.6.3+
+			VirtualBox 4.3.6+
+		- Switching to a 32-bit vagrant box seems to be a temporary fix
+		
