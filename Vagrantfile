@@ -6,7 +6,7 @@ cd /vagrant
 sudo pip install -r requirements/compiled.txt
 sudo pip install -r requirements/dev.txt
 sudo pip install -r requirements/prod.txt
-python kickoff-web.py -d sqlite:///update.db --username=admin --password=password --host=0.0.0.0 --port=5000
+python kickoff-web.py -d sqlite:///update.db --username=admin --password=password --host=0.0.0.0 --port=5000 &
 SCRIPT
 
 Vagrant.configure("2") do |config|
