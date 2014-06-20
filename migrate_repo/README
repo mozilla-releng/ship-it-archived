@@ -2,3 +2,9 @@ This is a database migration repository.
 
 More information at
 http://code.google.com/p/sqlalchemy-migrate/
+
+To manage the database using migrate:
+$ python migrate_repo/manage.py version_control sqlite:///update.db migrate_repo
+
+To upgrade the schema:
+$ python migrate_repo/manage.py upgrade sqlite:///update.db migrate_repo
