@@ -14,8 +14,9 @@ Dependencies are listed in requirements/*.txt.
 To get the list of options:
 $ python kickoff-web.py --help
 
-To run release-kickoff using a sqlite database:
-$ python kickoff-web.py -d sqlite://///var/www/update.db --username=foo --password=bar
+To run release-kickoff using a sqlite database, use of the following:
+1) $ python kickoff-web.py -d sqlite://///var/www/update.db --username=foo --password=bar
+2) $ vagrant up	# Username:admin Password:password
 
 Open your Firefox on: http://127.0.0.1:5000/
 
