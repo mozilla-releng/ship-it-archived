@@ -40,10 +40,10 @@ class Release(object):
                  mozillaRelbranch, submittedAt=None):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
-        self.version = version
+        self.version = version.strip()
         self.buildNumber = buildNumber
-        self.branch = branch
-        self.mozillaRevision = mozillaRevision
+        self.branch = branch.strip()
+        self.mozillaRevision = mozillaRevision.strip()
         self.l10nChangesets = l10nChangesets
         self.dashboardCheck = dashboardCheck
         self.mozillaRelbranch = mozillaRelbranch
