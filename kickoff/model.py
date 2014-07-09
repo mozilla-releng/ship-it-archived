@@ -24,6 +24,7 @@ class Release(object):
     complete = db.Column(db.Boolean(), nullable=False, default=False)
     status = db.Column(db.String(250), default="")
     mozillaRelbranch = db.Column(db.String(50), default=None, nullable=True)
+    comment = db.Column(db.Text, default=None, nullable=True)
 
     # Dates are always returned in UTC time and ISO8601 format to make them
     # as transportable as possible.
@@ -37,7 +38,7 @@ class Release(object):
 
     def __init__(self, submitter, version, buildNumber, branch,
                  mozillaRevision, l10nChangesets, dashboardCheck,
-                 mozillaRelbranch, submittedAt=None):
+                 mozillaRelbranch, submittedAt=None, comment=None):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version.strip()
@@ -49,6 +50,9 @@ class Release(object):
         self.mozillaRelbranch = mozillaRelbranch
         if submittedAt:
             self.submittedAt = submittedAt
+        if comment:
+            self.comment = comment
+
 
     def toDict(self):
         me = {'product': self.product}
@@ -69,6 +73,7 @@ class Release(object):
         self.l10nChangesets = form.l10nChangesets.data
         self.dashboardCheck = form.dashboardCheck.data
         self.mozillaRelbranch = form.mozillaRelbranch.data
+        self.comment = form.comment.data
         self.name = getReleaseName(self.product, self.version, self.buildNumber)
 
     @classmethod
@@ -97,7 +102,8 @@ class FennecRelease(Release, db.Model):
         return cls(submitter, form.version.data,
                    form.buildNumber.data, form.branch.data,
                    form.mozillaRevision.data, form.l10nChangesets.data,
-                   form.dashboardCheck.data, form.mozillaRelbranch.data)
+                   form.dashboardCheck.data, form.mozillaRelbranch.data,
+                   form.comment.data)
 
 class DesktopRelease(Release):
     partials = db.Column(db.String(100))
@@ -122,7 +128,8 @@ class FirefoxRelease(DesktopRelease, db.Model):
         return cls(form.partials.data, form.promptWaitTime.data, submitter,
                    form.version.data, form.buildNumber.data, form.branch.data,
                    form.mozillaRevision.data, form.l10nChangesets.data,
-                   form.dashboardCheck.data, form.mozillaRelbranch.data)
+                   form.dashboardCheck.data, form.mozillaRelbranch.data,
+                   form.comment.data)
 
 class ThunderbirdRelease(DesktopRelease, db.Model):
     __tablename__ = 'thunderbird_release'
@@ -141,7 +148,8 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
                    form.partials.data, form.promptWaitTime.data, submitter,
                    form.version.data, form.buildNumber.data, form.branch.data,
                    form.mozillaRevision.data, form.l10nChangesets.data,
-                   form.dashboardCheck.data, form.mozillaRelbranch.data)
+                   form.dashboardCheck.data, form.mozillaRelbranch.data,
+                   form.comment.data)
 
     def updateFromForm(self, form):
         DesktopRelease.updateFromForm(self, form)

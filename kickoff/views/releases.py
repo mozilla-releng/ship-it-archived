@@ -121,6 +121,7 @@ class Releases(MethodView):
             r = table.query.filter_by(name=release).first()
             r.ready = True
             r.status = 'Pending'
+            r.comment = form.comment.data
             db.session.add(r)
         db.session.commit()
         return render_template('releases.html', releases=sortedReleases(), form=form)

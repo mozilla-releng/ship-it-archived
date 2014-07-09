@@ -16,6 +16,7 @@
   <th>L10n Changesets</th>
   <th>Partial Versions</th>
   <th>Update Prompt Wait Time</th>
+  <th>Comment</th>
 </tr>
 </thead>
 {% endif %}
@@ -54,6 +55,7 @@
           <td>{{ rel.promptWaitTime }}</td>
       {% endif %}
   {% endif %}
+  <td>{{ rel.comment }}</td>
 {% if loop.last %}
 </table>
 {% endif %}

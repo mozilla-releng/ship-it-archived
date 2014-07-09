@@ -48,6 +48,10 @@
  <div class="release_footer"></div>
 </div><!-- rel -->
 {% if loop.last %}
+<div class="comment">
+{{ form.comment.label()|safe }}<br />
+{{ form.comment(title='Extra information to release-drivers:')|safe }}
+</div>
 <input type="submit" id="doeet" value="Do eet!">
 </form>
 {% endif %}

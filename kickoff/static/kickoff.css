@@ -74,6 +74,13 @@ h1 {
     width: 95%;
 }
 
+.comment {
+    margin: 0 auto;
+    min-width: 500px;
+    margin-bottom: 20px;
+    width: 95%;
+}
+
 .release_title {
     font-size: 200%;
     clear: left;

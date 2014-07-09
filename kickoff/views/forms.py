@@ -110,6 +110,7 @@ def collapseSpaces(value):
 class ReleasesForm(Form):
     readyReleases = MultiCheckboxField('readyReleases')
     deleteReleases = MultiCheckboxField('deleteReleases')
+    comment = TextAreaField('Extra information to release-drivers:')
 
     def validate(self, *args, **kwargs):
         valid = Form.validate(self, *args, **kwargs)
@@ -163,6 +164,7 @@ class ReleaseForm(Form):
     mozillaRevision = StringField('Mozilla Revision:')
     dashboardCheck = BooleanField('Dashboard check?', default=False)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
+    comment = TextAreaField('Extra information to release-drivers:')
 
     def __init__(self, suggest=True, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -301,6 +303,7 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
+        self.comment.data = row.comment
 
 
 class ThunderbirdReleaseForm(DesktopReleaseForm):
