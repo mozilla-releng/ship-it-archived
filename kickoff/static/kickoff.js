@@ -50,11 +50,15 @@ function viewReleases(){
 function toLocalDate() {
     $( '.submittedAt' ).each(function() {
         var localdate = new Date($(this).html());
+
+        // formatDate does not handle hour/minute
+        formateddate=$.datepicker.formatDate('yy/mm/dd', localdate) + " " + localdate.getHours() + ":" + (localdate.getMinutes() < 10?"0":"") + localdate.getMinutes();
+
         if ( $(this).prop('tagName') == 'TD' ) {
-            $(this).empty().append(localdate.toLocaleString());
+            $(this).empty().append(formateddate);
         } else {
             //this is not a table row: prepend 'Submitted at: '
-            $(this).empty().append('Submitted at: ' + localdate.toLocaleString());
+            $(this).empty().append('Submitted at: ' + formateddate);
         }
     });
 };
