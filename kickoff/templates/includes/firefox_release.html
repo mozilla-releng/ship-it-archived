@@ -4,7 +4,8 @@ $(document).ready(function() {
         $('#{{ firefoxForm.version.id }}'),
         {{ firefoxForm.version.suggestions|safe }},
         $('#{{ firefoxForm.buildNumber.id }}'),
-        {{ firefoxForm.buildNumber.suggestions|safe }}
+        {{ firefoxForm.buildNumber.suggestions|safe }},
+        $('#{{ firefoxForm.branch.id }}')
     );
     setupBranchSuggestions(
         $('#{{ firefoxForm.branch.id }}'),
@@ -17,6 +18,7 @@ $(document).ready(function() {
         $('#{{ firefoxForm.mozillaRevision.id }}')
     );
 })
+
 </script>
 {{ firefoxForm.hidden_tag() }}
 <div class="submit_release">

@@ -1,4 +1,4 @@
-function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers) {
+function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement) {
     versions.sort(function(a, b) {
         return a > b;
     });
@@ -9,6 +9,59 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         // If we have a build number for the version we're given, use it!
         if (buildNumbers.hasOwnProperty(version)) {
             buildNumberElement.val(buildNumbers[version]);
+        }
+    }
+    function populateBranch(name, version) {
+
+        isTB = name.indexOf("thunderbird") > -1;
+
+        if (isTB) {
+            // Special case for thunderbird
+            base = "releases/comm-"
+        } else {
+            base = "releases/mozilla-"
+        }
+
+        if (version == "") {
+            // Empty. Reset the field
+            branchElement.val("");
+            return true;
+        }
+
+        // Beta version
+        betaRE = /^\d+\.\db\d+$/;
+        if (version.match(betaRE) != null) {
+            // 32.0b2
+            branchElement.val(base + "beta");
+            return true;
+        }
+
+        // ESR version
+        esrRE = /^(\d+)\.[\d.]*\desr$/;
+        esrVersion = version.match(esrRE);
+        if (esrVersion != null) {
+            // 31.0esr or 31.1.0esr
+            branchElement.val(base + "esr" + esrVersion[1]);
+            return true;
+        }
+
+        // Manage Thunderbird case (Stable release but using an ESR branch)
+        if (isTB) {
+            tbRE = /^(\d+)\.[\d.]*\d$/;
+            tbVersion = version.match(tbRE);
+            if (tbVersion != null) {
+                // 31.0 or 31.0.1
+                branchElement.val(base + "esr" + tbVersion[1]);
+                return true;
+            }
+        }
+
+        versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+$/;
+        if (version.match(versionRE) != null) {
+            // Probably a release. Can be 31.0 or 32.0.1
+            branchElement.val(base + "release");
+        } else {
+            alert("Unknown version schema. If that is unexpected, please report a bug.");
         }
     }
     versionElement.autocomplete({
@@ -25,11 +78,13 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         },
         select: function(event, ui) {
             populateBuildNumber(ui.item.value);
+            populateBranch(event.target.name, ui.item.value);
         }
     }).focus(function() {
         $(this).autocomplete('search');
     }).change(function() {
         populateBuildNumber(this.value);
+        populateBranch(this.name, this.value);
     });
 }
 

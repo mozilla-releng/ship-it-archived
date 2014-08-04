@@ -4,7 +4,8 @@ $(document).ready(function() {
         $('#{{ fennecForm.version.id }}'),
         {{ fennecForm.version.suggestions|safe }},
         $('#{{ fennecForm.buildNumber.id }}'),
-        {{ fennecForm.buildNumber.suggestions|safe }}
+        {{ fennecForm.buildNumber.suggestions|safe }},
+        $('#{{ fennecForm.branch.id }}')
     );
     setupBranchSuggestions(
         $('#{{ fennecForm.branch.id }}'),

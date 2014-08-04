@@ -4,7 +4,8 @@ $(document).ready(function() {
         $('#{{ thunderbirdForm.version.id }}'),
         {{ thunderbirdForm.version.suggestions|safe }},
         $('#{{ thunderbirdForm.buildNumber.id }}'),
-        {{ thunderbirdForm.buildNumber.suggestions|safe }}
+        {{ thunderbirdForm.buildNumber.suggestions|safe }},
+        $('#{{ thunderbirdForm.branch.id }}')
     );
     setupBranchSuggestions(
         $('#{{ thunderbirdForm.branch.id }}'),
