@@ -210,9 +210,10 @@ class ReleaseEvents(db.Model):
     results = db.Column(db.Integer(), nullable=False)
     chunkNum = db.Column(db.Integer(), default=0, nullable=False)
     chunkTotal = db.Column(db.Integer(), default=0, nullable=False)
+    group = db.Column(db.String(100), default=None, nullable=True)
 
     def __init__(self, name, sent, event_name, platform, results, chunkNum=0,
-                 chunkTotal=0):
+                 chunkTotal=0, group=None):
         self.name = name
         self.sent = sent
         self.event_name = event_name
@@ -220,6 +221,7 @@ class ReleaseEvents(db.Model):
         self.results = results
         self.chunkNum = chunkNum
         self.chunkTotal = chunkTotal
+        self.group = group
 
     def toDict(self):
         for c in self.__table__.columns:
@@ -230,7 +232,7 @@ class ReleaseEvents(db.Model):
     def createFromRequest(cls, form):
         return cls(form['name'], form['sent'], form['event_name'],
                    form['platform'], form['results'], form['chunkNum'],
-                   form['chunkTotal'])
+                   form['chunkTotal'], form['group'])
 
     def __repr__(self):
         return '<ReleaseEvents %r>' % self.name
