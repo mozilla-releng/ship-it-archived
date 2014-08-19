@@ -1,12 +1,14 @@
+import logging
+import re
+
+import simplejson as json
 from ast import literal_eval
 from collections import defaultdict
 from distutils.version import LooseVersion
-import logging
-import simplejson as json
 
 from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
     Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
-    IntegerField, HiddenField, Regexp, TextInput
+    IntegerField, HiddenField, Regexp, TextInput, DateTimeField, InputRequired
 
 from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
@@ -17,6 +19,7 @@ log = logging.getLogger(__name__)
 
 
 PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
+NAME_REGEX = re.compile('\w{0,100}-%s-build\d+' % ANY_VERSION_REGEX)
 
 # From http://wtforms.simplecodes.com/docs/1.0.2/specific_problems.html#specialty-field-tricks
 class MultiCheckboxField(SelectMultipleField):
@@ -353,3 +356,38 @@ def getReleaseForm(release):
         return ThunderbirdReleaseForm
     else:
         raise ValueError("Can't find release table for release %s" % release)
+
+
+class ReleaseEventsAPIForm(Form):
+    sent = DateTimeField('Sent:', validators=[InputRequired('Sent is required.')])
+    event_name = StringField('Event Name:', validators=[InputRequired('Event Name is required.'), Length(0, 150)])
+    platform = StringField('Platform:')
+    results = IntegerField('Results:', default=0, validators=[InputRequired('Results is required.')])
+    chunkNum = IntegerField('Chunk Number:', default=1, validators=[InputRequired('Chunk Num is required.')])
+    chunkTotal = IntegerField('Chunk Total:', default=1, validators=[InputRequired('Chunk Total is required.')])
+    group = StringField('Group:', default='other')
+
+    def validate(self, releaseName, *args, **kwargs):
+        valid = Form.validate(self, *args, **kwargs)
+
+        # Verify releaseName
+        if len(releaseName) < 1 or len(releaseName) > 100:
+            valid = False
+            if 'releaseName' not in self.errors:
+                self.errors['releaseName'] = []
+            self.errors['releaseName'].append('Release name too short or too long. Must be greater than 0 and less than 100.')
+        match = NAME_REGEX.match(releaseName)
+        if not match:
+            valid = False
+            if 'releaseName' not in self.errors:
+                self.errors['releaseName'] = []
+            self.errors['releaseName'].append('Incorrect release name format.')
+        else:
+            start, end = match.span()
+            if not releaseName[start:end] == releaseName:
+                valid = False
+                if 'releaseName' not in self.errors:
+                    self.errors['releaseName'] = []
+                self.errors['releaseName'].append('Incorrect release name format.')
+
+        return valid
