@@ -31,4 +31,8 @@ Troubleshooting
 			Vagrant 1.6.3+
 			VirtualBox 4.3.6+
 		- Switching to a 32-bit vagrant box seems to be a temporary fix
-		
+
+
+To run tests:
+* install python-nose
+* PYTHONPATH=$(pwd)/vendor/lib/python/ nosetests
