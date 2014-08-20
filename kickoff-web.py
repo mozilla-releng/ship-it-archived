@@ -37,6 +37,7 @@ if __name__ == '__main__':
     with app.test_request_context():
         db.init_app(app)
         db.create_all()
+
     def auth(environ, username, password):
         return options.username == username and options.password == password
     app.wsgi_app = AuthBasicHandler(app.wsgi_app, "Release kick-off", auth)

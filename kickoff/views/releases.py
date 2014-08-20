@@ -1,7 +1,5 @@
 import logging
 
-import pytz
-
 from flask import request, jsonify, render_template, Response, redirect, make_response, abort
 from flask.views import MethodView
 
@@ -11,6 +9,7 @@ from kickoff.model import getReleaseTable, getReleases
 from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm
 
 log = logging.getLogger(__name__)
+
 
 def sortedReleases():
     def cmpReleases(x, y):

@@ -1,5 +1,4 @@
 import datetime
-import mock
 import random
 import string
 

@@ -2,6 +2,7 @@ from kickoff import app
 from kickoff.model import FirefoxRelease
 from kickoff.test.views.base import ViewTest
 
+
 class TestSubmitRelease(ViewTest):
     def testSubmit(self):
         data = [

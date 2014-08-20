@@ -16,12 +16,14 @@ log = logging.getLogger(__name__)
 
 version = '1.1'
 
+
 # Ensure X-Frame-Options is set to protect against clickjacking attacks:
 # https://wiki.mozilla.org/WebAppSec/Secure_Coding_QA_Checklist#Test:_X-Frame-Options
 @app.after_request
 def add_xframe_options(response):
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     return response
+
 
 # Apache should always be configured to ask for a login, so we should never
 # hit a case where REMOTE_USER isn't set. But just in case...
@@ -31,10 +33,12 @@ def require_login():
         cef_event('Login Required', CEF_WARN)
         return Response(status=401)
 
+
 @app.route('/', methods=['GET'])
 @app.route('/index.html', methods=['GET'])
 def index():
     return render_template('base.html')
+
 
 @app.route('/favicon.ico')
 # The deployed app's web server expects the favicon here.

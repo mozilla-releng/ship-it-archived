@@ -7,9 +7,10 @@ from kickoff import db
 from kickoff.log import cef_event, CEF_ALERT, CEF_INFO
 from kickoff.model import getReleaseTable
 from kickoff.views.forms import FennecReleaseForm, FirefoxReleaseForm, \
-  ThunderbirdReleaseForm, getReleaseForm
+    ThunderbirdReleaseForm, getReleaseForm
 
 log = logging.getLogger(__name__)
+
 
 class SubmitRelease(MethodView):
     def get(self):
@@ -49,7 +50,7 @@ class SubmitRelease(MethodView):
         table = getReleaseTable(form.product.data)
         release = table.createFromForm(submitter, form)
 
-        if db.session.query(table).filter(table.name==release.name).first():
+        if db.session.query(table).filter(table.name == release.name).first():
             msg = 'Release "%s" already exists' % release.name
             cef_event('User Input Failed', CEF_INFO, ReleaseName=release.name)
             errors.append(msg)

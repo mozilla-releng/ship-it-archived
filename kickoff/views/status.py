@@ -1,13 +1,11 @@
 import logging
-import pytz
-import json
 
-from flask import request, jsonify, render_template, Response, redirect, \
-    make_response, abort
+from flask import request, jsonify, Response
+
 from flask.views import MethodView
 
 from kickoff import db
-from kickoff.log import cef_event, CEF_WARN, CEF_INFO, CEF_ALERT
+from kickoff.log import cef_event, CEF_INFO, CEF_ALERT
 from kickoff.model import ReleaseEvents
 from kickoff.views.forms import ReleaseEventsAPIForm
 
@@ -52,10 +50,10 @@ class StatusAPI(MethodView):
 
         # Check if this ReleaseEvent already exists in the ReleaseEvents table
         if db.session.query(ReleaseEvents).\
-                      filter(ReleaseEvents.name==releaseEventsUpdate.name,
-                             ReleaseEvents.event_name==releaseEventsUpdate.event_name).first():
+           filter(ReleaseEvents.name == releaseEventsUpdate.name,
+                  ReleaseEvents.event_name == releaseEventsUpdate.event_name).first():
             msg = 'ReleaseEvents ({}, {}) already exists'.\
-                   format(releaseEventsUpdate.name, releaseEventsUpdate.event_name)
+                  format(releaseEventsUpdate.name, releaseEventsUpdate.event_name)
             log.error('{}'.format(msg))
             cef_event('User Input Failed', CEF_INFO,
                       ReleaseName=releaseEventsUpdate.name)

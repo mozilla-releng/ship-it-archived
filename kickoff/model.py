@@ -250,7 +250,6 @@ class ReleaseEvents(db.Model):
     def __repr__(self):
         return '<ReleaseEvents %r>' % self.name
 
-
     @classmethod
     def getEvents(cls, group=None):
         filters = {}
@@ -262,7 +261,6 @@ class ReleaseEvents(db.Model):
             return cls.query.filter_by(**filters)
         else:
             return cls.query.all()
-
 
     @classmethod
     def getStatus(cls, name):
@@ -276,13 +274,11 @@ class ReleaseEvents(db.Model):
         status['name'] = name
         return status
 
-
     @classmethod
     def tagStatus(cls, name):
         if cls.query.filter_by(name=name, group='tag').count() > 0:
             return {'progress': 1.00}
         return {'progress': 0.00}
-
 
     @classmethod
     def buildStatus(cls, name):
@@ -297,7 +293,6 @@ class ReleaseEvents(db.Model):
             builds['progress'] += (1.00/len(builds['platforms']))
 
         return builds
-
 
     @classmethod
     def repackStatus(cls, name):
@@ -320,20 +315,17 @@ class ReleaseEvents(db.Model):
 
         return repacks
 
-
     @classmethod
     def updateStatus(cls, name):
         if cls.query.filter_by(name=name, group='update').count() > 0:
             return {'progress': 1.00}
         return {'progress': 0.00}
 
-
     @classmethod
     def releasetestStatus(cls, name):
         if cls.query.filter_by(name=name, group='releasetest').count() > 0:
             return {'progress': 1.00}
         return {'progress': 0.00}
-
 
     @classmethod
     def readyForReleaseStatus(cls, name):
@@ -361,13 +353,11 @@ class ReleaseEvents(db.Model):
 
         return data
 
-
     @classmethod
     def postreleaseStatus(cls, name):
         if cls.query.filter_by(name=name, group='postrelease').count() > 0:
             return {'progress': 1.00}
         return {'progress': 0.00}
-
 
     @classmethod
     def getEnUSPlatforms(cls, name):

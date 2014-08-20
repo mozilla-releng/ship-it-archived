@@ -8,7 +8,7 @@ from distutils.version import LooseVersion
 
 from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
     Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
-    IntegerField, HiddenField, Regexp, TextInput, DateTimeField, InputRequired
+    IntegerField, HiddenField, Regexp, DateTimeField, InputRequired
 
 from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
 NAME_REGEX = re.compile('\w{0,100}-%s-build\d+' % ANY_VERSION_REGEX)
+
 
 # From http://wtforms.simplecodes.com/docs/1.0.2/specific_problems.html#specialty-field-tricks
 class MultiCheckboxField(SelectMultipleField):
@@ -243,6 +244,7 @@ class ReleaseForm(Form):
         self.branch.suggestions = json.dumps(list(recentBranches.keys()))
         self.version.suggestions = json.dumps(list(suggestedVersions))
         self.buildNumber.suggestions = json.dumps(buildNumbers)
+
 
 class FennecReleaseForm(ReleaseForm):
     product = HiddenField('product')

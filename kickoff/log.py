@@ -14,6 +14,7 @@ CEF_WARN = 6
 CEF_ALERT = 8
 CEF_EMERG = 10
 
+
 def cef_event(name, severity, **custom_exts):
     # Extra values need to be in the format csNLabel=xxx, csN=yyy
     extra_exts = {}
@@ -27,6 +28,7 @@ def cef_event(name, severity, **custom_exts):
 
     username = request.environ.get('REMOTE_USER', 'Unknown User')
     cef.log_cef(name, severity, request.environ, kickoff.app.config, username=username, **extra_exts)
+
 
 def cef_config(logfile):
     return {

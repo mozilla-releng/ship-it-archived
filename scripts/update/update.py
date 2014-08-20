@@ -35,6 +35,7 @@ def deploy_app(ctx):
     ctx.remote(settings.REMOTE_UPDATE_SCRIPT)
     ctx.remote('/bin/touch %s' % settings.REMOTE_WSGI)
 
+
 @task
 def update_info(ctx):
     """Write info about the current state to a publicly visible file."""
@@ -51,15 +52,18 @@ def update_info(ctx):
 def pre_update(ctx, ref=settings.UPDATE_REF):
     """Update code to pick up changes to this file."""
     update_code(ref)
-    
+
+
 @task
 def update(ctx):
     update_info()
-    
+
+
 @task
 def deploy(ctx):
     checkin_changes()
     deploy_app()
+
 
 @task
 def update_site(ctx, tag):
