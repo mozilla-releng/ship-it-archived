@@ -1,3 +1,43 @@
+function isBeta(version) {
+    // Beta version
+    betaRE = /^\d+\.\db\d+$/;
+    if (version.match(betaRE) != null) {
+        // 32.0b2
+        return true;
+    }
+    return false;
+}
+
+function isESR(version) {
+    // ESR version
+    esrRE = /^(\d+)\.[\d.]*\desr$/;
+    esrVersion = version.match(esrRE);
+    if (esrVersion != null) {
+        // 31.0esr or 31.1.0esr
+        return true;
+    }
+    return false;
+}
+
+function isRelease(version) {
+    versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+$/;
+    if (version.match(versionRE) != null) {
+        // Probably a release. Can be 31.0 or 32.0.1
+        return true;
+    }
+    return false;
+}
+
+function isTBRelease(version) {
+    tbRE = /^(\d+)\.[\d.]*\d$/;
+    tbVersion = version.match(tbRE);
+    if (tbVersion != null) {
+        // 31.0 or 31.0.1
+        return true;
+    }
+    return false;
+}
+
 function guessBranchFromVersion(name, version) {
 
     isTB = name.indexOf("thunderbird") > -1;
@@ -15,39 +55,33 @@ function guessBranchFromVersion(name, version) {
     }
 
     // Beta version
-    betaRE = /^\d+\.\db\d+$/;
-    if (version.match(betaRE) != null) {
+    if (isBeta(version)) {
         // 32.0b2
         return base + "beta";
     }
 
     // ESR version
-    esrRE = /^(\d+)\.[\d.]*\desr$/;
-    esrVersion = version.match(esrRE);
-    if (esrVersion != null) {
+    if (isESR(version)) {
         // 31.0esr or 31.1.0esr
         return base + "esr" + esrVersion[1];
     }
 
     // Manage Thunderbird case (Stable release but using an ESR branch)
     if (isTB) {
-        tbRE = /^(\d+)\.[\d.]*\d$/;
-        tbVersion = version.match(tbRE);
-        if (tbVersion != null) {
+        if (isTBRelease(version)) {
             // 31.0 or 31.0.1
             return base + "esr" + tbVersion[1];
         }
     }
 
-    versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+$/;
-    if (version.match(versionRE) != null) {
+    if (isRelease(version)) {
         // Probably a release. Can be 31.0 or 32.0.1
         return base + "release";
     }
     return "";
 }
 
-function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement) {
+function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, dashboardElement) {
     versions.sort(function(a, b) {
         return a > b;
     });
@@ -61,9 +95,20 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         }
     }
 
+    // From the version, try to guess the branch
     function populateBranch(name, version) {
         branch = guessBranchFromVersion(name, version);
         branchElement.val(branch);
+    }
+
+    function dashboardCheck(version) {
+        // Building a beta, tick the checkbox
+        // Due to limitation, we cannot do that for the release
+        if (isBeta(version)) {
+            dashboardElement.prop("checked", true);
+        } else {
+            dashboardElement.prop("checked", false);
+        }
     }
 
     versionElement.autocomplete({
@@ -81,12 +126,14 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         select: function(event, ui) {
             populateBuildNumber(ui.item.value);
             populateBranch(event.target.name, ui.item.value);
+            dashboardCheck(ui.item.value);
         }
     }).focus(function() {
         $(this).autocomplete('search');
     }).change(function() {
         populateBuildNumber(this.value);
         populateBranch(this.name, this.value);
+        dashboardCheck(this.value);
     });
 }
 
