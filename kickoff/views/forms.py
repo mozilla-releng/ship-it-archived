@@ -137,6 +137,7 @@ class ReleaseAPIForm(Form):
     # it than complain, because it's purely informational.
     # Use the Column length directly rather than duplicating its value.
     status = StringField('status', filters=[truncateFilter(Release.status.type.length)])
+    enUSPlatforms = JSONField('enUSPlatforms')
 
     def validate(self, release, *args, **kwargs):
         valid = Form.validate(self, *args, **kwargs)

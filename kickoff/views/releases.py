@@ -76,6 +76,9 @@ class ReleaseAPI(MethodView):
         if form.status.data:
             log.debug('%s: status being changed to: %s' % (releaseName, form.status.data))
             release.status = form.status.data
+        if form.enUSPlatforms.data:
+            log.debug('%s: enUSPlatforms being changed to: %s' % (releaseName, form.enUSPlatforms.data))
+            release.enUSPlatforms = form.enUSPlatforms.data
 
         db.session.add(release)
         db.session.commit()
