@@ -36,6 +36,12 @@ body {
     color: red;
     font-weight: bold;
 }
+
+.status_complete {
+    color: green;
+    font-weight: bold;
+}
+
 /* submit release form advanced fileds*/
 .advanced {
     border-top:2px solid LightGray;
@@ -168,11 +174,11 @@ body {
 }
 
 th.incomplete,
-th.complete {
+th.running {
     font-size:12px;
 }
 tr.incomplete,
-tr.complete {
+tr.running {
     font-size:10px;
 }
 
@@ -282,6 +288,71 @@ h4 {
     margin-left: 20px;
     margin-bottom: 20px;
     padding-bottom: 5px;
+}
+
+/* status/<release-name>.html page */
+
+#title {
+    margin-bottom: -15px;
+    margin-top: -30px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#title h2 {
+    text-align: center;
+    font-weight: bold;
+}
+
+#progress-container {
+    margin-bottom: -22px;
+}
+
+#progress-container h3 {
+    margin-left: 10%;
+}
+
+#main-progress {
+    position: absolute;
+    width: 80%;
+    margin-left: 11%;
+}
+
+#collapse-progress {
+    margin-bottom: -30px;
+}
+
+#top-sub-progress-container {
+    margin-top: 50px;
+}
+
+#top-sub-progress-container h4 {
+    margin-top: 0px;
+    margin-left: -23px;
+}
+
+#sub-progress-container h4 {
+    margin-top: 0px;
+    margin-left: -23px;
+}
+
+#sub-progress {
+    margin-top: 3px;
+    margin-left: -11px;
+}
+
+#sub-progress-bar {
+    margin-left: -15px;
+}
+
+#collapse-button {
+    padding-top: 30px;
+    text-align: center;
+}
+
+#collapse-hidden {
+    padding-top: 48px;
+    text-align: center;
 }
 
 /* disable column highlighting when selected */

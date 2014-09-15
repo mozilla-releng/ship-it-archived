@@ -34,15 +34,15 @@ function viewReleases(){
         return JSON.parse( localStorage.getItem('DataTables_reviewed'+window.location.pathname) );
     }
   });
-  $( "#complete" ).dataTable({
+  $( "#running" ).dataTable({
     "bJQueryUI": true,
     "aaSorting": [[ 2, "desc" ]],
     "bStateSave": true,
     "fnStateSave": function (oSettings, oData) {
-        localStorage.setItem( 'DataTables_complete'+window.location.pathname, JSON.stringify(oData) );
+        localStorage.setItem( 'DataTables_running'+window.location.pathname, JSON.stringify(oData) );
     },
     "fnStateLoad": function (oSettings) {
-        return JSON.parse( localStorage.getItem('DataTables_complete'+window.location.pathname) );
+        return JSON.parse( localStorage.getItem('DataTables_running'+window.location.pathname) );
     }
   });
 }

@@ -1,8 +1,9 @@
 {% for rel in releases if rel.ready and rel.complete %}
 {% if loop.first %}
-<table id="complete">
+<table id="running">
 <thead>
 <tr>
+    <th>Status</th>
     <th>Name</th>
     <th>Submitted By</th>
     <th>Submitted At</th>
@@ -19,8 +20,9 @@
 </tr>
 </thead>
 {% endif %}
-<tr class='complete'>
-  <td>{{ rel.name }}</td>
+<tr class='running'>
+  <td>{% if rel.status == 'Complete' %}<span class='status_complete'>{{ rel.status }}</span>{% else %}{{ rel.status }}{% endif %}</td>
+  <td><a href="releases/{{ rel.name }}/status.html">{{ rel.name }}</a></td>
   <td>{{ rel.submitter }}</td>
   <td class='submittedAt'>{{ rel.submittedAt }}</td>
   <td>{{ rel.branch }}</td>
@@ -58,5 +60,5 @@
 </table>
 {% endif %}
 {% else %}
-<h1>No completed releases!</h1>
+<h1>No running/completed releases!</h1>
 {% endfor %}

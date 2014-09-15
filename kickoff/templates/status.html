@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+{% if errors %}
+<div id='errors'>
+<ul>
+    {% for e in errors %}
+    <li>{{ e }}</li>
+    {% endfor %}
+</ul>
+</div> <!-- id=errors -->
+{% endif %}
+
+{% if not status %}
+  <div id="title">
+    <h2>No release events found!</h2>
+  </div>
+{% else %}
+  <div id="title">
+    <h2>{{ status['name'] }}</h2>
+  </div>
+  {% for group in status_groups %}
+    <div id="progress-container">
+      <h3>
+        <strong>{{ group[1] }}</strong> 
+        {% if status[group[0]]['progress'] == 1 %}
+          <i class="fa fa-check" style="color: green;"></i>
+        {% elif status[group[0]]['progress'] > 0 %}
+          <i class="fa fa-spinner fa-spin"></i>
+        {% endif %}
+      </h3>
+      <div id="main-progress" class="progress">
+        <div class="progress-bar progress-bar-info {% if 0 < status[group[0]]['progress'] < 1 %}progress-bar-striped active{% endif %}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ status[group[0]]['progress'] * 100 }}%"></div>
+      </div>
+      <div id="collapse{{ group[0] }}" class="panel-collapse collapse out collapse-progress">
+        {% if status[group[0]].get('platforms') %}
+          {% for platform, data in status[group[0]]['platforms'].items() %}
+            <div id="{% if loop.first %}top-{% endif %}sub-progress-container" class="row">
+              <h4 class="col-lg-2 col-lg-push-2">
+                {% if data == 1 %}
+                  <i class="fa fa-check" style="color: green;"></i> 
+                {% elif data > 0 %}
+                  <i class="fa fa-spinner fa-spin"></i> 
+                {% endif %}
+                {{ platform.title() }}
+              </h4>
+              <div id="sub-progress" class="col-lg-6 col-lg-push-2 progress">
+                <div id="sub-progress-bar" style="width: {{ data * 106 }}%" class="progress-bar progress-bar-info {% if 0 < data < 1 %}progress-bar-striped active{% endif %}" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          {% endfor %}
+          </div>
+          <div id="collapse-button">
+            <a id="collapseText{{ loop.index }}" onClick="changeCollapseText({{ loop.index }});" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ group[0] }}"><i class="fa fa-chevron-down"></i> expand <i class="fa fa-chevron-down"></i></a>
+          </div>
+        {% else %}
+          </div>
+          <div id="collapse-hidden"></div>
+        {% endif %}
+    </div>
+  {% endfor %}
+{% endif %}
+<div style="margin-bottom: 40px;"></div>
+
+<script>
+    $(document).ready(function(){ viewReleases(); });
+</script>
+{% endblock %}

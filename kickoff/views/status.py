@@ -1,7 +1,6 @@
 import logging
 
-from flask import request, jsonify, Response
-
+from flask import request, jsonify, render_template, redirect, Response
 from flask.views import MethodView
 
 from kickoff import db
@@ -36,7 +35,9 @@ class StatusAPI(MethodView):
 
         if not form.validate(releaseName):
             errors = form.errors
-            log.error('User Input Failed - {} - ({}, {})'.format(errors.values(),                                                                 releaseName,                                                                 form.event_name.data))
+            log.error('User Input Failed - {} - ({}, {})'.format(errors.values(),
+                                                                 releaseName,
+                                                                 form.event_name.data))
             cef_event('User Input Failed', CEF_INFO, **errors)
             return Response(status=400, response=errors.values())
 
@@ -44,16 +45,17 @@ class StatusAPI(MethodView):
         try:
             releaseEventsUpdate = ReleaseEvents.createFromForm(releaseName, form)
         except Exception as e:
-            log.error('User Input Failed - {} - ({}, {})'.format(e, releaseName,                                                                 form.event_name.data))
+            log.error('User Input Failed - {} - ({}, {})'.format(e, releaseName,
+                                                                 form.event_name.data))
             cef_event('User Input Failed', CEF_ALERT)
             return Response(status=400, response=e)
 
         # Check if this ReleaseEvent already exists in the ReleaseEvents table
         if db.session.query(ReleaseEvents).\
-           filter(ReleaseEvents.name == releaseEventsUpdate.name,
-                  ReleaseEvents.event_name == releaseEventsUpdate.event_name).first():
+                      filter(ReleaseEvents.name==releaseEventsUpdate.name,
+                             ReleaseEvents.event_name==releaseEventsUpdate.event_name).first():
             msg = 'ReleaseEvents ({}, {}) already exists'.\
-                  format(releaseEventsUpdate.name, releaseEventsUpdate.event_name)
+                   format(releaseEventsUpdate.name, releaseEventsUpdate.event_name)
             log.error('{}'.format(msg))
             cef_event('User Input Failed', CEF_INFO,
                       ReleaseName=releaseEventsUpdate.name)
@@ -66,3 +68,35 @@ class StatusAPI(MethodView):
                   format(releaseEventsUpdate.name, releaseEventsUpdate.event_name))
 
         return Response(status=200)
+
+
+class StatusesAPI(MethodView):
+
+    def get(self):
+        group = request.args.get('group')
+        if not group:
+            cef_event('User Input Failed', CEF_INFO, group=group)
+            return Response(status=400, response="Got unparseable value for group")
+        events = [(r.name, r.event_name) for r in getEvents(group)]
+        return jsonify({'events': events})
+
+
+class Status(MethodView):
+
+    def get(self, releaseName):
+        status_groups = [('tag', 'Tagging'), ('build', 'Builds'), ('repack', 'Repacks'), 
+                         ('update', 'Update'), ('releasetest', 'Release Test'), 
+                         ('readyforrelease', 'Ready For Release'), 
+                         ('postrelease', 'Post Release')]
+        status = ReleaseEvents.getStatus(releaseName)
+        errors = {}
+        if not status:
+            errors = ['No release events found for {}'.format(releaseName)]
+        return render_template('status.html', status=ReleaseEvents.getStatus(releaseName), status_groups=status_groups,
+                               errors=errors)
+
+
+class Statuses(MethodView):
+
+    def get(self):
+        return render_template('statuses.html', statuses=sortedEvents())

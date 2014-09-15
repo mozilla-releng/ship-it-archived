@@ -14,18 +14,18 @@
   <div id='notready'>
    {% include 'includes/releases_submitted.html' %}
   </div><!-- notready -->
-  <h3><a href="#ReviewedComplete">Reviewed/Complete</a></h3>
+  <h3><a href="#ReviewedRunning">Reviewed/Running/Complete</a></h3>
   <div id='tabs'>
     <ul>
       <li><a href="#reviewed-tab">Reviewed</a></li>
-      <li><a href="#complete-tab">Complete</a></li>
+      <li><a href="#running-tab">Running/Complete</a></li>
     </ul>
     <div id="reviewed-tab">
      {% include 'includes/releases_reviewed.html' %}
     </div> <!-- reviewed-tab -->
-    <div id="complete-tab">
-     {% include 'includes/releases_complete.html' %}
-    </div> <!-- complete-tab -->
+    <div id="running-tab">
+     {% include 'includes/releases_running.html' %}
+    </div> <!-- running-tab -->
   </div> <!-- tabs -->
   </div><!-- accordion -->
 <script>

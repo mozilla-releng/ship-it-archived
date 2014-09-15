@@ -197,6 +197,14 @@ def getReleases(ready=None, complete=None):
         else:
             for r in table.query.all():
                 releases.append(r)
+    status_groups = {'tag': 'Tagging', 'build': 'Builds','repack': 'Repacks', 
+                     'update': 'Update', 'releasetest': 'Release Test', 
+                     'readyforrelease': 'Ready For Release',
+                     'postrelease': 'Post Release'}
+    for release in releases:
+        status = ReleaseEvents.getCurrentStatus(release.name)
+        if status:
+            release.status = status_groups[status]
     return releases
 
 
@@ -238,7 +246,7 @@ class ReleaseEvents(db.Model):
     def toDict(self):
         me = {}
         for c in self.__table__.columns:
-            me[c.name] = getattr(self, c.name)
+            me[c.name] = str(getattr(self, c.name))
         return me
 
     @classmethod
@@ -273,6 +281,19 @@ class ReleaseEvents(db.Model):
             status[step] = status[step](name)
         status['name'] = name
         return status
+
+    @classmethod
+    def getCurrentStatus(cls, name):
+        status = cls.getStatus(name)
+        status_order = ['tag', 'build', 'repack', 'update', 'releasetest', 'readyforrelease', 'postrelease']
+
+        currentStatus = None
+        if status:
+            for s in reversed(status_order):
+                if status[s]['progress'] != 0:
+                    return s
+
+        return currentStatus
 
     @classmethod
     def tagStatus(cls, name):
