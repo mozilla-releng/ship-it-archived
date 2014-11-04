@@ -55,7 +55,13 @@
           <td>{{ rel.promptWaitTime }}</td>
       {% endif %}
   {% endif %}
-  <td>{{ rel.comment }}</td>
+  <td>
+  {% if rel.comment|length > 50 %}
+          <a href="/releases/{{ rel.name }}/comment">Link</a>
+  {% else %}
+          {{ rel.comment }}
+  {% endif %}
+  </td>
 {% if loop.last %}
 </table>
 {% endif %}

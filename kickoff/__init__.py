@@ -8,7 +8,7 @@ db = SQLAlchemy()
 
 from kickoff.log import cef_event, CEF_WARN
 from kickoff.views.csrf import CSRFView
-from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release
+from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release, ReleaseCommentAPI
 from kickoff.views.submit import SubmitRelease
 from kickoff.views.status import StatusAPI, StatusesAPI, Statuses, Status
 
@@ -52,6 +52,7 @@ app.add_url_rule('/releases.html', view_func=Releases.as_view('releases'), metho
 app.add_url_rule('/releases/<releaseName>/status.html', view_func=Status.as_view('status'), methods=['GET'])
 app.add_url_rule('/csrf_token', view_func=CSRFView.as_view('csrf_token'), methods=['GET'])
 app.add_url_rule('/releases', view_func=ReleasesAPI.as_view('releases_api'), methods=['GET'])
-app.add_url_rule('/releases/<releaseName>', view_func=ReleaseAPI.as_view('release_api'), methods=['GET', 'POST'])
+app.add_url_rule('/releases/<releaseName>', view_func=ReleaseAPI.as_view('release_api'), methods=['GET'])
 app.add_url_rule('/releases/<releaseName>/l10n', view_func=ReleaseL10nAPI.as_view('release_l10n_api'), methods=['GET'])
-app.add_url_rule('/releases/<releaseName>/status', view_func=StatusAPI.as_view('status_api'), methods=['GET', 'POST'])
+app.add_url_rule('/releases/<releaseName>/status', view_func=StatusAPI.as_view('status_api'), methods=['GET'])
+app.add_url_rule('/releases/<releaseName>/comment', view_func=ReleaseCommentAPI.as_view('comment_api'), methods=['GET'])
