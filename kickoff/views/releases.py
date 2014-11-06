@@ -109,6 +109,8 @@ class Releases(MethodView):
         return render_template('releases.html', releases=sortedReleases(), form=form)
 
     def post(self):
+        starter = request.environ.get('REMOTE_USER')
+
         form = ReleasesForm()
         form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
         # Don't include completed or ready releases, because they aren't allowed to be deleted
@@ -129,6 +131,7 @@ class Releases(MethodView):
             r.ready = True
             r.status = 'Pending'
             r.comment = form.comment.data
+            r.starter = starter
             db.session.add(r)
         db.session.commit()
         return render_template('releases.html', releases=sortedReleases(), form=form)

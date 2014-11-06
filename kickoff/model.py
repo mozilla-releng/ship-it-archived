@@ -30,6 +30,7 @@ class Release(object):
     mozillaRelbranch = db.Column(db.String(50), default=None, nullable=True)
     enUSPlatforms = db.Column(db.String(500), default=None, nullable=True)
     comment = db.Column(db.Text, default=None, nullable=True)
+    starter = db.Column(db.String(250), nullable=True)
 
     # Dates are always returned in UTC time and ISO8601 format to make them
     # as transportable as possible.
