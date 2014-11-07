@@ -278,7 +278,7 @@ class DesktopReleaseForm(ReleaseForm):
     def addSuggestions(self):
         ReleaseForm.addSuggestions(self)
         table = getReleaseTable(self.product.data)
-        recentReleases = table.getRecent()
+        recentReleases = table.getRecentShipped()
         seenVersions = []
         partials = {}
         # The UI will suggest any versions which are on the same branch as

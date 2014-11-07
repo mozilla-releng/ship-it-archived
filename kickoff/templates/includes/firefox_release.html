@@ -6,6 +6,8 @@ $(document).ready(function() {
         $('#{{ firefoxForm.buildNumber.id }}'),
         {{ firefoxForm.buildNumber.suggestions|safe }},
         $('#{{ firefoxForm.branch.id }}'),
+        $('#{{ firefoxForm.partials.id }}'),
+        {{ firefoxForm.partials.suggestions|safe }},
         $('#{{ firefoxForm.dashboardCheck.id }}')
     );
     setupBranchSuggestions(

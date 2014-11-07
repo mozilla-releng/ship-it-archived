@@ -6,6 +6,8 @@ $(document).ready(function() {
         $('#{{ fennecForm.buildNumber.id }}'),
         {{ fennecForm.buildNumber.suggestions|safe }},
         $('#{{ fennecForm.branch.id }}'),
+        [], // Partial. Meaningless for fennec
+        [], // Ditto
         $('#{{ fennecForm.dashboardCheck.id }}')
     );
     setupBranchSuggestions(
