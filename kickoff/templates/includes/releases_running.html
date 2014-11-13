@@ -56,7 +56,7 @@
     {% endif %}
   {% endif %}
   <td>
-  {% if rel.comment|length > 50 %}
+  {% if rel.comment and rel.comment|length > 50 %}
           <a href="/releases/{{ rel.name }}/comment">Link</a>
   {% else %}
           {{ rel.comment }}
