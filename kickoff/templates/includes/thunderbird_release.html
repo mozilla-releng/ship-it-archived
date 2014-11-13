@@ -78,7 +78,7 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ thunderbirdForm.mozillaRelbranch.label()|safe }}
     {{ thunderbirdForm.mozillaRelbranch()|safe }}
-    <div class="help">The relbranch to put version bumps/tags for this release on. If not specified, one will be generated automatically during tagging. When provided the release will be created from tip of this branch thus it cannot be used in conjunction with revision.</div>
+    <div class="help">If a revision is specified this field is disabled and ignored otherwise the relbranch specified will be used put version bumps/tags for this release on. If not specified, one will be generated automatically during tagging. When provided the release will be created from tip of this branch thus it cannot be used in conjunction with revision.</div>
 </div>
 <div class="submit_release">
     {{ thunderbirdForm.commRelbranch.label()|safe }}
