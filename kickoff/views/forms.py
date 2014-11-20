@@ -94,7 +94,7 @@ def truncateFilter(max_):
     """A filter that truncates the value to `max_' length
        if its initial length exceeds `max_'"""
     def filter(value):
-        if len(value) > max_:
+        if value and len(value) > max_:
             return value[:max_]
         return value
     return filter
