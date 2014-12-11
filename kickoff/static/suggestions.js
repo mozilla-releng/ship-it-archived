@@ -38,16 +38,23 @@ function isTBRelease(version) {
     return false;
 }
 
+function isTB(name) {
+    return name.indexOf("thunderbird") > -1;
+}
+
+function getBaseRepository(name, version) {
+
+    if (isTB(name)) {
+        // Special case for thunderbird
+        return "releases/comm-"
+    } else {
+        return "releases/mozilla-"
+    }
+}
+
 function guessBranchFromVersion(name, version) {
 
-    isTB = name.indexOf("thunderbird") > -1;
-
-    if (isTB) {
-        // Special case for thunderbird
-        base = "releases/comm-"
-    } else {
-        base = "releases/mozilla-"
-    }
+    base = getBaseRepository(name);
 
     if (version == "") {
         // Empty. Reset the field
@@ -67,7 +74,7 @@ function guessBranchFromVersion(name, version) {
     }
 
     // Manage Thunderbird case (Stable release but using an ESR branch)
-    if (isTB) {
+    if (isTB(name)) {
         if (isTBRelease(version)) {
             // 31.0 or 31.0.1
             return base + "esr" + tbVersion[1];
@@ -81,7 +88,8 @@ function guessBranchFromVersion(name, version) {
     return "";
 }
 
-function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, dashboardElement) {
+function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement) {
+
     versions.sort(function(a, b) {
         return a > b;
     });
@@ -111,6 +119,62 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         }
     }
 
+    function populatePartial(name, version) {
+
+        if (name.indexOf("fennec") > -1) {
+            // Android does not need partial
+            return true;
+        }
+        base = getBaseRepository(name);
+
+        nbPartial = 0;
+        previousReleases =  [];
+
+        // Beta version
+        betaRE = /^\d+\.\db\d+$/;
+        betaVersion = version.match(betaRE);
+        if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
+            previousReleases = previousBuilds[base + 'beta'].sort().reverse();
+            nbPartial = 2;
+        }
+
+        // Release version
+        versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+$/;
+        releaseVersion = version.match(versionRE);
+        if (releaseVersion != null) {
+            previousReleases = previousBuilds[base + 'release'].sort().reverse()
+            nbPartial = 3;
+        }
+
+        partial = "";
+        partialAdded = 0;
+        for (i = 0; i < previousReleases.length; i++) {
+            // Reuse the previous builds info to generate the partial
+
+            if (previousReleases[i] < version) {
+                // Build a previous release should not occur but it is the case
+                // don't provide past partials
+                partial += previousReleases[i];
+
+                partialAdded++;
+
+                if (i + 1 != previousReleases.length &&
+                    partialAdded != nbPartial) {
+                    // We don't want a trailing ","
+                    partial += ",";
+                }
+            }
+
+            if (partialAdded == nbPartial) {
+                // We have enough partials. Bye bye.
+                break;
+            }
+        }
+
+        partialElement.val(partial);
+        return true;
+    }
+
     versionElement.autocomplete({
         source: versions,
         minLength: 0,
@@ -126,6 +190,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         select: function(event, ui) {
             populateBuildNumber(ui.item.value);
             populateBranch(event.target.name, ui.item.value);
+            populatePartial(event.target.name, ui.item.value);
             dashboardCheck(ui.item.value);
         }
     }).focus(function() {
@@ -133,6 +198,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     }).change(function() {
         populateBuildNumber(this.value);
         populateBranch(this.name, this.value);
+        populatePartial(this.name, this.value);
         dashboardCheck(this.value);
     });
 }

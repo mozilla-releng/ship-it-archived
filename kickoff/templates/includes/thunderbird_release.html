@@ -6,6 +6,8 @@ $(document).ready(function() {
         $('#{{ thunderbirdForm.buildNumber.id }}'),
         {{ thunderbirdForm.buildNumber.suggestions|safe }},
         $('#{{ thunderbirdForm.branch.id }}'),
+        $('#{{ thunderbirdForm.partials.id }}'),
+        {{ thunderbirdForm.partials.suggestions|safe }},
         $('#{{ thunderbirdForm.dashboardCheck.id }}')
     );
     setupBranchSuggestions(
