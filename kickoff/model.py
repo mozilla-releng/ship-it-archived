@@ -204,8 +204,8 @@ def getReleases(ready=None, complete=None):
         else:
             for r in table.query.all():
                 releases.append(r)
-    status_groups = {'tag': 'Tagging', 'build': 'Builds','repack': 'Repacks', 
-                     'update': 'Update', 'releasetest': 'Release Test', 
+    status_groups = {'tag': 'Tagging', 'build': 'Builds', 'repack': 'Repacks',
+                     'update': 'Update', 'releasetest': 'Release Test',
                      'readyforrelease': 'Ready For Release',
                      'postrelease': 'Post Release'}
     for release in releases:
@@ -268,8 +268,6 @@ class ReleaseEvents(db.Model):
     @classmethod
     def getEvents(cls, group=None):
         filters = {}
-        if results is not None:
-            filters['results'] = results
         if group is not None:
             filters['group'] = group
         if filters:
@@ -292,7 +290,8 @@ class ReleaseEvents(db.Model):
     @classmethod
     def getCurrentStatus(cls, name):
         status = cls.getStatus(name)
-        status_order = ['tag', 'build', 'repack', 'update', 'releasetest', 'readyforrelease', 'postrelease']
+        status_order = ['tag', 'build', 'repack', 'update', 'releasetest',
+                        'readyforrelease', 'postrelease']
 
         currentStatus = None
         if status:

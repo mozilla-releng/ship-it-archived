@@ -1,6 +1,6 @@
 import logging
 
-from flask import request, jsonify, render_template, redirect, Response
+from flask import request, jsonify, render_template, Response
 from flask.views import MethodView
 
 from kickoff import db
