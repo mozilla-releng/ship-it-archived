@@ -190,12 +190,18 @@ def getReleaseTable(release):
         raise ValueError("Can't find release table for release %s" % release)
 
 
-def getReleases(ready=None, complete=None):
+def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None):
     filters = {}
     if ready is not None:
         filters['ready'] = ready
     if complete is not None:
         filters['complete'] = complete
+    if status is not None:
+        filters['status'] = status
+    if versionFilter is not None:
+        filters['version'] = versionFilter
+    if productFilter is not None:
+        filters['product'] = productFilter
     releases = []
     for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
         if filters:

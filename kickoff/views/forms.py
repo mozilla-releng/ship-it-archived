@@ -13,7 +13,7 @@ from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
 from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
 
-from kickoff.model import Release, getReleaseTable
+from kickoff.model import Release, getReleaseTable, getReleases
 
 log = logging.getLogger(__name__)
 
@@ -149,6 +149,16 @@ class ReleaseAPIForm(Form):
                 if 'ready' not in self.errors:
                     self.errors['ready'] = []
                 self.errors['ready'].append('Cannot make a completed release not ready or incomplete.')
+
+            # Check if there is an other product-version already shipped
+            similar = getReleases(status="postrelease", productFilter=release.product,
+                                  versionFilter=release.version)
+            if similar:
+                valid = False
+                if 'postrelease' not in self.errors:
+                    self.errors['postrelease'] = []
+                self.errors['postrelease'].append('Version ' + release.version + ' already marked as shipped')
+
         # If the release isn't complete, we can accept changes to readyness or
         # completeness, but marking a release as not ready *and* complete at
         # the same time is invalid.

@@ -84,17 +84,18 @@ function submittedReleaseButtons(buttonId) {
 
 function updateShip(e) {
   csrf_token = $('#csrf_token').val();
-  $.ajax( {
+  var request = $.ajax( {
     url: "/releases/" + e,
     type: "POST",
-    data: "status=postrelease&csrf_token=" + csrf_token
-  })
-  .done(function() {
-     location.reload();
-  })
-  .fail(function() {
-     alert( "Error. Please report a bug on https://bugzilla.mozilla.org/." );
-  })
-  .always(function() {
+    data: "status=postrelease&csrf_token=" + csrf_token,
   });
+
+  request.done(function() {
+     location.reload();
+  });
+
+  request.fail(function(jqXHR, textStatus) {
+     alert( "Error: " + jqXHR.responseText);
+  });
+
 }

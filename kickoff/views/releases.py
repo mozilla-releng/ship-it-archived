@@ -64,7 +64,8 @@ class ReleaseAPI(MethodView):
         if not form.validate(release):
             errors = form.errors
             cef_event('User Input Failed', CEF_INFO, **errors)
-            return Response(status=400, response=errors.values())
+            errorsStr = ', '.join("%s" % val[0] for val in errors.values())
+            return Response(status=400, response=errorsStr)
 
         # All of the validation has already been done by the form so we can
         # safely assume that the values we have are valid.
