@@ -139,10 +139,16 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         }
 
         // Release version
-        versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+$/;
+        versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+|^\d+\.[\d.]*\desr$/;
         releaseVersion = version.match(versionRE);
         if (releaseVersion != null) {
-            previousReleases = previousBuilds[base + 'release'].sort().reverse()
+            if (isTB(name) || isESR(version)) {
+                // Thunderbird and Fx ESR are using mozilla-esr as branch
+                base = guessBranchFromVersion(name, version);
+                previousReleases = previousBuilds[base].sort().reverse()
+            } else {
+                previousReleases = previousBuilds[base + 'release'].sort().reverse()
+            }
             nbPartial = 3;
         }
 
@@ -150,8 +156,9 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         partialAdded = 0;
         for (i = 0; i < previousReleases.length; i++) {
             // Reuse the previous builds info to generate the partial
-
-            if (previousReleases[i] < version) {
+            // Strip the build number. "31.0build1" < "31.0.1" => false is JS
+            previousRelease = previousReleases[i].replace(/build.*/g, "");
+            if (previousRelease < version) {
                 // Build a previous release should not occur but it is the case
                 // don't provide past partials
                 partial += previousReleases[i];
@@ -170,7 +177,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
                 break;
             }
         }
-
         partialElement.val(partial);
         return true;
     }
