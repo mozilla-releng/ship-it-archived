@@ -42,7 +42,7 @@ function isTB(name) {
     return name.indexOf("thunderbird") > -1;
 }
 
-function getBaseRepository(name, version) {
+function getBaseRepository(name) {
 
     if (isTB(name)) {
         // Special case for thunderbird
