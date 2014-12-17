@@ -88,6 +88,72 @@ function guessBranchFromVersion(name, version) {
     return "";
 }
 
+function populatePartial(name, version, previousBuilds) {
+
+    if (name.indexOf("fennec") > -1) {
+        // Android does not need partial
+        return true;
+    }
+    base = getBaseRepository(name);
+
+    nbPartial = 0;
+    previousReleases =  [];
+
+    // Beta version
+    betaRE = /^\d+\.\db\d+$/;
+    betaVersion = version.match(betaRE);
+    if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
+        previousReleases = previousBuilds[base + 'beta'].sort().reverse();
+        nbPartial = 2;
+    }
+
+    // Release version
+    versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+|^\d+\.[\d.]*\desr$/;
+    releaseVersion = version.match(versionRE);
+    if (releaseVersion != null) {
+        if (isTB(name) || isESR(version)) {
+            // Thunderbird and Fx ESR are using mozilla-esr as branch
+            base = guessBranchFromVersion(name, version);
+            if (typeof previousBuilds[base] !== "undefined") {
+                // If the branch is not supported, do not try to access it
+                previousReleases = previousBuilds[base].sort().reverse()
+            }
+        } else {
+            previousReleases = previousBuilds[base + 'release'].sort().reverse()
+        }
+        nbPartial = 3;
+    }
+
+    partial = "";
+    partialAdded = 0;
+    for (i = 0; i < previousReleases.length; i++) {
+        // Reuse the previous builds info to generate the partial
+        // Strip the build number. "31.0build1" < "31.0.1" => false is JS
+        previousRelease = previousReleases[i].replace(/build.*/g, "");
+        if (previousRelease < version) {
+            // Build a previous release should not occur but it is the case
+            // don't provide past partials
+            partial += previousReleases[i];
+
+            partialAdded++;
+
+            if (i + 1 != previousReleases.length &&
+                partialAdded != nbPartial) {
+                // We don't want a trailing ","
+                partial += ",";
+            }
+        }
+
+        if (partialAdded == nbPartial) {
+            // We have enough partials. Bye bye.
+            break;
+        }
+    }
+    partialElement.val(partial);
+    return true;
+}
+
+
 function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement) {
 
     versions.sort(function(a, b) {
@@ -119,68 +185,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         }
     }
 
-    function populatePartial(name, version) {
-
-        if (name.indexOf("fennec") > -1) {
-            // Android does not need partial
-            return true;
-        }
-        base = getBaseRepository(name);
-
-        nbPartial = 0;
-        previousReleases =  [];
-
-        // Beta version
-        betaRE = /^\d+\.\db\d+$/;
-        betaVersion = version.match(betaRE);
-        if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
-            previousReleases = previousBuilds[base + 'beta'].sort().reverse();
-            nbPartial = 2;
-        }
-
-        // Release version
-        versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+|^\d+\.[\d.]*\desr$/;
-        releaseVersion = version.match(versionRE);
-        if (releaseVersion != null) {
-            if (isTB(name) || isESR(version)) {
-                // Thunderbird and Fx ESR are using mozilla-esr as branch
-                base = guessBranchFromVersion(name, version);
-                previousReleases = previousBuilds[base].sort().reverse()
-            } else {
-                previousReleases = previousBuilds[base + 'release'].sort().reverse()
-            }
-            nbPartial = 3;
-        }
-
-        partial = "";
-        partialAdded = 0;
-        for (i = 0; i < previousReleases.length; i++) {
-            // Reuse the previous builds info to generate the partial
-            // Strip the build number. "31.0build1" < "31.0.1" => false is JS
-            previousRelease = previousReleases[i].replace(/build.*/g, "");
-            if (previousRelease < version) {
-                // Build a previous release should not occur but it is the case
-                // don't provide past partials
-                partial += previousReleases[i];
-
-                partialAdded++;
-
-                if (i + 1 != previousReleases.length &&
-                    partialAdded != nbPartial) {
-                    // We don't want a trailing ","
-                    partial += ",";
-                }
-            }
-
-            if (partialAdded == nbPartial) {
-                // We have enough partials. Bye bye.
-                break;
-            }
-        }
-        partialElement.val(partial);
-        return true;
-    }
-
     versionElement.autocomplete({
         source: versions,
         minLength: 0,
@@ -196,7 +200,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         select: function(event, ui) {
             populateBuildNumber(ui.item.value);
             populateBranch(event.target.name, ui.item.value);
-            populatePartial(event.target.name, ui.item.value);
+            populatePartial(event.target.name, ui.item.value, previousBuilds);
             dashboardCheck(ui.item.value);
         }
     }).focus(function() {
@@ -204,7 +208,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     }).change(function() {
         populateBuildNumber(this.value);
         populateBranch(this.name, this.value);
-        populatePartial(this.name, this.value);
+        populatePartial(this.name, this.value, previousBuilds);
         dashboardCheck(this.value);
     });
 }
