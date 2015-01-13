@@ -88,7 +88,7 @@ function guessBranchFromVersion(name, version) {
     return "";
 }
 
-function populatePartial(name, version, previousBuilds) {
+function populatePartial(name, version, previousBuilds, partialElement) {
 
     if (name.indexOf("fennec") > -1) {
         // Android does not need partial
@@ -200,7 +200,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         select: function(event, ui) {
             populateBuildNumber(ui.item.value);
             populateBranch(event.target.name, ui.item.value);
-            populatePartial(event.target.name, ui.item.value, previousBuilds);
+            populatePartial(event.target.name, ui.item.value, previousBuilds, partialElement);
             dashboardCheck(ui.item.value);
         }
     }).focus(function() {
@@ -208,7 +208,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     }).change(function() {
         populateBuildNumber(this.value);
         populateBranch(this.name, this.value);
-        populatePartial(this.name, this.value, previousBuilds);
+        populatePartial(this.name, this.value, previousBuilds, partialElement);
         dashboardCheck(this.value);
     });
 }
