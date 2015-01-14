@@ -33,6 +33,10 @@ Troubleshooting
 		- Switching to a 32-bit vagrant box seems to be a temporary fix
 
 
-To run tests:
+To run Python tests:
 * install python-nose
 * PYTHONPATH=$(pwd)/vendor/lib/python/ nosetests
+
+To run JS tests:
+* firefox kickoff/test/js/jstest.html
+
