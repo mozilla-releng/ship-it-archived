@@ -153,7 +153,9 @@ class ReleaseAPIForm(Form):
             # Check if there is an other product-version already shipped
             similar = getReleases(status="postrelease", productFilter=release.product,
                                   versionFilter=release.version)
-            if similar:
+            if similar and self.status.data != "Started":
+                # In most of the cases, it is useless since bug 1121032 has been implemented but keeping it
+                # in case we change/revert in the future and because we cannot always trust the client
                 valid = False
                 if 'postrelease' not in self.errors:
                     self.errors['postrelease'] = []

@@ -82,12 +82,17 @@ function submittedReleaseButtons(buttonId) {
     }
 }
 
-function updateShip(e) {
+function updateShip(e, shipped) {
   csrf_token = $('#csrf_token').val();
+  if (shipped) {
+      status = "postrelease";
+  } else {
+      status = "Started";
+  }
   var request = $.ajax( {
     url: "/releases/" + e,
     type: "POST",
-    data: "status=postrelease&csrf_token=" + csrf_token,
+    data: "status=" + status + "&csrf_token=" + csrf_token,
   });
 
   request.done(function() {

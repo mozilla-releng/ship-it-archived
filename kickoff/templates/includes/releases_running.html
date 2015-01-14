@@ -1,3 +1,4 @@
+
 {% for rel in releases if rel.ready and rel.complete %}
 {% if loop.first %}
 <table id="running">
@@ -70,10 +71,11 @@
       Other build shipped
     {% else %}
       Not shipped
-      <input type="submit" value="Shipped!" class="submitButton" onclick="return updateShip('{{ rel.name }}')" />
+      <input type="submit" value="Shipped!" class="submitButton" onclick="return updateShip('{{ rel.name }}', true)" />
     {% endif %}
 {% else %}
     Shipped
+    <input type="submit" value="Not Shipped" class="submitButton" onclick="return updateShip('{{ rel.name }}', false)" />
 {% endif %}
   </td>
 {% if loop.last %}
