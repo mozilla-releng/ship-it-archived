@@ -190,7 +190,7 @@ def getReleaseTable(release):
         raise ValueError("Can't find release table for release %s" % release)
 
 
-def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None):
+def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None, searchOtherShipped=False):
     filters = {}
     if ready is not None:
         filters['ready'] = ready
@@ -218,6 +218,19 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
         status = ReleaseEvents.getCurrentStatus(release.name)
         if status:
             release.status = status_groups[status]
+
+        if not searchOtherShipped:
+            # Disable this search to avoid an infinite recursion
+
+            # Search if we don't have a build (same version + product) already shipped
+            similar = getReleases(status="postrelease", productFilter=release.product,
+                                  versionFilter=release.version, searchOtherShipped=True)
+            if similar:
+                # The release has been marked as shipped (this build or an other)
+                # Store this information to disable the button to avoid two builds of
+                # the same version marked as shipped
+                release.ReleaseMarkedAsShipped = True
+
     return releases
 
 

@@ -64,9 +64,14 @@
   {% endif %}
   </td>
   <td>
+
 {% if rel.status != "postrelease" %}
-    Not shipped
+    {% if rel.ReleaseMarkedAsShipped %}
+      Other build shipped
+    {% else %}
+      Not shipped
       <input type="submit" value="Shipped!" class="submitButton" onclick="return updateShip('{{ rel.name }}')" />
+    {% endif %}
 {% else %}
     Shipped
 {% endif %}
