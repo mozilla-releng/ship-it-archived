@@ -33,7 +33,7 @@ class StatusAPI(MethodView):
     def post(self, releaseName):
         form = ReleaseEventsAPIForm()
 
-        if not form.validate(releaseName):
+        if not form.validate():
             errors = form.errors
             log.error('User Input Failed - %s - (%s, %s)', errors.values(),
                       releaseName, form.event_name.data)
@@ -51,9 +51,9 @@ class StatusAPI(MethodView):
             return Response(status=400, response=e)
 
         # Check if this ReleaseEvent already exists in the ReleaseEvents table
-        if db.session.query(ReleaseEvents).filter(
-            ReleaseEvents.name == releaseEventsUpdate.name,
-            ReleaseEvents.event_name == releaseEventsUpdate.event_name
+        if db.session.query(ReleaseEvents).filter_by(
+            name=releaseEventsUpdate.name,
+            event_name=releaseEventsUpdate.event_name
         ).first():
             msg = 'ReleaseEvents ({r_name}, {e_name}) already exists'.format(
                 r_name=releaseEventsUpdate.name,
