@@ -18,6 +18,10 @@ To run release-kickoff using a sqlite database, use of the following:
 1) $ python kickoff-web.py -d sqlite://///var/www/update.db --username=foo --password=bar
 2) $ vagrant up	# Username:admin Password:password
 
+Or with MySQL:
+$ python kickoff-web.py -d mysql://root@localhost/ship_it --username=foo --password=bar
+
+
 Open your Firefox on: http://127.0.0.1:5000/
 
 To have the auto completion in the various forms, please enter some releases to feed the database.
