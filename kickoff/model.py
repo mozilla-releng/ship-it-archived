@@ -94,7 +94,11 @@ class Release(object):
     def getRecentShipped(cls, age=timedelta(weeks=15)):
         """Returns all shipped releases of 'age' or newer."""
         since = datetime.now() - age
-        return cls.query.filter(cls._submittedAt > since).filter(cls.status == "postrelease").all()
+        return [
+            r for r in cls.query.filter(cls._submittedAt > since).all() if
+            r.status == "postrelease" or
+            ReleaseEvents.getCurrentStatus(r.name) == "postrelease"
+        ]
 
     @classmethod
     def getMaxBuildNumber(cls, version):
