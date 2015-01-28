@@ -200,10 +200,12 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
         filters['status'] = status
     if versionFilter is not None:
         filters['version'] = versionFilter
-    if productFilter is not None:
-        filters['product'] = productFilter
+    if productFilter:
+        tables = (getReleaseTable(productFilter),)
+    else:
+        tables = (FennecRelease, FirefoxRelease, ThunderbirdRelease)
     releases = []
-    for table in (FennecRelease, FirefoxRelease, ThunderbirdRelease):
+    for table in tables:
         if filters:
             for r in table.query.filter_by(**filters):
                 releases.append(r)
