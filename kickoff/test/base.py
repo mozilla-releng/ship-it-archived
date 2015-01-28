@@ -10,11 +10,10 @@ from kickoff.model import FennecRelease, FirefoxRelease, ThunderbirdRelease
 
 class TestBase(unittest.TestCase):
     def setUp(self):
-        self.db_fd, self.db_file = mkstemp()
         self.cef_fd, self.cef_file = mkstemp()
         app.config['DEBUG'] = True
         app.config['CSRF_ENABLED'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % self.db_file
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         app.config.update(cef_config(self.cef_file))
         with app.test_request_context():
             db.init_app(app)
@@ -73,7 +72,5 @@ class TestBase(unittest.TestCase):
         # Trick Flask into thinking nothing has happened yet. Otherwise it will
         # complain when we try to reset the state in setUp().
         app._got_first_request = False
-        os.close(self.db_fd)
-        os.remove(self.db_file)
         os.close(self.cef_fd)
         os.remove(self.cef_file)
