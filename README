@@ -38,9 +38,10 @@ Troubleshooting
 
 
 To run Python tests:
-* install python-nose
-* PYTHONPATH=$(pwd)/vendor/lib/python/ nosetests
+* `sudo apt-get install python-tox` or `pip install tox`
+* `tox -e py27` or `tox -e py26` if you have Python 2.6 installed
 
 To run JS tests:
-* firefox kickoff/test/js/jstest.html
-
+* `firefox kickoff/test/js/jstest.html`
+or using node.js
+* `npm install &&  ./node_modules/grunt-cli/bin/grunt --verbose`
