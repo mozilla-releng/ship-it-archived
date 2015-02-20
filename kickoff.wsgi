@@ -1,7 +1,17 @@
 from ConfigParser import RawConfigParser
 import logging
+from os import getenv
 from os import path
 import site
+
+try:
+    import newrelic.agent
+except ImportError:
+    newrelic = False
+if newrelic:
+    newrelic_ini = getenv('NEWRELIC_PYTHON_INI_FILE')
+    if newrelic_ini:
+        newrelic.agent.initialize(newrelic_ini)
 
 mydir = path.dirname(path.abspath(__file__))
 site.addsitedir(mydir)
@@ -25,3 +35,6 @@ application.config['SECRET_KEY'] = secretKey
 application.config.update(cef_config(cef_logfile))
 with application.test_request_context():
     db.init_app(application)
+
+if newrelic:
+    application = newrelic.agent.wsgi_application()(application)
