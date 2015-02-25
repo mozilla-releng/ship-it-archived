@@ -57,8 +57,9 @@ class SubmitRelease(MethodView):
         if errors:
             forms['%sForm' % product] = getReleaseForm(product)()
             return make_response(
-                    render_template('submit_release.html', errors=errors,
-                                    selectedProduct=product, **forms), 400)
+                render_template('submit_release.html', errors=errors,
+                                selectedProduct=product, **forms), 400
+            )
 
         db.session.add(release)
         db.session.commit()

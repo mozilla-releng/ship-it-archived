@@ -279,9 +279,9 @@ class FennecReleaseForm(ReleaseForm):
 
 class DesktopReleaseForm(ReleaseForm):
     partials = StringField('Partial versions:',
-        validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
-        filters=[collapseSpaces],
-    )
+                           validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
+                           filters=[collapseSpaces],
+                           )
     promptWaitTime = NullableIntegerField('Update prompt wait time:')
     l10nChangesets = PlainChangesetsField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
 

@@ -93,11 +93,13 @@ class ReleaseL10nAPI(MethodView):
         l10n = table.query.filter_by(name=releaseName).first().l10nChangesets
         return Response(status=200, response=l10n, content_type='text/plain')
 
+
 class ReleaseCommentAPI(MethodView):
     def get(self, releaseName):
         table = getReleaseTable(releaseName)
         comment = table.query.filter_by(name=releaseName).first().comment
         return Response(status=200, response=comment, content_type='text/plain')
+
 
 class Releases(MethodView):
     def get(self):
@@ -106,7 +108,7 @@ class Releases(MethodView):
         # not possible without some heavy handed subclassing. For our simple
         # case it's not worthwhile
         # http://stackoverflow.com/questions/8463421/how-to-render-my-select-field-with-wtforms
-        #form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
+        # form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
         form = ReleasesForm()
         return render_template('releases.html', releases=sortedReleases(), form=form)
 
