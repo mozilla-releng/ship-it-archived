@@ -4,12 +4,14 @@ env:
     - TOX_ENV=py27
 
 install:
+    - travis_retry sudo apt-get update -qq
+    - travis_retry sudo apt-get install -y npm
     - travis_retry pip install tox coveralls
-    - travis_retry sudo npm install -g
+    - travis_retry npm install
 
 script:
     - tox -e $TOX_ENV
-    - grunt --verbose
+    - ./node_modules/.bin/grunt --verbose
 
 after_success:
     - if [[ $TOX_ENV = "py27" ]]; then travis_retry pip install coveralls; coveralls -i; fi
