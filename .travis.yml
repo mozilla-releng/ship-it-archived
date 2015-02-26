@@ -14,4 +14,4 @@ script:
     - ./node_modules/.bin/grunt --verbose
 
 after_success:
-    - if [[ $TOX_ENV = "py27" ]]; then travis_retry pip install coveralls; coveralls; fi
+    - travis_retry pip install coveralls; coveralls;
