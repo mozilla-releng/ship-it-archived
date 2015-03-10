@@ -67,8 +67,8 @@ $(document).ready(function() {
 </div>
 <div class="submit_release">
     {{ thunderbirdForm.l10nChangesets.label()|safe }}
-    {{ thunderbirdForm.l10nChangesets(placeholder='ru abcdef123456')|safe }}
-    <div class="help">The l10n changesets for this release, in JSON format. Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. ESR releases re-use the same changesets as the previous release on the same branch. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a></div>
+  {{ thunderbirdForm.l10nChangesets(placeholder='ru abcdef123456')|safe }}
+    <div class="help">The l10n changesets for this release (first column: locale, second: revision). Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>.</div>
 </div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
