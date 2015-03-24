@@ -159,6 +159,11 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     versions.sort(function(a, b) {
         return a > b;
     });
+
+    if (versions.length == 0) {
+        console.warn("Empty version suggestions. Empty or too old data?")
+    }
+
     // We need to fire this both when a version is selected
     // from the suggestions and when it is entered manually,
     // so we need this in a named function.
