@@ -1,0 +1,7 @@
+[credentials]
+host = <hostname.mozilla.com>
+port = 5433
+user = <login>
+password = <pass>
+database = <db>
+
