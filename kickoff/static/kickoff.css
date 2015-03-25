@@ -32,6 +32,10 @@ body {
     color: red;
 }
 
+.helpPartial {
+    margin-left: 45.5em;
+}
+
 .errorText {
     color: red;
     font-weight: bold;

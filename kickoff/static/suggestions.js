@@ -88,8 +88,57 @@ function guessBranchFromVersion(name, version) {
     return "";
 }
 
+function addLastVersionAsPartial(version, previousReleases, nb) {
+    partialList=""
+    nbAdded=0
+    // We always add the last released version to the list
+    for (k = 0; k < previousReleases.length; k++) {
+        previousRelease = stripBuildNumber(previousReleases[k]);
+        if (previousRelease < version) {
+            partialList += previousReleases[k] + ",";
+            nbAdded++;
+            if (nb == nbAdded) {
+                return partialList;
+            }
+        }
+    }
+}
+
+function getVersionWithBuildNumber(version, previousReleases) {
+    for (j = 0; j < previousReleases.length; j++) {
+        if (previousReleases[j].indexOf(version) > -1) {
+            return previousReleases[j];
+        }
+    }
+    console.warn("Could not find the build number of " + version + " from " + previousReleases);
+}
+
+
+function partialConsistencyCheck(partialsADI, previousReleases) {
+    stripped=[]
+    for (i = 0; i < previousReleases.length; i++) {
+        stripped[i]=stripBuildNumber(previousReleases[i]).replace("esr","");
+    }
+    // All partialsADI must be in previousReleases
+    for (i = 0; i < partialsADI.length; i++) {
+        if ($.inArray(partialsADI[i], stripped) == -1) {
+            console.warn("Partial '" + partialsADI[i] + "' not found in the previous build list " + stripped);
+            console.warn("This should not happen. Please report a bug");
+        }
+    }
+}
+
+
+function stripBuildNumber(release) {
+    // Reuse the previous builds info to generate the partial
+    // Strip the build number. "31.0build1" < "31.0.1" => false is JS
+    return release.replace(/build.*/g, "");
+}
+
+
 function populatePartial(name, version, previousBuilds, partialElement) {
 
+    partialElement.val("");
     if (name.indexOf("fennec") > -1) {
         // Android does not need partial
         return true;
@@ -98,6 +147,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
 
     nbPartial = 0;
     previousReleases =  [];
+    partialsADI = [];
 
     // Beta version
     betaRE = /^\d+\.\db\d+$/;
@@ -105,6 +155,9 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
         previousReleases = previousBuilds[base + 'beta'].sort().reverse();
         nbPartial = 3;
+        // Copy the global variable
+        // For now, this is pretty much useless as we don't have metrics for specific beta
+        partialsADI = allPartial.beta;
     }
 
     // Release version
@@ -119,31 +172,68 @@ function populatePartial(name, version, previousBuilds, partialElement) {
                 previousReleases = previousBuilds[base].sort().reverse()
             }
         } else {
-            previousReleases = previousBuilds[base + 'release'].sort().reverse()
+            previousReleases = previousBuilds[base + 'release'];
         }
+
+        if (isESR(version)) {
+            // Use the ESR partial
+            partialsADI = allPartial.esr;
+        } else {
+            partialsADI = allPartial.release;
+        }
+        // For thunderbird, use only the four last
+
         nbPartial = 4;
     }
 
+    // Transform the partialsADI datastruct in a single array to
+    // simplify processing
+    partialsADIVersion = [];
+    for (i = 0; i < partialsADI.length; i++) {
+        partialsADIVersion[i] = partialsADI[i].version;
+    }
+
+    if (previousReleases.length == 0) {
+        // No previous build. Not much we can do here.
+        return false;
+    }
+    // Check that all partials match a build.
+    partialConsistencyCheck(partialsADIVersion, previousReleases);
+
     partial = "";
     partialAdded = 0;
-    for (i = 0; i < previousReleases.length; i++) {
-        // Reuse the previous builds info to generate the partial
-        // Strip the build number. "31.0build1" < "31.0.1" => false is JS
-        previousRelease = previousReleases[i].replace(/build.*/g, "");
-        if (previousRelease < version) {
-            // Build a previous release should not occur but it is the case
-            // don't provide past partials
-            partial += previousReleases[i];
 
-            partialAdded++;
+    if (isTB(name)) {
+        // No ADI, select the three first
+        partial = addLastVersionAsPartial(version, previousReleases, 3);
+        partialAdded=3;
+        // Remove the last ","
+        partial=partial.slice(0,-1);
+        partialElement.val(partial);
+        return true;
+    } else {
+        // The first partial will always be the previous published release
+        partial = addLastVersionAsPartial(version, previousReleases, 1);
+        partialAdded++;
+    }
 
-            if (i + 1 != previousReleases.length &&
-                partialAdded != nbPartial) {
-                // We don't want a trailing ","
-                partial += ",";
-            }
+    for (i = 0; i < partialsADIVersion.length; i++) {
+
+        if (partial.indexOf(partialsADIVersion[i]) > -1) {
+            // We have already this version in the list of partial
+            // Go to the next one
+            continue;
         }
+        // Build a previous release should not occur but it is the case
+        // don't provide past partials
+        partial += getVersionWithBuildNumber(partialsADIVersion[i], previousReleases);
+        partialAdded++;
 
+        if (i + 1 != partialsADIVersion.length &&
+            partialAdded != nbPartial) {
+            // We don't want a trailing ","
+            partial += ",";
+        }
         if (partialAdded == nbPartial) {
             // We have enough partials. Bye bye.
             break;
@@ -154,7 +244,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
 }
 
 
-function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement) {
+function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement, partialInfo) {
 
     versions.sort(function(a, b) {
         return a > b;
@@ -190,6 +280,22 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         }
     }
 
+    function populatePartialInfo(version) {
+        if (partialsADI.length == 0 || !isRelease(version)) {
+            partialInfo.html("");
+            // No ADI available, don't display anything
+            return;
+        }
+
+        // Format the data for display
+        partialString = "ADI:<br />";
+        for (i = 0; i < partialsADI.length; i++) {
+            partialString += partialsADI[i].version + ": " + partialsADI[i].ADI + "<br />";
+        }
+
+        partialInfo.html(partialString);
+    }
+
     versionElement.autocomplete({
         source: versions,
         minLength: 0,
@@ -207,6 +313,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             populateBranch(event.target.name, ui.item.value);
             populatePartial(event.target.name, ui.item.value, previousBuilds, partialElement);
             dashboardCheck(ui.item.value);
+            populatePartialInfo(ui.item.value);
         }
     }).focus(function() {
         $(this).autocomplete('search');
