@@ -51,7 +51,7 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ firefoxForm.partials.label()|safe }}
     {{ firefoxForm.partials(placeholder='15.0b5build1,15.0b4build2')|safe }}
-    <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 3, for Betas it's 2, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
+    <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 4, for Betas it's 3, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.l10nChangesets.label()|safe }}
