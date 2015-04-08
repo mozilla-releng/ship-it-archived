@@ -72,12 +72,12 @@ partialElement = $('#partials');
 partialElement.hide();
 var result = populatePartial("firefox", "33.2", previousBuilds, partialElement);
 assert.ok( result );
-assert.strictEqual($('#partials').val(), "31.0build2,29.0build2,28.0build2");
+assert.strictEqual($('#partials').val(), "31.0build2,29.0build2,28.0build2,27.0build2");
 
 partialElement = $('#partials');
 var result = populatePartial("firefox", "33.2b2", previousBuilds, partialElement);
 assert.ok( result );
-assert.strictEqual($('#partials').val(), "28.0b5build2,27.0b5build2");
+assert.strictEqual($('#partials').val(), "28.0b5build2,27.0b5build2,26.0b5build2");
 
 partialElement = $('#partials');
 var result = populatePartial("firefox", "24.2.0esr", previousBuilds, partialElement);
@@ -96,6 +96,6 @@ previousBuilds = {"releases/comm-esr31": ["31.0build1", "24.1.0build1", "24.3.0b
 partialElement = $('#partials');
 var result = populatePartial("thunderbird", "31.2.0", previousBuilds, partialElement);
 assert.ok( result );
-assert.strictEqual($('#partials').val(), "31.0build1,24.4.0build1,24.3.0build1");
+assert.strictEqual($('#partials').val(), "31.0build1,24.4.0build1,24.3.0build1,24.1.0build1");
 
 });

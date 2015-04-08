@@ -104,7 +104,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     betaVersion = version.match(betaRE);
     if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
         previousReleases = previousBuilds[base + 'beta'].sort().reverse();
-        nbPartial = 2;
+        nbPartial = 3;
     }
 
     // Release version
@@ -121,7 +121,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         } else {
             previousReleases = previousBuilds[base + 'release'].sort().reverse()
         }
-        nbPartial = 3;
+        nbPartial = 4;
     }
 
     partial = "";
