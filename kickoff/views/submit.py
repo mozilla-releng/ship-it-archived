@@ -63,5 +63,5 @@ class SubmitRelease(MethodView):
 
         db.session.add(release)
         db.session.commit()
-        log.debug('%s added to the database' % release.name)
+        log.debug('%s added to the database', release.name)
         return redirect('releases.html')
