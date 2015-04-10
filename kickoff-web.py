@@ -34,6 +34,7 @@ if __name__ == '__main__':
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = 'NOT A SECRET'
     app.config.update(cef_config(options.cef_log))
+
     with app.test_request_context():
         db.init_app(app)
         db.create_all()
