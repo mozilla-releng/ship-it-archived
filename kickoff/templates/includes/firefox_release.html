@@ -1,5 +1,15 @@
 <script type='text/javascript'>
 $(document).ready(function() {
+
+    $.getJSON( "http://relman-vm1.dmz.scl3.mozilla.com/partial.json" )
+    .done(function( allPartial ) {
+        window.allPartial = allPartial;
+    })
+    .fail(function( jqxhr, textStatus, error ) {
+        var err = textStatus + ", " + error;
+        console.log( "Request Failed: " + err );
+   });
+
     setupVersionSuggestions(
         $('#{{ firefoxForm.version.id }}'),
         {{ firefoxForm.version.suggestions|safe }},
@@ -8,7 +18,8 @@ $(document).ready(function() {
         $('#{{ firefoxForm.branch.id }}'),
         $('#{{ firefoxForm.partials.id }}'),
         {{ firefoxForm.partials.suggestions|safe }},
-        $('#{{ firefoxForm.dashboardCheck.id }}')
+        $('#{{ firefoxForm.dashboardCheck.id }}'),
+        $('#partialInfo')
     );
     setupBranchSuggestions(
         $('#{{ firefoxForm.branch.id }}'),
@@ -21,7 +32,6 @@ $(document).ready(function() {
         $('#{{ firefoxForm.mozillaRevision.id }}')
     );
 })
-
 </script>
 {{ firefoxForm.hidden_tag() }}
 <div class="submit_release">
@@ -51,6 +61,7 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ firefoxForm.partials.label()|safe }}
     {{ firefoxForm.partials(placeholder='15.0b5build1,15.0b4build2')|safe }}
+    <div class="helpPartial" id="partialInfo"></div>
     <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 4, for Betas it's 3, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
 </div>
 <div class="submit_release">
