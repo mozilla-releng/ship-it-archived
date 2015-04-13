@@ -1,7 +1,8 @@
 <script type='text/javascript'>
+URLToPartial="//relman-vm1.dmz.scl3.mozilla.com/partial.json";
 $(document).ready(function() {
 
-    $.getJSON( "http://relman-vm1.dmz.scl3.mozilla.com/partial.json" )
+    $.getJSON( URLToPartial )
     .done(function( allPartial ) {
         window.allPartial = allPartial;
     })
