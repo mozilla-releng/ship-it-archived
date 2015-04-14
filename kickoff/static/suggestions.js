@@ -123,7 +123,7 @@ function partialConsistencyCheck(partialsADI, previousReleases) {
     for (i = 0; i < partialsADI.length; i++) {
         if ($.inArray(partialsADI[i], stripped) == -1) {
             console.warn("Partial '" + partialsADI[i] + "' not found in the previous build list " + stripped);
-            console.warn("This should not happen. Please report a bug");
+            console.warn("This should not happen. That probably means that your instance does not have recent builds. Please report a bug");
         }
     }
 }
