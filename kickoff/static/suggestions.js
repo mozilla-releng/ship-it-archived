@@ -193,7 +193,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         partialsADIVersion[i] = partialsADI[i].version;
     }
 
-    if (previousReleases.length == 0) {
+    if (previousReleases == null || previousReleases.length == 0) {
         // No previous build. Not much we can do here.
         return false;
     }
