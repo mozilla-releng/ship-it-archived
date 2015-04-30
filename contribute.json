@@ -1,0 +1,24 @@
+{
+    "name": "Ship-it",
+    "description": "The Mozilla tool to start build of Firefox Desktop, Firefox Mobile and Thunderbird",
+    "repository": {
+        "url": "https://github.com/mozilla/ship-it",
+        "license": "BSD 2-Clause"
+    },
+    "bugs": {
+        "list": "https://bugzilla.mozilla.org/buglist.cgi?product=Release%20Engineering&component=Ship%20It&resolution=---",
+        "report": "https://bugzilla.mozilla.org/enter_bug.cgi?product=Release%20Engineering&component=Ship%20It"
+    },
+    "urls": {
+        "prod": "https://ship-it.mozilla.org/",
+        "dev": "https://ship-it-dev.allizom.org/"
+    },
+    "keywords": [
+        "flask",
+        "build",
+        "python",
+        "javascript",
+        "releng",
+        "release
+    ]
+}
