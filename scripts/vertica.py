@@ -1,6 +1,7 @@
 # pip install vertica-python
 from vertica_python import connect
 from ConfigParser import SafeConfigParser
+from datetime import datetime
 import json
 import os.path
 import sys
@@ -33,7 +34,8 @@ def saveAllPartial(exportFile):
     partialESR = getPartialJSON("esr")
     partialRelease = getPartialJSON("release")
     partialBeta = getPartialJSON("beta")
-    full = {"beta": partialBeta, "release": partialRelease, "esr": partialESR}
+    lastUpdate = datetime.utcnow().strftime("%d/%m/%Y %H:%M")
+    full = {"beta": partialBeta, "release": partialRelease, "esr": partialESR, "lastUpdate": lastUpdate}
 
     with open(exportFile, 'w') as outfile:
         json.dump(full, outfile)
