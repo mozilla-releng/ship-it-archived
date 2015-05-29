@@ -102,6 +102,8 @@ function addLastVersionAsPartial(version, previousReleases, nb) {
             }
         }
     }
+    // In case, we don't have enough partial to feed the partial
+    return partialList;
 }
 
 function getVersionWithBuildNumber(version, previousReleases) {
