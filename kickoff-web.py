@@ -41,5 +41,15 @@ if __name__ == '__main__':
 
     def auth(environ, username, password):
         return options.username == username and options.password == password
+
+    if app.config['DEBUG']:
+        # Setting up the cron/ directory with some testing data
+        # In production, this is managed by Apache and the json file is going to be override
+        # by the cron (see bug 1155935)
+        from werkzeug import SharedDataMiddleware
+        app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
+            '/cron/': path.join(path.dirname(__file__), 'cron/')
+        })
+
     app.wsgi_app = AuthBasicHandler(app.wsgi_app, "Release kick-off", auth)
     app.run(port=options.port, host=options.host)

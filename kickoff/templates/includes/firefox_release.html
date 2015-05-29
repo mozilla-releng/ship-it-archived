@@ -1,5 +1,5 @@
 <script type='text/javascript'>
-URLToPartial="//ship-it.mozilla.org/cron/partial.json";
+URLToPartial="/cron/partial.json";
 $(document).ready(function() {
 
     $.getJSON( URLToPartial )
@@ -8,7 +8,7 @@ $(document).ready(function() {
     })
     .fail(function( jqxhr, textStatus, error ) {
         var err = textStatus + ", " + error;
-        console.log( "Request Failed: " + err );
+        console.log( "Request to URL (" + URLToPartial + ") Failed: " + err );
    });
 
     setupVersionSuggestions(
