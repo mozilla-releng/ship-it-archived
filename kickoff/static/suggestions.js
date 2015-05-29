@@ -150,6 +150,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     nbPartial = 0;
     previousReleases =  [];
     partialsADI = [];
+    isFxBeta = false;
 
     // Beta version
     betaRE = /^\d+\.\db\d+$/;
@@ -159,7 +160,9 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         nbPartial = 3;
         // Copy the global variable
         // For now, this is pretty much useless as we don't have metrics for specific beta
+        // Just prepare the code when it is ready
         partialsADI = allPartial.beta;
+        isFxBeta = true;
     }
 
     // Release version
@@ -205,12 +208,14 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     partial = "";
     partialAdded = 0;
 
-    if (isTB(name)) {
+    // When we have the ADI for Firefox Beta or Thunderbird, we can remove
+    // this special case
+    if (isTB(name) || isFxBeta) {
         // No ADI, select the three first
         partial = addLastVersionAsPartial(version, previousReleases, 3);
-        partialAdded=3;
+        partialAdded = 3;
         // Remove the last ","
-        partial=partial.slice(0,-1);
+        partial = partial.slice(0,-1);
         partialElement.val(partial);
         return true;
     } else {
