@@ -93,7 +93,16 @@ function addLastVersionAsPartial(version, previousReleases, nb) {
     nbAdded=0
     // We always add the last released version to the list
     for (k = 0; k < previousReleases.length; k++) {
+
         previousRelease = stripBuildNumber(previousReleases[k]);
+
+        // In the 38 cycle, we built the 38 beta version from the
+        // mozilla-release branch. We don't want beta partials for a release
+        // This is confusing ship-it (and us)
+        if (isRelease(version) && isBeta(previousRelease)) {
+            continue;
+        }
+
         if (previousRelease < version) {
             partialList += previousReleases[k] + ",";
             nbAdded++;
