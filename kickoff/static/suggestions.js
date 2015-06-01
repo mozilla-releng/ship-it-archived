@@ -113,6 +113,7 @@ function getVersionWithBuildNumber(version, previousReleases) {
         }
     }
     console.warn("Could not find the build number of " + version + " from " + previousReleases);
+    return undefined;
 }
 
 
@@ -233,11 +234,16 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         }
         // Build a previous release should not occur but it is the case
         // don't provide past partials
-        partial += getVersionWithBuildNumber(partialsADIVersion[i], previousReleases);
-        partialAdded++;
+        newPartial = getVersionWithBuildNumber(partialsADIVersion[i], previousReleases);
+        if (newPartial != undefined) {
+            // Only add when we found a matching version
+            partial += newPartial;
+            partialAdded++;
+        }
 
         if (i + 1 != partialsADIVersion.length &&
-            partialAdded != nbPartial) {
+            partialAdded != nbPartial &&
+            newPartial != undefined) {
             // We don't want a trailing ","
             partial += ",";
         }
