@@ -91,7 +91,7 @@ class Release(object):
         return cls.query.filter(cls._submittedAt > since).all()
 
     @classmethod
-    def getRecentShipped(cls, age=timedelta(weeks=15)):
+    def getRecentShipped(cls, age=timedelta(weeks=40)):
         """Returns all shipped releases of 'age' or newer."""
         since = datetime.now() - age
         return [
