@@ -1,6 +1,7 @@
 
 QUnit.test( "isBeta", function( assert ) {
 assert.ok( isBeta("32.0b2"));
+assert.ok( isBeta("32.0.3b2"));
 assert.ok( isBeta("32.02") == false);
 assert.ok( isBeta("32.b2") == false);
 assert.ok( isBeta("32.0a2") == false);
@@ -17,6 +18,7 @@ assert.ok( isESR("32.02") == false);
 assert.ok( isESR("32.b2") == false);
 assert.ok( isESR("32.0a2") == false);
 assert.ok( isESR("32.0.1") == false);
+assert.ok( isESR("32.0.1b2") == false);
 assert.ok( isESR("32.0.1esr"));
 assert.ok( isESR("32.0esr"));
 });
@@ -28,6 +30,7 @@ QUnit.test( "isRelease", function( assert ) {
 assert.ok( isRelease("32.0b2") == false);
 assert.ok( isRelease("32.2"));
 assert.ok( isRelease("32.2.3"));
+assert.ok( isRelease("32.0.5b2") == false);
 assert.ok( isRelease("32.b2") == false);
 assert.ok( isRelease("32.0a2") == false);
 assert.ok( isRelease("32.0.1esr") == false);
@@ -42,6 +45,7 @@ assert.ok( isTBRelease("32.0b2") == false);
 assert.ok( isTBRelease("32.2"));
 assert.ok( isTBRelease("32.2.3"));
 assert.ok( isTBRelease("32.b2") == false);
+assert.ok( isTBRelease("32.0.4b2") == false);
 assert.ok( isTBRelease("32.0a2") == false);
 assert.ok( isTBRelease("32.0.1esr") == false);
 assert.ok( isTBRelease("32.0esr") == false);
@@ -198,5 +202,16 @@ partialElement = $('#partials');
 var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
+
+// Test the case we had during the 38 cycle (ship-it didn't understood that 38.0.5b3 was a beta)
+allPartialJ='{"release": [{"version": "38.0.3", "ADI": 5000}, {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}]}';
+allPartial=JSON.parse(allPartialJ);
+
+previousBuilds = {"releases/mozilla-release": ["38.0.5bbuild2", "38.0.3build2", "38.0b6build2",  "36.0build2", "35.0build2"]}
+
+partialElement = $('#partials');
+var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
+assert.ok( result );
+assert.strictEqual($('#partials').val(), "38.0.5bbuild2,38.0.3build2,35.0build2,36.0build2");
 
 });
