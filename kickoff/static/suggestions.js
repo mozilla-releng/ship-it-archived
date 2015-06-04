@@ -1,8 +1,8 @@
 function isBeta(version) {
     // Beta version
-    betaRE = /^\d+\.\db\d+$/;
+    betaRE = /^\d+\.[\d.]+b\d$/;
     if (version.match(betaRE) != null) {
-        // 32.0b2
+        // 32.0b2 or 38.0.5b2
         return true;
     }
     return false;
