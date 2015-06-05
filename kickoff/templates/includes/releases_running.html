@@ -18,6 +18,7 @@
     <th>Partial Versions</th>
     <th>Update Prompt Wait Time</th>
     <th>Comment</th>
+    <th>Shipped At</th>
     <th>Shipped?</th>
 </tr>
 </thead>
@@ -64,6 +65,7 @@
           {{ rel.comment }}
   {% endif %}
   </td>
+    <td class='submittedAt'>{{ rel.shippedAt }}</td>
   <td>
 {# In some cases, we get different values. See bug #1121032 #}
 {% if rel.status != "postrelease" and rel.status != "Post Release" %}
