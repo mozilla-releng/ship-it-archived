@@ -8,7 +8,8 @@ $(document).ready(function() {
         $('#{{ thunderbirdForm.branch.id }}'),
         $('#{{ thunderbirdForm.partials.id }}'),
         {{ thunderbirdForm.partials.suggestions|safe }},
-        $('#{{ thunderbirdForm.dashboardCheck.id }}')
+        $('#{{ thunderbirdForm.dashboardCheck.id }}'),
+        $('#partialInfo')
     );
     setupBranchSuggestions(
         $('#{{ thunderbirdForm.branch.id }}'),
@@ -63,6 +64,7 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ thunderbirdForm.partials.label()|safe }}
     {{ thunderbirdForm.partials(placeholder='15.0b5build1')|safe }}
+    <div class="helpPartial" id="partialInfo"></div>
     <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 3, for Betas it's 2, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
 </div>
 <div class="submit_release">
