@@ -1,15 +1,7 @@
-import datetime
-import random
-import string
-
-import pytz
-
 import simplejson as json
 
-from kickoff import app
-from kickoff.model import FennecRelease, ThunderbirdRelease
+from kickoff import config
 from kickoff.test.views.base import ViewTest
-import config
 
 
 class TestJSONRequestsAPI(ViewTest):
@@ -40,10 +32,10 @@ class TestJSONRequestsAPI(ViewTest):
 
     def testStableReleases(self):
         ret = self.get('/json/firefox_history_stability_releases.json')
-        expected = { '2.0.2': '2005-01-04',
-            "3.0.1": "2005-01-02",
-            "38.1.0": "2015-01-04",
-        }
+        expected = {'2.0.2': '2005-01-04',
+                    "3.0.1": "2005-01-02",
+                    "38.1.0": "2015-01-04",
+                    }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
@@ -114,16 +106,10 @@ class TestJSONRequestsAPI(ViewTest):
         # but no just en
         self.assertTrue('en' not in primary)
 
-    def testBetaBuilds(self):
-        ret = self.get('/json/firefox_beta_builds.json')
-        primary = json.loads(ret.data)
-        self.assertEquals(ret.status_code, 200)
-
-    def testBetaBuilds(self):
+    def testTBBetaBuilds(self):
         ret = self.get('/json/thunderbird_beta_builds.json')
         primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
-
 
     def testFirefoxVersions(self):
         config.CURRENT_ESR = "2"
@@ -161,7 +147,6 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['beta_version'], "23.0b2")
         self.assertEquals(versions['version'], "24.0")
 
-
     def testThunderbirdVersions(self):
         ret = self.get('/json/thunderbird_versions.json')
         versions = json.loads(ret.data)
@@ -178,4 +163,3 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("LATEST_FIREFOX_OLDER_VERSION" not in versions)
         self.assertTrue("LATEST_FIREFOX_RELEASED_DEVEL_VERSION" not in versions)
         self.assertTrue("LATEST_FIREFOX_VERSION" not in versions)
-

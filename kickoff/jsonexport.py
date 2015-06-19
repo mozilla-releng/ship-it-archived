@@ -1,12 +1,11 @@
 from kickoff import app
+from kickoff import config
 
 from flask import jsonify, render_template, make_response
 
 from kickoff.model import getReleases
 
 from kickoff.thunderbirddetails import primary_builds as tb_primary_builds, beta_builds as tb_beta_builds
-
-import config
 
 from mozilla.release.l10n import parsePlainL10nChangesets
 
@@ -49,10 +48,12 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, w
 # Manage firefox_versions.json, thunderbird_versions.json & mobile_versions.json
 def returnJSONVersionFile(template, versions):
     response = make_response(render_template(template, versions=versions))
-    response.mimetype="application/json"
+    response.mimetype = "application/json"
     return response
 
+
 # Firefox JSON
+
 
 @app.route('/json/firefox_history_major_releases.json', methods=['GET'])
 def firefox_history_major_releases_json():
@@ -128,19 +129,23 @@ def fillAuroraVersion(buildsVersionLocales):
 def updateLocaleWithVersionsTable(product):
     buildsVersionLocales = {}
     # Stable
-    lastStable = getFilteredReleases(product, ["major", "stability"], lastRelease=True, withL10N=True)
-    buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales, lastStable[0][2],
-                                                lastStable[0][0])
+    lastStable = getFilteredReleases(product, ["major", "stability"],
+                                     lastRelease=True, withL10N=True)
+    buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
+                                                   lastStable[0][2],
+                                                   lastStable[0][0])
 
     # beta
     lastStable = getFilteredReleases(product, ["dev"], lastRelease=True, withL10N=True)
-    buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales, lastStable[0][2],
-                                                lastStable[0][0])
+    buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
+                                                   lastStable[0][2],
+                                                   lastStable[0][0])
 
     # esr
     lastStable = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True)
-    buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales, lastStable[0][2],
-                                                lastStable[0][0])
+    buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
+                                                   lastStable[0][2],
+                                                   lastStable[0][0])
     buildsVersionLocales = fillAuroraVersion(buildsVersionLocales)
     return buildsVersionLocales
 
@@ -150,12 +155,14 @@ def firefox_primary_builds_json():
     buildsVersionLocales = updateLocaleWithVersionsTable("firefox")
     return jsonify(buildsVersionLocales)
 
+
 # Mobile JSON
+
 
 @app.route('/json/mobile_details.json', methods=['GET'])
 @app.route('/json/mobile_versions.json', methods=['GET'])
 def mobile_details_json():
-    versions = { "alpha_version": config.AURORA_VERSION }
+    versions = {"alpha_version": config.AURORA_VERSION}
 
     lastStable = getFilteredReleases("fennec", ["major", "stability"], lastRelease=True)
     versions['stable'] = lastStable[0][0]
@@ -207,7 +214,7 @@ def thunderbird_history_development_releases_json():
 
 @app.route('/json/thunderbird_versions.json', methods=['GET'])
 def thunderbird_versions_json():
-    versions={}
+    versions = {}
     # Stable
     lastStable = getFilteredReleases("thunderbird", ["major", "stability"], lastRelease=True)
     versions["LATEST_THUNDERBIRD_VERSION"] = lastStable[0][0]
