@@ -12,13 +12,23 @@ from kickoff.test.views.base import ViewTest
 
 
 class TestRequestsAPI(ViewTest):
+    maxDiff = None
     def testGetAllReleases(self):
         ret = self.get('/releases')
         expected = {
             'releases': ['Fennec-1-build1', 'Fennec-4-build4',
-                         'Fennec-4-build5', 'Firefox-2-build1',
-                         'Thunderbird-2-build2', 'Thunderbird-4.0-build1']
+                         'Fennec-4-build5', 'Fennec-24.0-build4',
+                         'Fennec-24.0.1-build4', 'Fennec-23.0b2-build4',
+                         'Firefox-2.0-build1', "Firefox-2.0.2esr-build1",
+                         'Firefox-38.1.0esr-build1',
+                         'Firefox-3.0b2-build1', 'Firefox-3.0b2-build2',
+                         'Firefox-3.0.1-build1',
+                         'Thunderbird-2-build2', 'Thunderbird-4.0-build1',
+                         'Thunderbird-23.0-build1', 'Thunderbird-23.0.1-build1',
+                         'Thunderbird-24.0b2-build2'
+                     ]
         }
+        self.maxDiff = None
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
@@ -32,6 +42,7 @@ class TestRequestsAPI(ViewTest):
 
 
 class TestReleaseAPI(ViewTest):
+    maxDiff = None
     def testGetRelease(self):
         ret = self.get('/releases/Thunderbird-2-build2')
         expected = {
@@ -39,6 +50,7 @@ class TestReleaseAPI(ViewTest):
             'product': 'thunderbird',
             'submitter': 'bob',
             'submittedAt': pytz.utc.localize(datetime.datetime(2005, 1, 1, 1, 1, 1, 1)).isoformat(),
+            'shippedAt': pytz.utc.localize(datetime.datetime(2005, 1, 3, 1, 1, 1, 1)).isoformat(),
             'version': '2',
             'buildNumber': 2,
             'branch': 'b',
@@ -61,13 +73,13 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testGetReleaseWithPromptWaitTime(self):
-        ret = self.get('/releases/Firefox-2-build1')
+        ret = self.get('/releases/Firefox-2.0-build1')
         expected = {
-            'name': 'Firefox-2-build1',
+            'name': 'Firefox-2.0-build1',
             'product': 'firefox',
             'submitter': 'joe',
             'submittedAt': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat(),
-            'version': '2',
+            'version': '2.0',
             'buildNumber': 1,
             'comment': 'yet an other amazying comment',
             'branch': 'a',
@@ -77,9 +89,10 @@ class TestReleaseAPI(ViewTest):
             'l10nChangesets': 'ja zu',
             'partials': '0,1',
             'ready': True,
+            'shippedAt': pytz.utc.localize(datetime.datetime(2005, 1, 4, 3, 4, 5, 6)).isoformat(),
             'complete': True,
             'starter': None,
-            'status': '',
+            'status': 'postrelease',
             'promptWaitTime': 5,
             'mozillaRelbranch': 'FOO',
         }
@@ -109,7 +122,7 @@ class TestReleaseAPI(ViewTest):
             self.assertEquals(got, longStatus[:250])
 
     def testGetL10n(self):
-        ret = self.get('/releases/Firefox-2-build1/l10n')
+        ret = self.get('/releases/Firefox-2.0-build1/l10n')
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(ret.content_type, 'text/plain')
         self.assertEquals(ret.data, 'ja zu')
@@ -130,6 +143,7 @@ class TestReleaseAPI(ViewTest):
 
 
 class TestReleasesView(ViewTest):
+    maxDiff = None
     def testMakeReady(self):
         data = 'readyReleases=Fennec-4-build4&readyReleases=Fennec-4-build5'
         ret = self.post('/releases.html', data=data, content_type='application/x-www-form-urlencoded')
@@ -165,6 +179,7 @@ class TestReleasesView(ViewTest):
 
 
 class TestReleaseView(ViewTest):
+    maxDiff = None
     def testEditRelease(self):
         data = '&'.join([
             'fennec-version=1.0',
