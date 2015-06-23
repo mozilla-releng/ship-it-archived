@@ -24,144 +24,28 @@ class TestBase(unittest.TestCase):
                               mozillaRelbranch=None)
             r.ready = True
             db.session.add(r)
-
             r = FennecRelease(submitter='joe', version='4', buildNumber=4,
                               branch='a', mozillaRevision='abc',
                               l10nChangesets='gh ij', dashboardCheck=True,
                               mozillaRelbranch=None)
             db.session.add(r)
-
             r = FennecRelease(submitter='joe', version='4', buildNumber=5,
                               branch='a', mozillaRevision='abc',
                               l10nChangesets='lk mn', dashboardCheck=False,
                               mozillaRelbranch='BAR',
                               submittedAt=datetime(2005, 1, 2, 2, 3, 3, 5))
             db.session.add(r)
-
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='2.0', buildNumber=1,
+                               submitter='joe', version='2', buildNumber=1,
                                branch='a', mozillaRevision='def',
                                l10nChangesets='ja zu', dashboardCheck=True,
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
                                comment="yet an other amazying comment",
                                enUSPlatforms=None)
             r.complete = True
             r.ready = True
-            # Shipped
-            r.status = "postrelease"
             db.session.add(r)
-
-
-            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='2.0.2esr', buildNumber=1,
-                               branch='a', mozillaRevision='def',
-                               l10nChangesets='ja zu', dashboardCheck=True,
-                               mozillaRelbranch='FOO',
-                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-
-            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='38.1.0esr', buildNumber=1,
-                               branch='a', mozillaRevision='def',
-                               l10nChangesets='ja zu', dashboardCheck=True,
-                               mozillaRelbranch='FOO',
-                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2015, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-
-            r = FennecRelease(submitter='joe', version='24.0', buildNumber=4,
-                              branch='a', mozillaRevision='abc',
-                              l10nChangesets='gh ij', dashboardCheck=True,
-                              submittedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
-                              shippedAt=datetime(2015, 3, 1, 3, 4, 5, 6),
-                              mozillaRelbranch=None)
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-
-            r = FennecRelease(submitter='joe', version='24.0.1', buildNumber=4,
-                              branch='a', mozillaRevision='abc',
-                              l10nChangesets='gh ij', dashboardCheck=True,
-                              submittedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
-                              shippedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
-                              mozillaRelbranch=None)
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-
-            r = FennecRelease(submitter='joe', version='23.0b2', buildNumber=4,
-                              branch='a', mozillaRevision='abc',
-                              l10nChangesets='gh ij', dashboardCheck=True,
-                              submittedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
-                              shippedAt=datetime(2015, 2, 27, 3, 4, 5, 6),
-                              mozillaRelbranch=None)
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-
-            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='3.0b2', buildNumber=1,
-                               branch='a', mozillaRevision='def',
-                               l10nChangesets='ja zu', dashboardCheck=True,
-                               mozillaRelbranch='FOO',
-                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-
-            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='3.0b2', buildNumber=2,
-                               branch='a', mozillaRevision='defa',
-                               l10nChangesets='ja zu', dashboardCheck=True,
-                               mozillaRelbranch='FOO',
-                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2005, 3, 2, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
-            db.session.add(r)
-
-            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='3.0.1', buildNumber=1,
-                               branch='a', mozillaRevision='def',
-                               l10nChangesets='ja zu', dashboardCheck=True,
-                               mozillaRelbranch='FOO',
-                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-
-            # Thunderbird data
             r = ThunderbirdRelease(commRevision='ghi', commRelbranch=None,
                                    partials='0', promptWaitTime=None,
                                    submitter='bob', version='2', buildNumber=2,
@@ -169,13 +53,11 @@ class TestBase(unittest.TestCase):
                                    l10nChangesets='li', dashboardCheck=True,
                                    mozillaRelbranch=None,
                                    submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
-                                   shippedAt=datetime(2005, 1, 3, 1, 1, 1, 1),
                                    comment='My great comment!',
                                    enUSPlatforms="foo bar")
             r.complete = True
             r.ready = True
             db.session.add(r)
-
             r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
                                    partials='1.0build1', promptWaitTime=None,
                                    submitter='bob', version='4.0', buildNumber=1,
@@ -183,53 +65,6 @@ class TestBase(unittest.TestCase):
                                    l10nChangesets='yy zz', dashboardCheck=True,
                                    mozillaRelbranch=None,
                                    submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1))
-            db.session.add(r)
-            db.session.commit()
-
-            r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
-                                   partials='1.0build1', promptWaitTime=None,
-                                   submitter='bob', version='23.0', buildNumber=1,
-                                   branch='b', mozillaRevision='yyy',
-                                   l10nChangesets='yy zz', dashboardCheck=True,
-                                   mozillaRelbranch=None,
-                                   submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
-
-                                   shippedAt=datetime(2005, 1, 3, 1, 1, 1, 1))
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-            db.session.commit()
-
-            r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
-                                   partials='1.0build1', promptWaitTime=None,
-                                   submitter='bob', version='23.0.1', buildNumber=1,
-                                   branch='b', mozillaRevision='yyy',
-                                   l10nChangesets='yy zz', dashboardCheck=True,
-                                   mozillaRelbranch=None,
-                                   submittedAt=datetime(2014, 1, 1, 1, 1, 1, 1),
-                                   shippedAt=datetime(2014, 2, 3, 1, 1, 1, 1))
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
-            db.session.add(r)
-            db.session.commit()
-
-            r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
-                                   partials='1.0build1', promptWaitTime=None,
-                                   submitter='bob', version='24.0b2', buildNumber=2,
-                                   branch='b', mozillaRevision='yyy',
-                                   l10nChangesets='yy zz', dashboardCheck=True,
-                                   mozillaRelbranch=None,
-                                   submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
-
-                                   shippedAt=datetime(2005, 2, 1, 1, 1, 1, 1))
-            r.complete = True
-            r.ready = True
-            # Shipped
-            r.status = "postrelease"
             db.session.add(r)
             db.session.commit()
 

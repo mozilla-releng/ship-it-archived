@@ -1,5 +1,0 @@
-{
-  "alpha_version": "{{ versions.alpha_version }}",
-  "beta_version": "{{ versions.beta_version }}",
-  "version": "{{ versions.stable }}"
-}
