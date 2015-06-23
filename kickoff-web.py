@@ -51,11 +51,5 @@ if __name__ == '__main__':
             '/cron/': path.join(path.dirname(__file__), 'cron/')
         })
 
-    # We serve (at least) a stastic json file
-    from werkzeug import SharedDataMiddleware
-    app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-        '/json/': path.join(path.dirname(__file__), 'json/')
-    })
-
     app.wsgi_app = AuthBasicHandler(app.wsgi_app, "Release kick-off", auth)
     app.run(port=options.port, host=options.host)
