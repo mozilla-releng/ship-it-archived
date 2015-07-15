@@ -150,11 +150,13 @@ function stripBuildNumber(release) {
 
 function populatePartial(name, version, previousBuilds, partialElement) {
 
-    partialElement.val("");
     if (name.indexOf("fennec") > -1) {
         // Android does not need partial
         return true;
     }
+
+    partialElement.val("");
+
     base = getBaseRepository(name);
 
     nbPartial = 0;
