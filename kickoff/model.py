@@ -48,7 +48,11 @@ class Release(object):
     # as transportable as possible.
     @hybrid_property
     def shippedAt(self):
-        return pytz.utc.localize(self._shippedAt).isoformat()
+        if self._shippedAt:
+            return pytz.utc.localize(self._shippedAt).isoformat()
+        else:
+            # Not (yet) shipped releaes
+            return None
 
     @shippedAt.setter
     def shippedAt(self, shippedAt):
