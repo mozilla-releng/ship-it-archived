@@ -6,6 +6,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 db = SQLAlchemy()
 
+# We do need this import to make sure json endpoints are available
+import kickoff.jsonexport  # NOQA
 from kickoff.log import cef_event, CEF_WARN
 from kickoff.views.csrf import CSRFView
 from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release, ReleaseCommentAPI
