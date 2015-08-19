@@ -50,7 +50,7 @@
 {% if loop.last %}
 <div class="comment">
 {{ form.comment.label()|safe }}<br />
-{{ form.comment(title='Extra information to release-drivers:')|safe }}
+{{ form.comment(title='Extra information to release-drivers (or thunderbird-drivers):', rows=7, cols=50)|safe }}
 </div>
 <input type="submit" id="doeet" value="Do eet!">
 </form>
