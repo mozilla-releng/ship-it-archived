@@ -30,7 +30,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
-    def testStableReleases(self):
+    def testStablityReleases(self):
         ret = self.get('/json/firefox_history_stability_releases.json')
         expected = {'2.0.2': '2005-01-04',
                     "3.0.1": "2005-01-02",

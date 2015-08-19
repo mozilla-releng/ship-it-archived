@@ -16,16 +16,16 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, w
     if "major" in categories:
         version.append("([0-9]+\.[0-9]+|14\.0\.1)$")
     if "stability" in categories:
-        version.append("([0-9]+\.[0-9]+\.[0-9]+|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)")
+        version.append("([0-9]+\.[0-9]+\.[0-9]+(esr|)$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(esr|)$)")
     if "dev" in categories:
-        version.append("[0-9]+\.[0-9](b|rc|build|plugin)[0-9]+$")
+        # We had 38.0.5b2
+        version.append("([0-9]+\.[0-9]|[0-9]+\.[0-9]+\.[0-9])(b|rc|build|plugin)[0-9]+$")
     if "esr" in categories:
         if ESR_NEXT:
             # Ugly hack to manage the next ESR (when we have two overlapping esr)
-            version.append("(" + config.ESR_NEXT + "\.[0-9]+\.[0-9]+esr|" + config.ESR_NEXT + "\.[0-9]+\.[0-9]+\.[0-9]+esr)")
+            version.append("(" + config.ESR_NEXT + "\.[0-9]+\.[0-9]+esr$|" + config.ESR_NEXT + "\.[0-9]+\.[0-9]+\.[0-9]+esr$)")
         else:
-            version.append("(" + config.CURRENT_ESR + "\.[0-9]+\.[0-9]+esr|" + config.CURRENT_ESR + "\.[0-9]+\.[0-9]+\.[0-9]+esr)")
-
+            version.append("(" + config.CURRENT_ESR + "\.[0-9]+\.[0-9]+esr$|" + config.CURRENT_ESR + "\.[0-9]+\.[0-9]+\.[0-9]+esr$)")
     releases = getReleases(ready=True, productFilter=product, versionFilterCategory=version, lastRelease=lastRelease)
     results = []
     for r in releases:
