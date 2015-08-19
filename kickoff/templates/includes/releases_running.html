@@ -75,8 +75,10 @@
       Not shipped
       <input type="submit" value="Shipped!" class="submitButton" onclick="return updateShip('{{ rel.name }}', true)" />
     {% endif %}
-{% else %}
-    Shipped
+    {% else %}
+    {# Do not display the date when not available. When we inserted the shippedAt value into this db, we did it
+    for build1 only. This is causing a mismatch between the shippedAt and the status #}
+    Shipped {% if rel.shippedAt %}({{ rel.shippedAt }}){% endif %}
     <input type="submit" value="Not Shipped" class="submitButton" onclick="return updateShip('{{ rel.name }}', false)" />
 {% endif %}
   </td>
