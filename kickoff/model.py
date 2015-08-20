@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import pytz
 import json
+import re
 
 from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -18,6 +19,7 @@ class Release(object):
     submitter = db.Column(db.String(250), nullable=False)
     _submittedAt = db.Column('submittedAt', db.DateTime(pytz.utc),
                              nullable=False, default=datetime.utcnow)
+    _shippedAt = db.Column('shippedAt', db.DateTime(pytz.utc))
     version = db.Column(db.String(10), nullable=False)
     buildNumber = db.Column(db.Integer(), nullable=False)
     branch = db.Column(db.String(50), nullable=False)
@@ -42,10 +44,24 @@ class Release(object):
     def submittedAt(self, submittedAt):
         self._submittedAt = submittedAt
 
+    # Dates are always returned in UTC time and ISO8601 format to make them
+    # as transportable as possible.
+    @hybrid_property
+    def shippedAt(self):
+        if self._shippedAt:
+            return pytz.utc.localize(self._shippedAt).isoformat()
+        else:
+            # Not (yet) shipped releaes
+            return None
+
+    @shippedAt.setter
+    def shippedAt(self, shippedAt):
+        self._shippedAt = shippedAt
+
     def __init__(self, submitter, version, buildNumber, branch,
                  mozillaRevision, l10nChangesets, dashboardCheck,
                  mozillaRelbranch, enUSPlatforms=None, submittedAt=None,
-                 comment=None):
+                 shippedAt=None, comment=None):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version.strip()
@@ -58,6 +74,8 @@ class Release(object):
         self.enUSPlatforms = enUSPlatforms
         if submittedAt:
             self.submittedAt = submittedAt
+        if shippedAt:
+            self.shippedAt = shippedAt
         if comment:
             self.comment = comment
 
@@ -66,6 +84,7 @@ class Release(object):
         for c in self.__table__.columns:
             me[c.name] = getattr(self, c.name)
         me['submittedAt'] = me['submittedAt']
+        me['shippedAt'] = me['shippedAt']
         return me
 
     @classmethod
@@ -194,7 +213,7 @@ def getReleaseTable(release):
         raise ValueError("Can't find release table for release %s" % release)
 
 
-def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None, searchOtherShipped=False):
+def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None, versionFilterCategory=None, searchOtherShipped=False, lastRelease=None):
     filters = {}
     if ready is not None:
         filters['ready'] = ready
@@ -211,8 +230,22 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
     releases = []
     for table in tables:
         if filters:
-            for r in table.query.filter_by(**filters):
-                releases.append(r)
+            if lastRelease:
+                # Retrieve the last X version
+                results = table.query.filter_by(**filters).order_by(table._submittedAt.desc()).limit(40)
+            else:
+                results = table.query.filter_by(**filters)
+            for r in results:
+                if not versionFilterCategory:
+                    releases.append(r)
+                else:
+                    # We are using a manual filter here.
+                    # we are not doing it through SQL because:
+                    # * regexp queries are not really standard in SQL
+                    # * sqlalchemy does not provide a wrapper for this
+                    for versionFilter in versionFilterCategory:
+                        if re.match(versionFilter, r.version):
+                            releases.append(r)
         else:
             for r in table.query.all():
                 releases.append(r)
