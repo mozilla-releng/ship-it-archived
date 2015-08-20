@@ -46,7 +46,7 @@
   {% if 'Fennec' in rel.name %}
     <td class="irrelevant">N/A</td>
   {% else %}
-    <td>{{ rel.partials|replace(',', ' ') }}</td>
+    <td>{{ rel.partials|replace(',', ',\n') }}</td>
   {% endif %}
   {% if 'Fennec' in rel.name %}
     <td class="irrelevant">N/A</td>
