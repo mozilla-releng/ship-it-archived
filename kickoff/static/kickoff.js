@@ -91,13 +91,17 @@ function updateShip(e, shipped) {
   csrf_token = $('#csrf_token').val();
   if (shipped) {
       status = "postrelease";
+      var d = new Date();
+      // Expects '%Y-%m-%d %H:%M:%S'
+      shippedAt = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()+ " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
   } else {
       status = "Started";
+      shippedAt = "";
   }
   var request = $.ajax( {
     url: "/releases/" + e,
     type: "POST",
-    data: "status=" + status + "&csrf_token=" + csrf_token,
+    data: "status=" + status + "&shippedAt=" + shippedAt + "&csrf_token=" + csrf_token,
   });
 
   request.done(function() {
