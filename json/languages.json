@@ -75,6 +75,10 @@
         "English": "Catalan (Valencian)",
         "native": "catal\u00e0 (valenci\u00e0)"
     },
+    "cak": {
+        "English": "Kaqchikel",
+        "native": "Maya Kaqchikel"
+    },
     "cs": {
         "English": "Czech",
         "native": "\u010ce\u0161tina"
@@ -437,7 +441,7 @@
     },
     "ro": {
         "English": "Romanian",
-        "native": "rom\u00e2n\u0103"
+        "native": "Rom\u00e2n\u0103"
     },
     "rm": {
         "English": "Romansh",
@@ -546,6 +550,10 @@
     "ts": {
         "English": "Tsonga",
         "native": "Xitsonga"
+    },
+    "tsz": {
+        "English": "Pur\u00e9pecha",
+        "native": "Pur\u00e9pecha"
     },
     "tt-RU": {
         "English": "Tatar",
