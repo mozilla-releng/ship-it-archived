@@ -49,21 +49,7 @@ function viewReleases(){
 
 function toLocalDate() {
 
-    $( '.submittedAt' ).each(function() {
-        var localdate = new Date($(this).html());
-
-        // formatDate does not handle hour/minute
-        formateddate=$.datepicker.formatDate('yy/mm/dd', localdate) + "<br />" + localdate.getHours() + ":" + (localdate.getMinutes() < 10?"0":"") + localdate.getMinutes();
-
-        if ( $(this).prop('tagName') == 'TD' ) {
-            $(this).empty().append(formateddate);
-        } else {
-            //this is not a table row: prepend 'Submitted at: '
-            $(this).empty().append('Submitted at: ' + formateddate);
-        }
-    });
-
-    $( '.shippedAt' ).each(function() {
+    $( '.dateDisplay' ).each(function() {
         dateField = $(this).html();
         if (dateField === "None") {
             // Field not set in the db, don't show anything
@@ -76,8 +62,8 @@ function toLocalDate() {
         if ( $(this).prop('tagName') == 'TD' ) {
             $(this).empty().append(formateddate);
         } else {
-            //this is not a table row: prepend 'Submitted at: '
-            $(this).empty().append('Shipped at: ' + formateddate);
+            //this is not a table row: prepend 'Date: '
+            $(this).empty().append('Date: ' + formateddate);
         }
     });
 };
@@ -105,13 +91,17 @@ function updateShip(e, shipped) {
   csrf_token = $('#csrf_token').val();
   if (shipped) {
       status = "postrelease";
+      var d = new Date();
+      // Expects '%Y-%m-%d %H:%M:%S'
+      shippedAt = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate()+ " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
   } else {
       status = "Started";
+      shippedAt = "";
   }
   var request = $.ajax( {
     url: "/releases/" + e,
     type: "POST",
-    data: "status=" + status + "&csrf_token=" + csrf_token,
+    data: "status=" + status + "&shippedAt=" + shippedAt + "&csrf_token=" + csrf_token,
   });
 
   request.done(function() {

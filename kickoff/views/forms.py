@@ -7,7 +7,7 @@ from distutils.version import LooseVersion
 
 from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
     Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
-    IntegerField, HiddenField, Regexp, DateTimeField, InputRequired
+    IntegerField, HiddenField, Regexp, DateTimeField, InputRequired, validators
 
 from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
@@ -136,6 +136,7 @@ class ReleaseAPIForm(Form):
     # Use the Column length directly rather than duplicating its value.
     status = StringField('status', filters=[truncateFilter(Release.status.type.length)])
     enUSPlatforms = JSONField('enUSPlatforms')
+    shippedAt = DateTimeField('shippedAt', [validators.optional()])
 
     def validate(self, release, *args, **kwargs):
         valid = Form.validate(self, *args, **kwargs)
