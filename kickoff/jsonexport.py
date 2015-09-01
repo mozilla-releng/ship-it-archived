@@ -240,6 +240,10 @@ def thunderbird_beta_builds_json():
     return jsonify(tb_beta_builds)
 
 
+@app.route('/json/languages.json', methods=['GET'])
+def languages_json():
+    return app.send_static_file('languages.json')
+
 # COMMON JSON
 
 @app.route('/json_exports.html', methods=['GET'])
