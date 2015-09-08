@@ -38,6 +38,10 @@ function isTBRelease(version) {
     return false;
 }
 
+function isFennec(name) {
+    return name.indexOf("fennec") > -1;
+}
+
 function isTB(name) {
     return name.indexOf("thunderbird") > -1;
 }
@@ -149,11 +153,6 @@ function stripBuildNumber(release) {
 
 
 function populatePartial(name, version, previousBuilds, partialElement) {
-
-    if (name.indexOf("fennec") > -1) {
-        // Android does not need partial
-        return true;
-    }
 
     partialElement.val("");
 
@@ -333,11 +332,17 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             collision: 'flipfit',
         },
         select: function(event, ui) {
-            populateBuildNumber(ui.item.value);
-            populateBranch(event.target.name, ui.item.value);
-            populatePartial(event.target.name, ui.item.value, previousBuilds, partialElement);
-            dashboardCheck(ui.item.value);
-            populatePartialInfo(ui.item.value);
+            name = event.target.name;
+            version = ui.item.value;
+            populateBuildNumber(version);
+            populateBranch(name, version);
+            if (!isFennec(name)) {
+                // There is no notion of partial on fennec
+                populatePartial(name, version, previousBuilds, partialElement);
+                populatePartialInfo(version);
+            }
+            dashboardCheck(version);
+
         }
     }).focus(function() {
         $(this).autocomplete('search');
