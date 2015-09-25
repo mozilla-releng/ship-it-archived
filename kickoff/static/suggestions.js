@@ -39,20 +39,20 @@ function isTBRelease(version) {
 }
 
 function isFennec(name) {
-    return name.indexOf("fennec") > -1;
+    return name.indexOf('fennec') > -1;
 }
 
 function isTB(name) {
-    return name.indexOf("thunderbird") > -1;
+    return name.indexOf('thunderbird') > -1;
 }
 
 function getBaseRepository(name) {
 
     if (isTB(name)) {
         // Special case for thunderbird
-        return "releases/comm-"
+        return 'releases/comm-';
     } else {
-        return "releases/mozilla-"
+        return 'releases/mozilla-';
     }
 }
 
@@ -60,41 +60,41 @@ function guessBranchFromVersion(name, version) {
 
     base = getBaseRepository(name);
 
-    if (version == "") {
+    if (version == '') {
         // Empty. Reset the field
-        return "";
+        return '';
     }
 
     // Beta version
     if (isBeta(version)) {
         // 32.0b2
-        return base + "beta";
+        return base + 'beta';
     }
 
     // ESR version
     if (isESR(version)) {
         // 31.0esr or 31.1.0esr
-        return base + "esr" + esrVersion[1];
+        return base + 'esr' + esrVersion[1];
     }
 
     // Manage Thunderbird case (Stable release but using an ESR branch)
     if (isTB(name)) {
         if (isTBRelease(version)) {
             // 31.0 or 31.0.1
-            return base + "esr" + tbVersion[1];
+            return base + 'esr' + tbVersion[1];
         }
     }
 
     if (isRelease(version)) {
         // Probably a release. Can be 31.0 or 32.0.1
-        return base + "release";
+        return base + 'release';
     }
-    return "";
+    return '';
 }
 
 function addLastVersionAsPartial(version, previousReleases, nb) {
-    partialList=""
-    nbAdded=0
+    partialList = '';
+    nbAdded = 0;
     // We always add the last released version to the list
     for (k = 0; k < previousReleases.length; k++) {
 
@@ -108,7 +108,7 @@ function addLastVersionAsPartial(version, previousReleases, nb) {
         }
 
         if (previousRelease < version) {
-            partialList += previousReleases[k] + ",";
+            partialList += previousReleases[k] + ',';
             nbAdded++;
             if (nb == nbAdded) {
                 return partialList;
@@ -125,36 +125,33 @@ function getVersionWithBuildNumber(version, previousReleases) {
             return previousReleases[j];
         }
     }
-    console.warn("Could not find the build number of " + version + " from " + previousReleases);
+    console.warn('Could not find the build number of ' + version + ' from ' + previousReleases);
     return undefined;
 }
 
-
 function partialConsistencyCheck(partialsADI, previousReleases) {
-    stripped=[]
+    stripped = [];
     for (i = 0; i < previousReleases.length; i++) {
-        stripped[i]=stripBuildNumber(previousReleases[i]).replace("esr","");
+        stripped[i] = stripBuildNumber(previousReleases[i]).replace('esr','');
     }
     // All partialsADI must be in previousReleases
     for (i = 0; i < partialsADI.length; i++) {
         if ($.inArray(partialsADI[i], stripped) == -1) {
-            console.warn("Partial '" + partialsADI[i] + "' not found in the previous build list " + stripped);
-            console.warn("This should not happen. That probably means that your instance does not have recent builds. Please report a bug");
+            console.warn('Partial \'' + partialsADI[i] + '\' not found in the previous build list ' + stripped);
+            console.warn('This should not happen. That probably means that your instance does not have recent builds. Please report a bug');
         }
     }
 }
 
-
 function stripBuildNumber(release) {
     // Reuse the previous builds info to generate the partial
     // Strip the build number. "31.0build1" < "31.0.1" => false is JS
-    return release.replace(/build.*/g, "");
+    return release.replace(/build.*/g, '');
 }
-
 
 function populatePartial(name, version, previousBuilds, partialElement) {
 
-    partialElement.val("");
+    partialElement.val('');
 
     base = getBaseRepository(name);
 
@@ -183,9 +180,9 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         if (isTB(name) || isESR(version)) {
             // Thunderbird and Fx ESR are using mozilla-esr as branch
             base = guessBranchFromVersion(name, version);
-            if (typeof previousBuilds[base] !== "undefined") {
+            if (typeof previousBuilds[base] !== 'undefined') {
                 // If the branch is not supported, do not try to access it
-                previousReleases = previousBuilds[base].sort().reverse()
+                previousReleases = previousBuilds[base].sort().reverse();
             }
         } else {
             previousReleases = previousBuilds[base + 'release'];
@@ -216,7 +213,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     // Check that all partials match a build.
     partialConsistencyCheck(partialsADIVersion, previousReleases);
 
-    partial = "";
+    partial = '';
     partialAdded = 0;
 
     // When we have the ADI for Firefox Beta or Thunderbird, we can remove
@@ -255,7 +252,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
             partialAdded != nbPartial &&
             newPartial != undefined) {
             // We don't want a trailing ","
-            partial += ",";
+            partial += ',';
         }
         if (partialAdded == nbPartial) {
             // We have enough partials. Bye bye.
@@ -266,7 +263,6 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     return true;
 }
 
-
 function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement, partialInfo) {
 
     versions.sort(function(a, b) {
@@ -274,7 +270,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     });
 
     if (versions.length == 0) {
-        console.warn("Empty version suggestions. Empty or too old data?")
+        console.warn('Empty version suggestions. Empty or too old data?');
     }
 
     // We need to fire this both when a version is selected
@@ -297,23 +293,23 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         // Building a beta, tick the checkbox
         // Due to limitation, we cannot do that for the release
         if (isBeta(version)) {
-            dashboardElement.prop("checked", true);
+            dashboardElement.prop('checked', true);
         } else {
-            dashboardElement.prop("checked", false);
+            dashboardElement.prop('checked', false);
         }
     }
 
     function populatePartialInfo(version) {
         if (partialsADI.length == 0 || !isRelease(version)) {
-            partialInfo.html("");
+            partialInfo.html('');
             // No ADI available, don't display anything
             return;
         }
 
         // Format the data for display
-        partialString = "ADI:<br />";
+        partialString = 'ADI:<br />';
         for (i = 0; i < partialsADI.length; i++) {
-            partialString += partialsADI[i].version + ": " + partialsADI[i].ADI + "<br />";
+            partialString += partialsADI[i].version + ': ' + partialsADI[i].ADI + '<br />';
         }
 
         partialInfo.html(partialString);
@@ -401,7 +397,7 @@ function setupBranchSuggestions(branchElement, branches, partialsElement, partia
                     var terms = this.value.split(/,\s*/);
                     terms.pop();
                     terms.push(ui.item.value);
-                    this.value = terms.join(", ");
+                    this.value = terms.join(', ');
                     return false;
                 }
             }).focus(function() {
@@ -428,8 +424,7 @@ function setupRevisionDisabling(relbranchElement, revisionElement) {
         if ($(this).val() == '') {
             revisionElement.removeAttr('disabled');
             revisionElement.attr('placeholder', 'abcdef123456');
-        }
-        else {
+        } else {
             revisionElement.removeAttr('placeholder');
             revisionElement.attr('disabled', 'disabled');
         }
@@ -437,8 +432,7 @@ function setupRevisionDisabling(relbranchElement, revisionElement) {
     revisionElement.blur(function() {
         if ($(this).val() == '') {
             relbranchElement.removeAttr('disabled');
-        }
-        else {
+        } else {
             relbranchElement.removeAttr('placeholder');
             relbranchElement.attr('disabled', 'disabled');
         }
