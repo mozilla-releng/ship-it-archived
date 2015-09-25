@@ -1,3 +1,4 @@
+sources = ["kickoff/static/kickoff.js", "kickoff/static/suggestions.js"];
 module.exports = function(grunt) {
     grunt.initConfig({
         qunit: {
@@ -6,15 +7,19 @@ module.exports = function(grunt) {
         jscs: {
             main: "ship-it.js",
             controllers: {
-                src: ["kickoff/static/kickoff.js", "kickoff/static/suggestions.js"],
+                src: sources,
                 options: {
                     config: '.jscsrc',
                     verbose: true
                 }
             }
+        },
+        eslint: {
+            target: sources
         }
     });
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-jscs');
-    grunt.registerTask('default', ['qunit', 'jscs']);
+    grunt.loadNpmTasks('grunt-eslint');
+    grunt.registerTask('default', ['qunit', 'jscs', 'eslint']);
 };
