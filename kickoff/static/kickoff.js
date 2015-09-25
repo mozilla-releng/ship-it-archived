@@ -74,20 +74,20 @@ function escapeExpression(str) {
 
 function submittedReleaseButtons(buttonId) {
     var btnId = '#' + escapeExpression(buttonId);
-    var other_btnId = btnId.replace('ready', 'delete');
-    if (other_btnId == btnId) {
-        other_btnId = btnId.replace('delete', 'ready');
+    var otherBtnId = btnId.replace('ready', 'delete');
+    if (otherBtnId == btnId) {
+        otherBtnId = btnId.replace('delete', 'ready');
     }
     if ($(btnId).is(':checked')) {
-        $(other_btnId).attr('checked', false);
-        $(other_btnId).attr('disabled', true);
+        $(otherBtnId).attr('checked', false);
+        $(otherBtnId).attr('disabled', true);
     } else {
-        $(other_btnId).attr('disabled', false);
+        $(otherBtnId).attr('disabled', false);
     }
 }
 
 function updateShip(e, shipped) {
-    csrf_token = $('#csrf_token').val();
+    csrfToken = $('#csrfToken').val();
     if (shipped) {
         status = 'postrelease';
         var d = new Date();
@@ -100,7 +100,7 @@ function updateShip(e, shipped) {
     var request = $.ajax({
         url: '/releases/' + e,
         type: 'POST',
-        data: 'status=' + status + '&shippedAt=' + shippedAt + '&csrf_token=' + csrf_token,
+        data: 'status=' + status + '&shippedAt=' + shippedAt + '&csrfToken=' + csrfToken,
     });
 
     request.done(function() {

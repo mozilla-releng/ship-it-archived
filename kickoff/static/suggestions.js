@@ -50,9 +50,9 @@ function getBaseRepository(name) {
 
     if (isTB(name)) {
         // Special case for thunderbird
-        return 'releases/comm-'
+        return 'releases/comm-';
     } else {
-        return 'releases/mozilla-'
+        return 'releases/mozilla-';
     }
 }
 
@@ -93,8 +93,8 @@ function guessBranchFromVersion(name, version) {
 }
 
 function addLastVersionAsPartial(version, previousReleases, nb) {
-    partialList = ''
-    nbAdded = 0
+    partialList = '';
+    nbAdded = 0;
     // We always add the last released version to the list
     for (k = 0; k < previousReleases.length; k++) {
 
@@ -130,7 +130,7 @@ function getVersionWithBuildNumber(version, previousReleases) {
 }
 
 function partialConsistencyCheck(partialsADI, previousReleases) {
-    stripped = []
+    stripped = [];
     for (i = 0; i < previousReleases.length; i++) {
         stripped[i] = stripBuildNumber(previousReleases[i]).replace('esr','');
     }
@@ -182,7 +182,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
             base = guessBranchFromVersion(name, version);
             if (typeof previousBuilds[base] !== 'undefined') {
                 // If the branch is not supported, do not try to access it
-                previousReleases = previousBuilds[base].sort().reverse()
+                previousReleases = previousBuilds[base].sort().reverse();
             }
         } else {
             previousReleases = previousBuilds[base + 'release'];
@@ -270,7 +270,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     });
 
     if (versions.length == 0) {
-        console.warn('Empty version suggestions. Empty or too old data?')
+        console.warn('Empty version suggestions. Empty or too old data?');
     }
 
     // We need to fire this both when a version is selected
