@@ -244,7 +244,8 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
                     # * regexp queries are not really standard in SQL
                     # * sqlalchemy does not provide a wrapper for this
                     for versionFilter in versionFilterCategory:
-                        if re.match(versionFilter, r.version):
+                        if re.match(versionFilter[1], r.version):
+                            r.category = versionFilter[0]
                             releases.append(r)
         else:
             for r in table.query.all():
