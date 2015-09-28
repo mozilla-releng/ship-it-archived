@@ -17,38 +17,8 @@ Compared to the PHP based product details, a few changes can be found:
   <li>thunderbird_versions.json now shows the beta version
   </li>
 </ul>
-
-<a href="/json/firefox_history_development_releases.json">firefox_history_development_releases.json</a><br />
-
-
-<a href="/json/firefox_history_major_releases.json">firefox_history_major_releases.json</a><br />
-
-<a href="/json/firefox_history_stability_releases.json">firefox_history_stability_releases.json</a><br />
-
-
-<a href="/json/firefox_primary_builds.json">firefox_primary_builds.json</a><br />
-
-
-<a href="/json/firefox_versions.json">firefox_versions.json</a><br />
-
-
-<a href="/json/languages.json">languages.json</a><br />
-
-<a href="/json/mobile_details.json">mobile_details.json</a> / <a href="/json/mobile_versions.json">mobile_versions.json</a> (same content)<br />
-
-<a href="/json/mobile_history_development_releases.json">mobile_history_development_releases.json</a><br />
-
-
-<a href="/json/mobile_history_major_releases.json">mobile_history_major_releases.json</a><br />
-
-
-<a href="/json/mobile_history_stability_releases.json">mobile_history_stability_releases.json</a><br />
-<a href="/json/thunderbird_versions.json">thunderbird_versions.json</a><br />
-<a href="/json/thunderbird_history_development_releases.json">thunderbird_history_development_releases.json</a><br />
-<a href="/json/thunderbird_history_major_releases.json">thunderbird_history_major_releases.json</a><br />
-<a href="/json/thunderbird_history_stability_releases.json">thunderbird_history_stability_releases.json</a><br />
-
-<a href="/json/thunderbird_beta_builds.json">thunderbird_beta_builds.json</a><br />
-<a href="/json/thunderbird_primary_builds.json">thunderbird_primary_builds.json</a><br />
+{% for json in jsonFiles %}
+<a href="{{ json[0] }}">{{ json[1] }}</a><br />
+{% endfor %}
 
 {% endblock %}

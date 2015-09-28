@@ -1,3 +1,5 @@
+import os
+
 from kickoff import app
 from kickoff import config
 
@@ -8,6 +10,16 @@ from kickoff.model import getReleases
 from kickoff.thunderbirddetails import primary_builds as tb_primary_builds, beta_builds as tb_beta_builds
 
 from mozilla.release.l10n import parsePlainL10nChangesets
+
+
+def generateJSONFileList():
+    """ From the flask endpoint, generate a list of json files """
+    links = []
+    for rule in app.url_map.iter_rules():
+        url = str(rule)
+        if url.endswith(".json"):
+            links.append((url, os.path.basename(url)))
+    return sorted(links)
 
 
 def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, withL10N=False):
@@ -244,8 +256,24 @@ def thunderbird_beta_builds_json():
 def languages_json():
     return app.send_static_file('languages.json')
 
-# COMMON JSON
 
 @app.route('/json_exports.html', methods=['GET'])
 def json_exports():
-    return render_template('json_exports.html')
+    jsonFiles = generateJSONFileList()
+    return render_template('json_exports.html', jsonFiles=jsonFiles)
+
+
+@app.route('/json/json_exports.json', methods=['GET'])
+def json_exports_json():
+    """ Export the list of files a friendly way to json """
+    jsonFiles = generateJSONFileList()
+    return jsonify(jsonFiles)
+
+
+@app.route('/json_exports.txt', methods=['GET'])
+def json_exports_txt():
+    """ Export the list of files a friendly way to txt """
+    jsonFiles = generateJSONFileList()
+    response = make_response(render_template("json_exports.txt", jsonFiles=jsonFiles))
+    response.mimetype = "text/plain"
+    return response
