@@ -363,3 +363,7 @@ h4 {
 table.dataTable tr.odd td.sorting_1 { background-color: transparent; }
 table.dataTable tr.even td.sorting_1 { background-color: transparent; }
 
+label {
+    display: inline-block;
+    width: 5em;
+}

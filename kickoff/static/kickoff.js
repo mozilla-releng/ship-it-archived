@@ -17,6 +17,19 @@ function initialSetup() {
         },
         active: parseInt(localStorage.getItem('active_accordion'))
     });
+
+    // Hide all by default
+    $('.textareaDiv').hide();
+    // Display or hide the textarea to update the description
+    $('.showLinkUpdate').click(function() {
+        $('.textareaDiv').hide();
+        $('.linkUpdate' + $(this).attr('target')).hide();
+        $('#description' + $(this).attr('target')).show();
+    });
+
+    // Show the tooltip. Mostly use for the "is security driven" checkbox
+    $(document).tooltip();
+
 }
 
 function viewReleases() {
@@ -86,21 +99,13 @@ function submittedReleaseButtons(buttonId) {
     }
 }
 
-function updateShip(e, shipped) {
-    csrfToken = $('#csrfToken').val();
-    if (shipped) {
-        status = 'postrelease';
-        var d = new Date();
-        // Expects '%Y-%m-%d %H:%M:%S'
-        shippedAt = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-    } else {
-        status = 'Started';
-        shippedAt = '';
-    }
+function sendAjaxQuery(releaseName, query) {
+    csrfToken = $('#csrf_token').val();
+
     var request = $.ajax({
-        url: '/releases/' + e,
+        url: '/releases/' + releaseName,
         type: 'POST',
-        data: 'status=' + status + '&shippedAt=' + shippedAt + '&csrfToken=' + csrfToken,
+        data: query + '&csrf_token=' + csrfToken + '&csrfToken=' + csrfToken ,
     });
 
     request.done(function() {
@@ -111,4 +116,27 @@ function updateShip(e, shipped) {
         alert('Error: ' + jqXHR.responseText);
     });
 
+}
+
+function updateShip(releaseName, shipped) {
+
+    if (shipped) {
+        status = 'postrelease';
+        var d = new Date();
+        // Expects '%Y-%m-%d %H:%M:%S'
+        shippedAt = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+    } else {
+        status = 'Started';
+        shippedAt = '';
+    }
+    query = 'status=' + status + '&shippedAt=' + shippedAt;
+    sendAjaxQuery(releaseName, query);
+
+}
+
+function updateDesc(releaseName, id) {
+    description = $('textarea#desc' + id).val();
+    isSecurityDriven = $('#isSecurityDriven' + id).prop('checked');
+    query = 'description=' + description + '&isSecurityDriven=' + isSecurityDriven;
+    sendAjaxQuery(releaseName, query);
 }

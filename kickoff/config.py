@@ -5,3 +5,4 @@ SUPPORTED_AURORA_LOCALES = ['ach', 'af', 'an', 'ar', 'as', 'ast', 'az', 'be', 'b
 LATEST_FIREFOX_OLDER_VERSION = "3.6.28"
 CURRENT_ESR = "38"
 ESR_NEXT = ""
+JSON_FORMAT_VERSION = 1

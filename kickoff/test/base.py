@@ -128,6 +128,8 @@ class TestBase(unittest.TestCase):
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                comment="yet an other amazying comment",
+                               isSecurityDriven=True,
+                               description="We did this because of an issue in NSS",
                                enUSPlatforms=None)
             r.complete = True
             r.ready = True
@@ -154,7 +156,8 @@ class TestBase(unittest.TestCase):
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                comment="yet an other amazying comment",
-                               enUSPlatforms=None)
+                               enUSPlatforms=None,
+                               description="we did this release because of foo")
             r.complete = True
             r.ready = True
             # Shipped
@@ -171,7 +174,9 @@ class TestBase(unittest.TestCase):
                                    submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
                                    shippedAt=datetime(2005, 1, 3, 1, 1, 1, 1),
                                    comment='My great comment!',
-                                   enUSPlatforms="foo bar")
+                                   enUSPlatforms="foo bar",
+                                   isSecurityDriven=True,
+                                   description="we did this release because of bar")
             r.complete = True
             r.ready = True
             db.session.add(r)
@@ -182,7 +187,8 @@ class TestBase(unittest.TestCase):
                                    branch='b', mozillaRevision='yyy',
                                    l10nChangesets='yy zz', dashboardCheck=True,
                                    mozillaRelbranch=None,
-                                   submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1))
+                                   submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
+                                   description="foo reason")
             db.session.add(r)
             db.session.commit()
 
@@ -193,8 +199,8 @@ class TestBase(unittest.TestCase):
                                    l10nChangesets='yy zz', dashboardCheck=True,
                                    mozillaRelbranch=None,
                                    submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
-
-                                   shippedAt=datetime(2005, 1, 3, 1, 1, 1, 1))
+                                   shippedAt=datetime(2005, 1, 3, 1, 1, 1, 1),
+                                   description="bar reason")
             r.complete = True
             r.ready = True
             # Shipped
@@ -209,7 +215,8 @@ class TestBase(unittest.TestCase):
                                    l10nChangesets='yy zz', dashboardCheck=True,
                                    mozillaRelbranch=None,
                                    submittedAt=datetime(2014, 1, 1, 1, 1, 1, 1),
-                                   shippedAt=datetime(2014, 2, 3, 1, 1, 1, 1))
+                                   shippedAt=datetime(2014, 2, 3, 1, 1, 1, 1),
+                                   description="bar2 reason")
             r.complete = True
             r.ready = True
             # Shipped
@@ -224,8 +231,8 @@ class TestBase(unittest.TestCase):
                                    l10nChangesets='yy zz', dashboardCheck=True,
                                    mozillaRelbranch=None,
                                    submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
-
-                                   shippedAt=datetime(2005, 2, 1, 1, 1, 1, 1))
+                                   shippedAt=datetime(2005, 2, 1, 1, 1, 1, 1),
+                                   description="bar2 reason")
             r.complete = True
             r.ready = True
             # Shipped
