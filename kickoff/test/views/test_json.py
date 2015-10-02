@@ -172,7 +172,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("/json/firefox_history_major_releases.json" in fileList)
 
     def testJsonListFilesText(self):
-        ret = self.get('json_exports.txt')
+        ret = self.get('/json/json_exports.txt')
         fileList = ret.data
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("mobile_versions.json" in fileList)

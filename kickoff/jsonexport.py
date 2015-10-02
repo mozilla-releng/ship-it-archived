@@ -257,7 +257,7 @@ def languages_json():
     return app.send_static_file('languages.json')
 
 
-@app.route('/json_exports.html', methods=['GET'])
+@app.route('/json/json_exports.html', methods=['GET'])
 def json_exports():
     jsonFiles = generateJSONFileList()
     return render_template('json_exports.html', jsonFiles=jsonFiles)
@@ -270,7 +270,7 @@ def json_exports_json():
     return jsonify(jsonFiles)
 
 
-@app.route('/json_exports.txt', methods=['GET'])
+@app.route('/json/json_exports.txt', methods=['GET'])
 def json_exports_txt():
     """ Export the list of files a friendly way to txt """
     jsonFiles = generateJSONFileList()

@@ -40,6 +40,9 @@ if __name__ == '__main__':
         db.create_all()
 
     def auth(environ, username, password):
+        if environ['PATH_INFO'].startswith("/json/"):
+            # We request a JSON page, no need for auth
+            return True
         return options.username == username and options.password == password
 
     if app.config['DEBUG']:
