@@ -188,7 +188,7 @@ class ReleaseForm(Form):
     dashboardCheck = BooleanField('Dashboard check?', default=False)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
     comment = TextAreaField('Extra information to release-drivers:')
-    description = TextAreaField('foo:')
+    description = TextAreaField('Description:')
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
 
     def __init__(self, suggest=True, *args, **kwargs):
