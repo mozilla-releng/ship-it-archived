@@ -137,9 +137,12 @@ class ReleaseAPIForm(Form):
     status = StringField('status', filters=[truncateFilter(Release.status.type.length)])
     enUSPlatforms = JSONField('enUSPlatforms')
     shippedAt = DateTimeField('shippedAt', [validators.optional()])
+    description = TextAreaField('description', [validators.optional()])
+    isSecurityDriven = BooleanField('isSecurityDriven', [validators.optional()])
 
     def validate(self, release, *args, **kwargs):
         valid = Form.validate(self, *args, **kwargs)
+
         # Completed releases shouldn't be altered in terms of readyness or
         # completeness. Status updates are OK though.
         if release.complete:
@@ -149,16 +152,20 @@ class ReleaseAPIForm(Form):
                     self.errors['ready'] = []
                 self.errors['ready'].append('Cannot make a completed release not ready or incomplete.')
 
-            # Check if there is an other product-version already shipped
-            similar = getReleases(status="postrelease", productFilter=release.product,
+            if self.description:
+                # We just want to update the description & isSecurityDriven
+                valid = True
+            else:
+                # Check if there is an other product-version already shipped
+                similar = getReleases(status="postrelease", productFilter=release.product,
                                   versionFilter=release.version)
-            if similar and self.status.data != "Started":
-                # In most of the cases, it is useless since bug 1121032 has been implemented but keeping it
-                # in case we change/revert in the future and because we cannot always trust the client
-                valid = False
-                if 'postrelease' not in self.errors:
-                    self.errors['postrelease'] = []
-                self.errors['postrelease'].append('Version ' + release.version + ' already marked as shipped')
+                if similar and self.status.data != "Started":
+                    # In most of the cases, it is useless since bug 1121032 has been implemented but keeping it
+                    # in case we change/revert in the future and because we cannot always trust the client
+                    valid = False
+                    if 'postrelease' not in self.errors:
+                        self.errors['postrelease'] = []
+                    self.errors['postrelease'].append('Version ' + release.version + ' already marked as shipped')
 
         # If the release isn't complete, we can accept changes to readyness or
         # completeness, but marking a release as not ready *and* complete at
@@ -181,6 +188,8 @@ class ReleaseForm(Form):
     dashboardCheck = BooleanField('Dashboard check?', default=False)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
     comment = TextAreaField('Extra information to release-drivers:')
+    description = TextAreaField('Description:')
+    isSecurityDriven = BooleanField('Is a security driven release?', default=False)
 
     def __init__(self, suggest=True, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -321,6 +330,7 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.comment.data = row.comment
+        self.description.data = row.description
 
 
 class ThunderbirdReleaseForm(DesktopReleaseForm):

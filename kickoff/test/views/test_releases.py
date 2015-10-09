@@ -58,7 +58,9 @@ class TestReleaseAPI(ViewTest):
             'commRevision': 'ghi',
             'comment': 'My great comment!',
             'dashboardCheck': True,
+            'description': 'we did this release because of bar',
             'enUSPlatforms': 'foo bar',
+            'isSecurityDriven': True,
             'l10nChangesets': 'li',
             'partials': '0',
             'ready': True,
@@ -85,7 +87,9 @@ class TestReleaseAPI(ViewTest):
             'branch': 'a',
             'mozillaRevision': 'def',
             'dashboardCheck': True,
+            'description': None,
             'enUSPlatforms': None,
+            'isSecurityDriven': False,
             'l10nChangesets': 'ja zu',
             'partials': '0,1',
             'ready': True,
@@ -280,6 +284,7 @@ class TestReleaseView(ViewTest):
             'thunderbird-product=thunderbird',
             'thunderbird-mozillaRelbranch=',
             'thunderbird-commRelbranch=',
+            'thunderbird-description=foo',
         ])
         ret = self.post('/release.html', query_string={'name': 'Thunderbird-2-build2'}, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 403)

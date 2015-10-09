@@ -32,6 +32,8 @@ class Release(object):
     mozillaRelbranch = db.Column(db.String(50), default=None, nullable=True)
     enUSPlatforms = db.Column(db.String(500), default=None, nullable=True)
     comment = db.Column(db.Text, default=None, nullable=True)
+    description = db.Column(db.Text, default=None, nullable=True)
+    isSecurityDriven = db.Column(db.Boolean(), nullable=False, default=False)
     starter = db.Column(db.String(250), nullable=True)
 
     # Dates are always returned in UTC time and ISO8601 format to make them
@@ -61,7 +63,8 @@ class Release(object):
     def __init__(self, submitter, version, buildNumber, branch,
                  mozillaRevision, l10nChangesets, dashboardCheck,
                  mozillaRelbranch, enUSPlatforms=None, submittedAt=None,
-                 shippedAt=None, comment=None):
+                 shippedAt=None, comment=None, description=None,
+                 isSecurityDriven=False):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version.strip()
@@ -78,6 +81,9 @@ class Release(object):
             self.shippedAt = shippedAt
         if comment:
             self.comment = comment
+        if description:
+            self.description = description
+        self.isSecurityDriven = isSecurityDriven
 
     def toDict(self):
         me = {'product': self.product}
@@ -102,6 +108,8 @@ class Release(object):
         self.name = getReleaseName(self.product, self.version,
                                    self.buildNumber)
         self.comment = form.comment.data
+        self.description = form.description.data
+        self.isSecurityDriven = form.isSecurityDriven.data
 
     @classmethod
     def getRecent(cls, age=timedelta(weeks=7)):
@@ -141,7 +149,8 @@ class FennecRelease(Release, db.Model):
                    form.buildNumber.data, form.branch.data,
                    form.mozillaRevision.data, form.l10nChangesets.data,
                    form.dashboardCheck.data, form.mozillaRelbranch.data,
-                   form.comment.data)
+                   form.comment.data, form.description.data,
+                   form.isSecurityDriven.data)
 
 
 class DesktopRelease(Release):
@@ -169,7 +178,8 @@ class FirefoxRelease(DesktopRelease, db.Model):
                    form.version.data, form.buildNumber.data, form.branch.data,
                    form.mozillaRevision.data, form.l10nChangesets.data,
                    form.dashboardCheck.data, form.mozillaRelbranch.data,
-                   form.comment.data)
+                   form.comment.data, form.description.data,
+                   form.isSecurityDriven.data)
 
 
 class ThunderbirdRelease(DesktopRelease, db.Model):
@@ -190,7 +200,8 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
                    form.version.data, form.buildNumber.data, form.branch.data,
                    form.mozillaRevision.data, form.l10nChangesets.data,
                    form.dashboardCheck.data, form.mozillaRelbranch.data,
-                   form.comment.data)
+                   form.comment.data, form.description.data,
+                   form.isSecurityDriven.data)
 
     def updateFromForm(self, form):
         DesktopRelease.updateFromForm(self, form)
@@ -213,7 +224,8 @@ def getReleaseTable(release):
         raise ValueError("Can't find release table for release %s" % release)
 
 
-def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None, versionFilterCategory=None, searchOtherShipped=False, lastRelease=None):
+def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None,
+                versionFilterCategory=None, searchOtherShipped=False, lastRelease=None):
     filters = {}
     if ready is not None:
         filters['ready'] = ready
@@ -244,7 +256,8 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
                     # * regexp queries are not really standard in SQL
                     # * sqlalchemy does not provide a wrapper for this
                     for versionFilter in versionFilterCategory:
-                        if re.match(versionFilter, r.version):
+                        if re.match(versionFilter[1], r.version):
+                            r.category = versionFilter[0]
                             releases.append(r)
         else:
             for r in table.query.all():

@@ -81,8 +81,16 @@ class ReleaseAPI(MethodView):
         if form.enUSPlatforms.data:
             log.debug('%s: enUSPlatforms being changed to: %s', releaseName, form.enUSPlatforms.data)
             release.enUSPlatforms = form.enUSPlatforms.data
-        log.debug('%s: shippedAt being changed to: %s', releaseName, form.shippedAt.data)
-        release.shippedAt = form.shippedAt.data
+        if form.description.data:
+            log.debug('%s: description being changed to: %s', releaseName, form.description.data)
+            release.description = form.description.data
+            log.debug('%s: isSecurityDriven being changed to: %s', releaseName, form.isSecurityDriven.data)
+            release.isSecurityDriven = form.isSecurityDriven.data
+        else:
+            # Don't do when we are updating the desc, it would reset the date
+            log.debug('%s: shippedAt being changed to: %s', releaseName, form.shippedAt.data)
+            release.shippedAt = form.shippedAt.data
+
 
         db.session.add(release)
         db.session.commit()

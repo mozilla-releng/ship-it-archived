@@ -6,6 +6,7 @@
 <tr>
     <th>Status</th>
     <th>Name</th>
+    <th>Description</th>
     <th>Submitted By</th>
     <th>Submitted At</th>
     <th>Branch</th>
@@ -17,7 +18,7 @@
     <th>L10n Changesets</th>
     <th>Partial Versions</th>
     <th>Update Prompt Wait Time</th>
-    <th>Comment</th>
+    <th>Build comment</th>
     <th>Shipped At</th>
     <th>Shipped?</th>
 </tr>
@@ -26,6 +27,15 @@
 <tr class='running'>
   <td>{% if rel.status == 'Complete' %}<span class='status_complete'>{{ rel.status }}</span>{% else %}{{ rel.status }}{% endif %}</td>
   <td><a href="releases/{{ rel.name }}/status.html">{{ rel.name }}</a></td>
+  <td>{% if rel.description %}{{ rel.description }}{% endif %}
+    {% if rel.isSecurityDriven %}<br /><b>Security Driven</b>{% endif %}
+    <div class="linkUpdate{{ loop.index }}"><a target="{{ loop.index }}" class="showLinkUpdate">Update</a></div>
+    <div id="description{{ loop.index }}" class="textareaDiv">
+      <textarea id="desc{{ loop.index }}" name="desc{{ loop.index }}">{% if rel.description != None %}{{ rel.description }}{% endif %}</textarea>
+      <label for="isSecurityDriven{{ loop.index }}">Is sec driven?</label> <input type="checkbox" id="isSecurityDriven{{ loop.index }}"  name="isSecurityDriven{{ loop.index }}" value="is Sec Driven?" title="Did we do this release to fix a security issue (chemspill)?"/><br />
+      <input type="submit" value="Update" class="submitButton" onclick="return updateDesc('{{ rel.name }}', {{loop.index}})" />
+    </div>
+  </td>
   <td>{{ rel.submitter }}</td>
   <td class='dateDisplay'>{{ rel.submittedAt }}</td>
   <td>{{ rel.branch }}</td>
@@ -62,7 +72,7 @@
   {% if rel.comment and rel.comment|length > 50 %}
           <a href="/releases/{{ rel.name }}/comment">Link</a>
   {% else %}
-          {{ rel.comment }}
+          {% if rel.comment %} {{ rel.comment }} {% endif %}
   {% endif %}
   </td>
     <td class='dateDisplay'>{{ rel.shippedAt }}</td>
