@@ -45,3 +45,6 @@ To run JS tests:
 * `firefox kickoff/test/js/jstest.html`
 or using node.js
 * `npm install &&  ./node_modules/grunt-cli/bin/grunt --verbose`
+
+Code coverage results are published on coveralls:
+https://coveralls.io/github/mozilla/ship-it
