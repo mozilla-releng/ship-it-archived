@@ -139,6 +139,8 @@ class TestJSONRequestsAPI(ViewTest):
         config.CURRENT_ESR = "2"
         config.ESR_NEXT = "38"
         config.AURORA_VERSION = "23.0a2"
+        config.IOS_VERSION = "1.1"
+        config.IOS_BETA_VERSION = "1.2"
         ret = self.get('/json/mobile_versions.json')
         versions = json.loads(ret.data)
 
@@ -146,6 +148,8 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['alpha_version'], "23.0a2")
         self.assertEquals(versions['beta_version'], "23.0b2")
         self.assertEquals(versions['version'], "24.0")
+        self.assertEquals(versions['ios_version'], "1.1")
+        self.assertEquals(versions['ios_beta_version'], "1.2")
 
     def testThunderbirdVersions(self):
         ret = self.get('/json/thunderbird_versions.json')
