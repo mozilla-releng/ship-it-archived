@@ -100,12 +100,12 @@ function submittedReleaseButtons(buttonId) {
 }
 
 function sendAjaxQuery(releaseName, query) {
-    csrfToken = $('#csrf_token').val();
+    csrf_token = $('#csrf_token').val();
 
     var request = $.ajax({
         url: '/releases/' + releaseName,
         type: 'POST',
-        data: query + '&csrf_token=' + csrfToken + '&csrfToken=' + csrfToken ,
+        data: query + '&csrf_token=' + csrf_token + '&csrf_token=' + csrf_token ,
     });
 
     request.done(function() {
