@@ -33,7 +33,7 @@
       </div>
       <div id="collapse{{ group[0] }}" class="panel-collapse collapse out collapse-progress">
         {% if status[group[0]].get('platforms') %}
-          {% for platform, data in status[group[0]]['platforms'].items() %}
+          {% for platform, data in status[group[0]]['platforms']|dictsort %}
             <div id="{% if loop.first %}top-{% endif %}sub-progress-container" class="row">
               <h4 class="col-lg-2 col-lg-push-2">
                 {% if data == 1 %}
