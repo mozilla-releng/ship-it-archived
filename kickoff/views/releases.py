@@ -6,13 +6,13 @@ from flask.views import MethodView
 
 from kickoff import db
 from kickoff.log import cef_event, CEF_WARN, CEF_INFO
-from kickoff.model import getReleaseTable, getReleases
+from kickoff.model import getReleaseTable, getReleases, ProductReleasesView, ReleasesPaginationCriteria
 from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm
 
 log = logging.getLogger(__name__)
 
 
-def sortedReleases():
+def sortedReleases(ready = None):
     def cmpReleases(x, y):
         # Not ready releases should come before ready ones.
         # Incomplete releases should come before completed ones.
@@ -29,7 +29,7 @@ def sortedReleases():
         elif y.complete:
             return -1
         return cmp(y._submittedAt, x._submittedAt)
-    return sorted(getReleases(), cmp=cmpReleases)
+    return sorted(getReleases(ready = ready), cmp=cmpReleases)
 
 
 class ReleasesAPI(MethodView):
@@ -96,6 +96,85 @@ class ReleaseAPI(MethodView):
         db.session.commit()
         return Response(status=200)
 
+class ReleasesListAPI(MethodView):
+    def getTotal(self, complete = None, ready = None):
+        filter = {}
+
+        if complete is not None:
+            filter["complete"] = complete
+
+        if ready is not None:
+            filter["ready"] = ready
+
+        return ProductReleasesView.query.filter_by(**filter).count()
+
+    def checkJQueryDataTableVersion(self):
+        version = request.args.get('datatableVersion')
+
+        if version is None or not '1.9.4' in version:
+            msg = str.format('The Jquery datatable version is {0}. Expected version 1.9.4', version)
+            log.warning(msg) 
+
+    def getOrderByDict(self):
+        #Warning: This is a server-side function that is highly dependent of Jquery Datatables
+        self.checkJQueryDataTableVersion()
+
+        order_by = {
+        'ready': 'asc',
+        'complete': 'asc'
+        }
+        
+        sortColumnIndexPrefix = 'iSortCol_'
+        sortColumnDirectionPrefix = 'sSortDir_'
+        columnNamePrefix = 'mDataProp_'
+        columnCount = len([dataParam for dataParam in request.args.keys() if dataParam.startswith('mDataProp_')])
+
+        for i in range(0, columnCount):
+            sortIndex = request.args.get(sortColumnIndexPrefix + str(i))
+            
+            if sortIndex is None:
+                break
+
+            name = request.args.get(columnNamePrefix + sortIndex)
+            direction = request.args.get(sortColumnDirectionPrefix + str(i))
+
+            if name == 'submittedAt':
+                order_by['_submittedAt'] = direction
+            elif name == 'shippedAt':
+                order_by['_shippedAt'] = direction
+            else:
+                order_by[name] = direction
+
+        return order_by
+
+    def get(self):
+        start = request.args.get('iDisplayStart', type=int)
+        length = request.args.get('iDisplayLength', type=int)       
+
+        readyParam = request.args.get('ready')
+        completeParam = request.args.get('complete')
+
+        ready = None
+        complete = None
+
+        if readyParam is not None:
+            ready = readyParam == 'true'
+        if completeParam is not None:
+            complete = completeParam == 'true'
+
+        orderByDict = self.getOrderByDict()
+        total = self.getTotal(complete=complete, ready=ready)
+
+        paginationCriteria = ReleasesPaginationCriteria(start, length, orderByDict)
+        releases = getReleases(complete = complete, ready = ready, paginationCriteria = paginationCriteria)
+        
+        paginatedReleases = {
+            'releases': [r.toDict() for r in releases],
+            'iTotalDisplayRecords': total,
+            'iTotalRecords': total
+        }
+
+        return jsonify(paginatedReleases)
 
 class ReleaseL10nAPI(MethodView):
     def get(self, releaseName):
@@ -120,7 +199,7 @@ class Releases(MethodView):
         # http://stackoverflow.com/questions/8463421/how-to-render-my-select-field-with-wtforms
         # form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
         form = ReleasesForm()
-        return render_template('releases.html', releases=sortedReleases(), form=form)
+        return render_template('releases.html', releases=sortedReleases(ready = False), form=form)
 
     def post(self):
         starter = request.environ.get('REMOTE_USER')
@@ -148,7 +227,7 @@ class Releases(MethodView):
             r.starter = starter
             db.session.add(r)
         db.session.commit()
-        return render_template('releases.html', releases=sortedReleases(), form=form)
+        return render_template('releases.html', releases=sortedReleases(ready = False), form=form)
 
 
 class Release(MethodView):

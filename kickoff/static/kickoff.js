@@ -21,7 +21,7 @@ function initialSetup() {
     // Hide all by default
     $('.textareaDiv').hide();
     // Display or hide the textarea to update the description
-    $('.showLinkUpdate').click(function() {
+    $('table').on('click', 'tbody tr td div .showLinkUpdate', function() {
         $('.textareaDiv').hide();
         $('.linkUpdate' + $(this).attr('target')).hide();
         $('#description' + $(this).attr('target')).show();
@@ -33,30 +33,175 @@ function initialSetup() {
 }
 
 function viewReleases() {
-    toLocalDate();
-    // initial sorting by SubmittedAt (descending)
-    // and then saving user table state using localStorage
-    $('#reviewed').dataTable({
-        'bJQueryUI': true,
-        'aaSorting': [[3, 'desc']],
-        'bStateSave': true,
-        'fnStateSave': function(oSettings, oData) {
-        localStorage.setItem('DataTables_reviewed' + window.location.pathname, JSON.stringify(oData));
-    },
-        'fnStateLoad': function(oSettings) {
-        return JSON.parse(localStorage.getItem('DataTables_reviewed' + window.location.pathname));
-    }
+    var submittedAtIndexColumn = 4;
+
+    var returnDataIfIsThunderbird = function(data, type, full) {
+        if (full.name.contains('Thunderbird')) {
+            return data;
+        }
+
+        return null;
+    };
+
+    var yesIfDataIsNotNull = function(data, type, full) {
+        if (data) {
+            return 'Yes';
+        }
+
+        return 'No';
+    };
+
+    var buildl10nLink = function(data, type, full) {
+        return '<a style="cursor: pointer; text-decoration: underline;" href="/releases/' + data + '/l10n">Link</a>';
+    };
+
+    var commaToNewLine = function(data) {
+        return data.replace(/,/g,',\n');
+    };
+
+    var buildPromptWaitTimeLabel = function(data, type, full) {
+        if (full.name.contains('Fennec')) {
+            return 'N/A';
+        } else if (!data) {
+            return 'Default';
+        }
+
+        return data;
+    };
+
+    var buildCommentCell = function(data, type, full) {
+        if (data && data.length > 50) {
+            return '<a href="/releases/' + full.name + '/comment" style="cursor: pointer; text-decoration: underline;">Link</a>';
+        }
+
+        return data == null ? '-' : data;
+    };
+
+    $('#reviewed').DataTable({
+        'bServerSide': true,
+        'sAjaxSource': '/releases/releaseslist',
+        'sAjaxDataProp': 'releases',
+        'aaSorting': [[submittedAtIndexColumn,'desc']],
+        'fnServerParams': function(aoData) {
+            aoData.push({'name': 'ready', 'value': true}, {'name': 'complete', 'value': false}, {'name': 'datatableVersion', 'value': this.DataTable.version});
+        },
+        'aoColumns': [
+            {'mData': 'status'},
+            {'mData': 'name'},
+            {'mData': 'submitter'},
+            {'mData': 'submittedAt'},
+            {'mData': 'branch'},
+            {'mData': 'mozillaRevision'},
+            {'mData': 'mozillaRelbranch'},
+            {'mData': 'commRevision', 'sDefaultContent': 'N/A', 'mRender': returnDataIfIsThunderbird},
+            {'mData': 'commRelbranch', 'sDefaultContent': 'N/A', 'mRender': returnDataIfIsThunderbird},
+            {'mData': 'dashboardCheck', 'mRender': yesIfDataIsNotNull},
+            {'mData': 'name', 'mRender': buildl10nLink},
+            {'mData': 'partials',
+             'sDefaultContent': 'N/A',
+            'mRender': function(data, type, full) {
+                if (data && full.name.contains('Fennec')) {
+                    return commaToNewLine(data);
+                }
+
+                return null;
+            }},
+            {'mData': 'promptWaitTime', 'mRender': buildPromptWaitTimeLabel},
+            {'mData': 'comment', 'mRender': buildCommentCell}
+        ]
+        ,
+        'fnDrawCallback': function(oSettings) {
+            setTimeout(function() {
+                var width = $('.ui-accordion-header').innerWidth();
+                $('#tabContainer').width(width);
+            });
+        }
     });
-    $('#running').dataTable({
-        'bJQueryUI': true,
-        'aaSorting': [[2, 'desc']],
-        'bStateSave': true,
-        'fnStateSave': function(oSettings, oData) {
-        localStorage.setItem('DataTables_running' + window.location.pathname, JSON.stringify(oData));
-    },
-        'fnStateLoad': function(oSettings) {
-        return JSON.parse(localStorage.getItem('DataTables_running' + window.location.pathname));
-    }
+
+    $('#running').DataTable({
+        'bServerSide': true,
+        'sAjaxSource': '/releases/releaseslist',
+        'sAjaxDataProp': 'releases',
+        'aaSorting': [[submittedAtIndexColumn,'desc']],
+        'fnServerParams': function(aoData) {
+            aoData.push({'name': 'ready', 'value': true}, {'name': 'complete', 'value': true}, {'name': 'datatableVersion', 'value': this.DataTable.version});
+        },
+        'fnCreatedRow': function(nRow, aData, iDataIndex) {
+            var description = aData.description != null ? aData.description : '';
+            var htmlDescription = description;
+
+            if (aData.isSecurityDriven) {
+                htmlDescription += '<br /><strong style="white-space: nowrap;">Security Driven</strong>';
+            }
+
+            htmlDescription += '<div style="cursor: pointer; text-decoration: underline;" class="linkUpdate' + iDataIndex + '"><a target="' + iDataIndex + '" class="showLinkUpdate">Update</a></div>';
+            htmlDescription += '<div id="description' + iDataIndex + '" style="display: none;" class="form-group textareaDiv">';
+            htmlDescription += '<textarea id="desc' + iDataIndex + '" name="desc' + iDataIndex + '">' + description + '</textarea>';
+            htmlDescription += '<div class="checkbox"><label style="white-space: nowrap; font-weight: bold; text-align: center;" for="isSecurityDriven{{ loop.index }}">';
+            htmlDescription += '<input type="checkbox" ' + (aData.isSecurityDriven ? 'checked' : '') + ' id="isSecurityDriven' + iDataIndex + '"  name="isSecurityDriven' + iDataIndex + '" value="Is Sec Driven?" title="Did we do this release to fix a security issue (chemspill)?"/> Is sec driven?</label></div>';
+            htmlDescription += '<input type="submit" value="Update" class="submitButton" onclick="return updateDesc(\'' + aData.name + '\', ' + iDataIndex + ')" /></div>';
+
+            var tdDescription = $(nRow).find('td')[2];
+            $(tdDescription).html(htmlDescription);
+        },
+        'aoColumns': [
+            {'mData': 'status',
+             'mRender': function(data, type, full) {
+                if (data == 'Complete') {
+                    return '<span class="status_complete">' + data + '</span>';
+                }
+
+                return data;
+            }},
+            {'mData': 'name'},
+            {'mData':  'description'},
+            {'mData': 'submitter'},
+            {'mData': 'submittedAt',
+             'mRender': function(data, type, full) {
+                return '<span style="white-space: nowrap;" class="dateDisplay">' + data + '</span>';
+            }},
+            {'mData': 'branch'},
+            {'mData': 'mozillaRevision'},
+            {'mData': 'mozillaRelbranch'},
+            {'mData': 'commRevision', 'sDefaultContent': 'N/A'},
+            {'mData': 'commRelbranch', 'sDefaultContent': 'N/A'},
+            {'mData': 'dashboardCheck', 'mRender': yesIfDataIsNotNull},
+            {'mData': 'name', 'mRender': buildl10nLink},
+            {'mData': 'partials',
+             'mRender': function(data, type, full) {
+                if (data) {
+                    return commaToNewLine(data);
+                }
+
+                return '';
+            }},
+            {'mData': 'promptWaitTime', 'mRender': buildPromptWaitTimeLabel},
+            {'mData': 'comment', 'mRender': buildCommentCell},
+            {'mData': 'shippedAt',
+             'mRender': function(data, type, full) {
+                return '<span class="dateDisplay">' + data + '</span>';
+            }},
+            {'mData': 'status',
+             'mRender': function(data, type, full) {
+                if (full.status !== 'postrelease' && full.status !== 'Post Release') {
+                    if (full.ReleaseMarkedAsShipped) {
+                        return 'Other build shipped';
+                    } else {
+                        return 'Not shipped <input type="submit" value="Shipped!" class="submitButton" onclick="return updateShip(\'' + full.name + '\', true)" />';
+                    }
+                } else {
+                    return 'Shipped <input type="submit" value="Not Shipped" class="submitButton" onclick="return updateShip(\'' + full.name + '\', false)" />';
+                }
+
+            }}
+        ],
+        'fnDrawCallback': function(oSettings) {
+            toLocalDate();
+            setTimeout(function() {
+                var width = $('.ui-accordion-header').innerWidth();
+                $('#tabContainer').width(width);
+            });
+        }
     });
 }
 
@@ -72,7 +217,7 @@ function toLocalDate() {
             // formatDate does not handle hour/minute
             formateddate = $.datepicker.formatDate('yy/mm/dd', localdate) + '<br />' + localdate.getHours() + ':' + (localdate.getMinutes() < 10 ? '0' : '') + localdate.getMinutes();
         }
-        if ($(this).prop('tagName') == 'TD') {
+        if ($(this).prop('tagName') == 'TD' || $(this).prop('tagName') == 'SPAN') {
             $(this).empty().append(formateddate);
         } else {
             //this is not a table row: prepend 'Date: '

@@ -1,98 +1,27 @@
-
-{% for rel in releases if rel.ready and rel.complete %}
-{% if loop.first %}
 <table id="running">
-<thead>
-<tr>
-    <th>Status</th>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Submitted By</th>
-    <th>Submitted At</th>
-    <th>Branch</th>
-    <th>Mozilla Revision</th>
-    <th>Mozilla Relbranch</th>
-    <th>Comm Revision</th>
-    <th>Comm Relbranch</th>
-    <th>Check Dashboard?</th>
-    <th>L10n Changesets</th>
-    <th>Partial Versions</th>
-    <th>Update Prompt Wait Time</th>
-    <th>Build comment</th>
-    <th>Shipped At</th>
-    <th>Shipped?</th>
-</tr>
-</thead>
-{% endif %}
-<tr class='running'>
-  <td>{% if rel.status == 'Complete' %}<span class='status_complete'>{{ rel.status }}</span>{% else %}{{ rel.status }}{% endif %}</td>
-  <td><a href="releases/{{ rel.name }}/status.html">{{ rel.name }}</a></td>
-  <td>{% if rel.description %}{{ rel.description }}{% endif %}
-    {% if rel.isSecurityDriven %}<br /><b>Security Driven</b>{% endif %}
-    <div class="linkUpdate{{ loop.index }}"><a target="{{ loop.index }}" class="showLinkUpdate">Update</a></div>
-    <div id="description{{ loop.index }}" class="textareaDiv">
-      <textarea id="desc{{ loop.index }}" name="desc{{ loop.index }}">{% if rel.description != None %}{{ rel.description }}{% endif %}</textarea>
-      <label for="isSecurityDriven{{ loop.index }}">Is sec driven?</label> <input type="checkbox" id="isSecurityDriven{{ loop.index }}"  name="isSecurityDriven{{ loop.index }}" value="is Sec Driven?" title="Did we do this release to fix a security issue (chemspill)?"/><br />
-      <input type="submit" value="Update" class="submitButton" onclick="return updateDesc('{{ rel.name }}', {{loop.index}})" />
-    </div>
-  </td>
-  <td>{{ rel.submitter }}</td>
-  <td class='dateDisplay'>{{ rel.submittedAt }}</td>
-  <td>{{ rel.branch }}</td>
-  <td>{{ rel.mozillaRevision }}</td>
-  <td>{{ rel.mozillaRelbranch }}</td>
-  {% if 'Thunderbird' in rel.name %}
-    <td>{{ rel.commRevision }}</td>
-    <td>{{ rel.commRelbranch }}</td>
-  {% else %}
-    <td class="irrelevant">N/A</td>
-    <td class="irrelevant">N/A</td>
-  {% endif %}
-  {% if rel.dashboardCheck %}
-    <td>Yes</td>
-  {% else %}
-    <td>No</td>
-  {% endif %}
-  <td><a href="/releases/{{ rel.name }}/l10n">Link</a></td>
-  {% if 'Fennec' in rel.name %}
-    <td class="irrelevant">N/A</td>
-  {% else %}
-    <td>{{ rel.partials|replace(',', ',\n') }}</td>
-  {% endif %}
-  {% if 'Fennec' in rel.name %}
-    <td class="irrelevant">N/A</td>
-  {% else %}
-    {% if not rel.promptWaitTime %}
-      <td>Default</td>
-    {% else %}
-      <td>{{ rel.promptWaitTime }}</td>
-    {% endif %}
-  {% endif %}
-  <td>
-  {% if rel.comment and rel.comment|length > 50 %}
-          <a href="/releases/{{ rel.name }}/comment">Link</a>
-  {% else %}
-          {% if rel.comment %} {{ rel.comment }} {% endif %}
-  {% endif %}
-  </td>
-    <td class='dateDisplay'>{{ rel.shippedAt }}</td>
-  <td>
-{# In some cases, we get different values. See bug #1121032 #}
-{% if rel.status != "postrelease" and rel.status != "Post Release" %}
-    {% if rel.ReleaseMarkedAsShipped %}
-      Other build shipped
-    {% else %}
-      Not shipped
-      <input type="submit" value="Shipped!" class="submitButton" onclick="return updateShip('{{ rel.name }}', true)" />
-    {% endif %}
-{% else %}
-    Shipped
-    <input type="submit" value="Not Shipped" class="submitButton" onclick="return updateShip('{{ rel.name }}', false)" />
-{% endif %}
-  </td>
-{% if loop.last %}
+  <thead>
+    <tr>
+        <th>Status</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Submitted By</th>
+        <th>Submitted At</th>
+        <th>Branch</th>
+        <th>Mozilla Revision</th>
+        <th>Mozilla Relbranch</th>
+        <th>Comm Revision</th>
+        <th>Comm Relbranch</th>
+        <th>Check Dashboard?</th>
+        <th>L10n Changesets</th>
+        <th>Partial Versions</th>
+        <th>Update Prompt Wait Time</th>
+        <th>Build comment</th>
+        <th>Shipped At</th>
+        <th>Shipped?</th>
+    </tr>
+  </thead>
+
+
 </table>
-{% endif %}
-{% else %}
-<h1>No running/completed releases!</h1>
-{% endfor %}
+
+<!-- <h1>No running/completed releases!</h1> -->
