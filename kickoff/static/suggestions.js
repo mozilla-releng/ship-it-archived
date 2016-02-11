@@ -107,7 +107,7 @@ function addLastVersionAsPartial(version, previousReleases, nb) {
             continue;
         }
 
-        if ((previousRelease.localeCompare(version))<0) {
+        if ((previousRelease.localeCompare(version)) < 0) {
             partialList += previousReleases[k] + ',';
             nbAdded++;
             if (nb == nbAdded) {
