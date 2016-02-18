@@ -78,6 +78,7 @@ function viewReleases() {
     };
 
     $('#reviewed').DataTable({
+        'bJQueryUI': true,
         'bServerSide': true,
         'sAjaxSource': '/releases/releaseslist',
         'sAjaxDataProp': 'releases',
@@ -119,6 +120,7 @@ function viewReleases() {
     });
 
     $('#running').DataTable({
+        'bJQueryUI': true,
         'bServerSide': true,
         'sAjaxSource': '/releases/releaseslist',
         'sAjaxDataProp': 'releases',
