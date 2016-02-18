@@ -223,9 +223,15 @@ def getReleaseTable(release):
     else:
         raise ValueError("Can't find release table for release %s" % release)
 
+class ReleasesPaginationCriteria:
+    def __init__(self, start, length, orderByDict):
+        self.start = start
+        self.length = length
+        self.orderByDict = orderByDict
 
 def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None,
-                versionFilterCategory=None, searchOtherShipped=False, lastRelease=None):
+                versionFilterCategory=None, searchOtherShipped=False, lastRelease=None, paginationCriteria = None):
+
     filters = {}
     if ready is not None:
         filters['ready'] = ready
@@ -235,18 +241,34 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
         filters['status'] = status
     if versionFilter is not None:
         filters['version'] = versionFilter
-    if productFilter:
+
+    if paginationCriteria:
+        tables = (ProductReleasesView, )
+    elif productFilter:
         tables = (getReleaseTable(productFilter),)
     else:
         tables = (FennecRelease, FirefoxRelease, ThunderbirdRelease)
+
     releases = []
+
     for table in tables:
         if filters:
-            if lastRelease:
+            if lastRelease and not paginationCriteria:
                 # Retrieve the last X version
-                results = table.query.filter_by(**filters).order_by(table._submittedAt.desc()).limit(40)
+                qry = table.query.filter_by(**filters).order_by(table._submittedAt.desc()).limit(40)
             else:
-                results = table.query.filter_by(**filters)
+                qry = table.query.filter_by(**filters)
+
+                if paginationCriteria:
+                    if productFilter:
+                        qry = qry.filter(ProductReleasesView.product.contains(productFilter))
+
+                    orderByList = getOrderByList(table, paginationCriteria.orderByDict)
+
+                    qry = qry.order_by(*orderByList).limit(paginationCriteria.length).offset(paginationCriteria.start)                  
+
+            results = qry.all()
+            
             for r in results:
                 if not versionFilterCategory:
                     releases.append(r)
@@ -260,18 +282,26 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
                             r.category = versionFilter[0]
                             releases.append(r)
         else:
-            for r in table.query.all():
+            if paginationCriteria:
+                orderByList = getOrderByList(table, paginationCriteria.orderByDict)
+                results = table.query.order_by(*orderByList).limit(paginationCriteria.length).offset(paginationCriteria.start).all()
+            else:
+                results = table.query.all()
+
+            for r in results:
                 releases.append(r)
+    
     status_groups = {'tag': 'Tagging', 'build': 'Builds', 'repack': 'Repacks',
                      'update': 'Update', 'releasetest': 'Release Test',
                      'readyforrelease': 'Ready For Release',
                      'postrelease': 'Post Release'}
+    
     for release in releases:
         status = ReleaseEvents.getCurrentStatus(release.name)
         if status:
             release.status = status_groups[status]
 
-        if not searchOtherShipped:
+        if not searchOtherShipped and not paginationCriteria:
             # Disable this search to avoid an infinite recursion
 
             # Search if we don't have a build (same version + product) already shipped
@@ -284,7 +314,6 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
                 release.ReleaseMarkedAsShipped = True
 
     return releases
-
 
 class ReleaseEvents(db.Model):
 
@@ -462,3 +491,22 @@ class ReleaseEvents(db.Model):
         releaseTable = getReleaseTable(name.split('-')[0].title())
         release = releaseTable.query.filter_by(name=name).first()
         return json.loads(release.enUSPlatforms)
+
+def getOrderByList(obj, orderByDict = {}):
+    lst = []
+
+    for k, v in orderByDict.iteritems():
+        column = getattr(obj, k)
+        direction = getattr(column, v)
+        lst.append(direction())
+
+    return lst
+
+class ProductReleasesView(Release, db.Model):
+    __tablename__ = 'product_releases'
+
+    product = db.Column(db.String(100))
+    partials = db.Column(db.String(100))
+    promptWaitTime = db.Column(db.Integer(), nullable=True)
+    commRevision = db.Column(db.String(100))
+    commRelbranch = db.Column(db.String(50))
