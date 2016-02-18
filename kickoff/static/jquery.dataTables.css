@@ -219,3 +219,16 @@ table.dataTable thead td:active {
 	-webkit-overflow-scrolling: touch;
 }
 
+/*
+ * Fix header and arrow positions
+*/
+
+table.dataTable thead th div.DataTables_sort_wrapper {
+    position: relative;
+}
+table.dataTable thead th div.DataTables_sort_wrapper span {
+    margin-top: -8px;
+    position: absolute;
+    right: -18px;
+    top: 50%;
+}
