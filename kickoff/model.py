@@ -6,7 +6,7 @@ import re
 
 from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_property
-
+from sqlalchemy.sql.expression import or_
 from mozilla.release.info import getReleaseName
 
 from kickoff import db
@@ -230,7 +230,7 @@ class ReleasesPaginationCriteria:
         self.orderByDict = orderByDict
 
 def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None,
-                versionFilterCategory=None, searchOtherShipped=False, lastRelease=None, paginationCriteria = None):
+                versionFilterCategory=None, searchOtherShipped=False, lastRelease=None, paginationCriteria = None, searchFilter = None):
 
     filters = {}
     if ready is not None:
@@ -258,6 +258,10 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
                 qry = table.query.filter_by(**filters).order_by(table._submittedAt.desc()).limit(40)
             else:
                 qry = table.query.filter_by(**filters)
+
+                if searchFilter:
+                    searchList = table.getSearchList(searchFilter)
+                    qry = qry.filter(or_(*searchList))
 
                 if paginationCriteria:
                     if productFilter:
@@ -510,3 +514,17 @@ class ProductReleasesView(Release, db.Model):
     promptWaitTime = db.Column(db.Integer(), nullable=True)
     commRevision = db.Column(db.String(100))
     commRelbranch = db.Column(db.String(50))
+
+    @classmethod
+    def OR(cls, searchList):
+        return or_(*searchList)
+
+    @classmethod
+    def getSearchList(cls, searchDict = {}):
+        lst = []
+        for k, v in searchDict.iteritems():
+            column = getattr(cls, k)
+            contains = getattr(column, 'contains')
+            lst.append(contains(v))
+
+        return lst

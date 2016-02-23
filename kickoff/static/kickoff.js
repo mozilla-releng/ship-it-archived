@@ -90,7 +90,7 @@ function viewReleases() {
             {'mData': 'status'},
             {'mData': 'name'},
             {'mData': 'submitter'},
-            {'mData': 'submittedAt'},
+            {'mData': 'submittedAt', 'bSearchable': false},
             {'mData': 'branch'},
             {'mData': 'mozillaRevision'},
             {'mData': 'mozillaRelbranch'},
@@ -158,7 +158,7 @@ function viewReleases() {
             {'mData': 'name'},
             {'mData':  'description'},
             {'mData': 'submitter'},
-            {'mData': 'submittedAt',
+            {'mData': 'submittedAt', 'bSearchable': false,
              'mRender': function(data, type, full) {
                 return '<span style="white-space: nowrap;" class="dateDisplay">' + data + '</span>';
             }},
@@ -179,7 +179,7 @@ function viewReleases() {
             }},
             {'mData': 'promptWaitTime', 'mRender': buildPromptWaitTimeLabel},
             {'mData': 'comment', 'mRender': buildCommentCell},
-            {'mData': 'shippedAt',
+            {'mData': 'shippedAt', 'bSearchable': false,
              'mRender': function(data, type, full) {
                 return '<span class="dateDisplay">' + data + '</span>';
             }},

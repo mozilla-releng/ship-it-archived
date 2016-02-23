@@ -97,7 +97,16 @@ class ReleaseAPI(MethodView):
         return Response(status=200)
 
 class ReleasesListAPI(MethodView):
-    def getTotal(self, complete = None, ready = None):
+    def __init__(self):
+        self.dataTableVersion = '1.9.4'
+        self.sortColumnIndexPrefix = 'iSortCol_'
+        self.sortColumnDirectionPrefix = 'sSortDir_'
+        self.columnNamePrefix = 'mDataProp_'
+        self.columnCountParam = 'iColumns'
+        self.serchablePrefix = 'bSearchable_'
+        self.searchParam = 'sSearch'
+
+    def getTotal(self, complete = None, ready = None, searchFilter = {}):
         filter = {}
 
         if complete is not None:
@@ -106,12 +115,17 @@ class ReleasesListAPI(MethodView):
         if ready is not None:
             filter["ready"] = ready
 
-        return ProductReleasesView.query.filter_by(**filter).count()
+        query = ProductReleasesView.query.filter_by(**filter)
+
+        if searchFilter:
+            query = query.filter(ProductReleasesView.OR(ProductReleasesView.getSearchList(searchFilter)))
+
+        return query.count()
 
     def checkJQueryDataTableVersion(self):
         version = request.args.get('datatableVersion')
 
-        if version is None or not '1.9.4' in version:
+        if version is None or not self.dataTableVersion in version:
             msg = str.format('The Jquery datatable version is {0}. Expected version 1.9.4', version)
             log.warning(msg) 
 
@@ -120,23 +134,20 @@ class ReleasesListAPI(MethodView):
         self.checkJQueryDataTableVersion()
 
         order_by = {
-        'ready': 'asc',
-        'complete': 'asc'
+            'ready': 'asc',
+            'complete': 'asc'
         }
         
-        sortColumnIndexPrefix = 'iSortCol_'
-        sortColumnDirectionPrefix = 'sSortDir_'
-        columnNamePrefix = 'mDataProp_'
-        columnCount = len([dataParam for dataParam in request.args.keys() if dataParam.startswith('mDataProp_')])
+        columnCount = request.args.get(self.columnCountParam, type=int)
 
         for i in range(0, columnCount):
-            sortIndex = request.args.get(sortColumnIndexPrefix + str(i))
+            sortIndex = request.args.get(self.sortColumnIndexPrefix + str(i))
             
             if sortIndex is None:
                 break
 
-            name = request.args.get(columnNamePrefix + sortIndex)
-            direction = request.args.get(sortColumnDirectionPrefix + str(i))
+            name = request.args.get(self.columnNamePrefix + sortIndex)
+            direction = request.args.get(self.sortColumnDirectionPrefix + str(i))
 
             if name == 'submittedAt':
                 order_by['_submittedAt'] = direction
@@ -146,6 +157,23 @@ class ReleasesListAPI(MethodView):
                 order_by[name] = direction
 
         return order_by
+
+    def getSearchFilterDict(self):
+        #Warning: This is a server-side function that is highly dependent of Jquery Datatables
+        self.checkJQueryDataTableVersion()
+
+        searchFilter = {}
+
+        columnCount = request.args.get(self.columnCountParam, type=int)
+        param = request.args.get(self.searchParam)
+
+        if param and not param.isspace():
+            for filterIndex in range(columnCount):
+                if request.args.get(self.serchablePrefix + str(filterIndex)) == 'true':
+                    columnName = request.args.get(self.columnNamePrefix + str(filterIndex))
+                    searchFilter[columnName] = param
+
+        return searchFilter
 
     def get(self):
         start = request.args.get('iDisplayStart', type=int)
@@ -162,11 +190,12 @@ class ReleasesListAPI(MethodView):
         if completeParam is not None:
             complete = completeParam == 'true'
 
+        searchFilterDict = self.getSearchFilterDict()
         orderByDict = self.getOrderByDict()
-        total = self.getTotal(complete=complete, ready=ready)
+        total = self.getTotal(complete=complete, ready=ready, searchFilter = searchFilterDict)
 
         paginationCriteria = ReleasesPaginationCriteria(start, length, orderByDict)
-        releases = getReleases(complete = complete, ready = ready, paginationCriteria = paginationCriteria)
+        releases = getReleases(complete = complete, ready = ready, paginationCriteria = paginationCriteria, searchFilter = searchFilterDict)
         
         paginatedReleases = {
             'releases': [r.toDict() for r in releases],
