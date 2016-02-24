@@ -1,0 +1,7 @@
+shipit:
+  build: ./
+  command: python kickoff-web.py -d sqlite:///update.db --username=admin --password=password --host=0.0.0.0 --port=5000 --verbose
+  ports:
+    - "5000:5000"
+  volumes:
+    - .:/app
