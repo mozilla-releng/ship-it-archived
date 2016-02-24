@@ -20,6 +20,8 @@ pip-log.txt
 .coverage
 .tox
 node_modules/
+# .cache used for mysql in docker
+.cache
 
 #Translations
 *.mo
@@ -29,4 +31,3 @@ node_modules/
 
 *.db
 *.log
-.vagrant/

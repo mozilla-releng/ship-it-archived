@@ -1,7 +1,26 @@
 shipit:
-  build: ./
-  command: python kickoff-web.py -d sqlite:///update.db --username=admin --password=password --host=0.0.0.0 --port=5000 --verbose
+  build: .
+  dockerfile: ./Dockerfile-server
+  entrypoint:
+    - bash
+    - scripts/initdb_and_run.sh
+  # TODO use uwsgi instead of kickoff-web.py directly
+  command: python kickoff-web.py -d mysql://shipit:shipitpw@shipitdb/shipit --username=admin --password=password --host=0.0.0.0 --port=5000 --verbose
   ports:
     - "5000:5000"
+  links:
+    - shipitdb
   volumes:
     - .:/app
+
+shipitdb:
+  image: mysql:5.7
+  expose:
+    - "3306"
+  environment:
+    - MYSQL_DATABASE=shipit
+    - MYSQL_USER=shipit
+    - MYSQL_PASSWORD=shipitpw
+    - MYSQL_ROOT_PASSWORD=admin
+  volumes:
+    - .cache/mysql:/var/lib/mysql
