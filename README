@@ -17,6 +17,7 @@ $ python kickoff-web.py --help
 To run release-kickoff using a sqlite database, use of the following:
 1) $ python kickoff-web.py -d sqlite://///var/www/update.db --username=foo --password=bar
 2) $ vagrant up	# Username:admin Password:password
+3) $ docker-compose up
 
 Or with MySQL:
 $ python kickoff-web.py -d mysql://root@localhost/ship_it --username=foo --password=bar
@@ -36,12 +37,15 @@ Troubleshooting
 			VirtualBox 4.3.6+
 		- Switching to a 32-bit vagrant box seems to be a temporary fix
 
+To run python and JS tests with docker:
+* `docker pull callek/shipit-test-runner`
+* `docker run --rm -v $PWD:/src -ti callek/shipit-test-runner /src/testing/run_tests.sh` (runs both py26 and py27 tests)
 
-To run Python tests:
+To run Python tests without docker:
 * `sudo apt-get install python-tox` or `pip install tox`
 * `tox -e py27` or `tox -e py26` if you have Python 2.6 installed
 
-To run JS tests:
+To run JS tests without docker:
 * `firefox kickoff/test/js/jstest.html`
 or using node.js
 * `npm install &&  ./node_modules/grunt-cli/bin/grunt --verbose`
