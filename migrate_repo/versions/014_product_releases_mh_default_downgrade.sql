@@ -1,4 +1,6 @@
-CREATE VIEW product_releases AS 
+/* Alter View needs to use the full syntax of the create view,
+  can't just add/drop columns */
+ALTER VIEW product_releases AS 
     select 'firefox' AS product,
         firefox_release.name AS name,
         firefox_release.submitter AS submitter,
