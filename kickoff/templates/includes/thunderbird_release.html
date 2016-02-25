@@ -94,4 +94,9 @@ $(document).ready(function() {
     {{ thunderbirdForm.promptWaitTime()|safe }}
     <div class="help">Number of seconds to wait before prompting users to apply the update to this release. Not specifying this will use the default value as specified in the application.</div>
 </div>
+<div class="submit_release">
+    {{ thunderbirdForm.mh_changeset.label()|safe }}
+    {{ thunderbirdForm.mh_changeset()|safe }}
+    <div class="help">Mozharness changeset. Not used in non release promotion scenario.</div>
+</div>
 </div> <!-- advanced -->

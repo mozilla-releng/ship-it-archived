@@ -190,6 +190,7 @@ class ReleaseForm(Form):
     comment = TextAreaField('Extra information to release-drivers:')
     description = TextAreaField('Description:')
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
+    mh_changeset = StringField('Mozharness Revision:')
 
     def __init__(self, suggest=True, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -285,6 +286,7 @@ class FennecReleaseForm(ReleaseForm):
         self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
+        self.mh_changeset.data = row.mh_changeset
 
 
 class DesktopReleaseForm(ReleaseForm):
@@ -331,6 +333,7 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.comment.data = row.comment
         self.description.data = row.description
+        self.mh_changeset.data = row.mh_changeset
 
 
 class ThunderbirdReleaseForm(DesktopReleaseForm):
@@ -366,6 +369,7 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.commRelbranch.data = row.commRelbranch
+        self.mh_changeset.data = row.mh_changeset
 
 
 def getReleaseForm(release):

@@ -16,6 +16,7 @@ class TestSubmitRelease(ViewTest):
             'firefox-product=firefox',
             'firefox-promptWaitTime=',
             'firefox-mozillaRelbranch=',
+            'firefox-mh_changeset=',
         ]
         ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 302, ret.data)
@@ -32,6 +33,7 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.promptWaitTime, None)
             self.assertEquals(got.status, '')
             self.assertEquals(got.mozillaRelbranch, None)
+            self.assertEquals(got.mh_changeset, '')
 
     def testSubmitInvalidForm(self):
         ret = self.post('/submit_release.html', data='fennec-product=fennec', content_type='application/x-www-form-urlencoded')
@@ -48,6 +50,7 @@ class TestSubmitRelease(ViewTest):
             'firefox-l10nChangesets=af%20def',
             'firefox-product=firefox',
             'firefox-mozillaRelbranch=',
+            'firefox-mh_changeset=xyz',
         ]
         ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 302, ret.data)
@@ -63,6 +66,7 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.complete, False)
             self.assertEquals(got.status, '')
             self.assertEquals(got.mozillaRelbranch, None)
+            self.assertEquals(got.mh_changeset, 'xyz')
 
     def testSubmitWithRelbranch(self):
         data = [

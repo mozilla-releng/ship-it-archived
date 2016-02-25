@@ -70,6 +70,7 @@ class TestReleaseAPI(ViewTest):
             'promptWaitTime': None,
             'mozillaRelbranch': None,
             'commRelbranch': None,
+            'mh_changeset': 'xyz',
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -99,6 +100,7 @@ class TestReleaseAPI(ViewTest):
             'status': 'postrelease',
             'promptWaitTime': 5,
             'mozillaRelbranch': 'FOO',
+            'mh_changeset': 'xyz',
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)

@@ -35,6 +35,7 @@ class Release(object):
     description = db.Column(db.Text, default=None, nullable=True)
     isSecurityDriven = db.Column(db.Boolean(), nullable=False, default=False)
     starter = db.Column(db.String(250), nullable=True)
+    mh_changeset = db.Column(db.String(100), nullable=True)
 
     # Dates are always returned in UTC time and ISO8601 format to make them
     # as transportable as possible.
@@ -64,7 +65,7 @@ class Release(object):
                  mozillaRevision, l10nChangesets, dashboardCheck,
                  mozillaRelbranch, enUSPlatforms=None, submittedAt=None,
                  shippedAt=None, comment=None, description=None,
-                 isSecurityDriven=False):
+                 isSecurityDriven=False, mh_changeset=None):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version.strip()
@@ -84,6 +85,7 @@ class Release(object):
         if description:
             self.description = description
         self.isSecurityDriven = isSecurityDriven
+        self.mh_changeset = mh_changeset
 
     def toDict(self):
         me = {'product': self.product}
@@ -94,7 +96,7 @@ class Release(object):
         return me
 
     @classmethod
-    def createFromForm(cls, form):
+    def createFromForm(cls, *args, **kwargs):
         raise NotImplementedError
 
     def updateFromForm(self, form):
@@ -110,6 +112,7 @@ class Release(object):
         self.comment = form.comment.data
         self.description = form.description.data
         self.isSecurityDriven = form.isSecurityDriven.data
+        self.mh_changeset = form.mh_changeset.data
 
     @classmethod
     def getRecent(cls, age=timedelta(weeks=7)):
@@ -145,12 +148,19 @@ class FennecRelease(Release, db.Model):
 
     @classmethod
     def createFromForm(cls, submitter, form):
-        return cls(submitter, form.version.data,
-                   form.buildNumber.data, form.branch.data,
-                   form.mozillaRevision.data, form.l10nChangesets.data,
-                   form.dashboardCheck.data, form.mozillaRelbranch.data,
-                   form.comment.data, form.description.data,
-                   form.isSecurityDriven.data)
+        return cls(
+            submitter=submitter,
+            version=form.version.data,
+            buildNumber=form.buildNumber.data,
+            branch=form.branch.data,
+            mozillaRevision=form.mozillaRevision.data,
+            l10nChangesets=form.l10nChangesets.data,
+            dashboardCheck=form.dashboardCheck.data,
+            mozillaRelbranch=form.mozillaRelbranch.data,
+            comment=form.comment.data,
+            description=form.description.data,
+            isSecurityDriven=form.isSecurityDriven.data,
+            mh_changeset=form.mh_changeset.data)
 
 
 class DesktopRelease(Release):
@@ -174,12 +184,21 @@ class FirefoxRelease(DesktopRelease, db.Model):
 
     @classmethod
     def createFromForm(cls, submitter, form):
-        return cls(form.partials.data, form.promptWaitTime.data, submitter,
-                   form.version.data, form.buildNumber.data, form.branch.data,
-                   form.mozillaRevision.data, form.l10nChangesets.data,
-                   form.dashboardCheck.data, form.mozillaRelbranch.data,
-                   form.comment.data, form.description.data,
-                   form.isSecurityDriven.data)
+        return cls(
+            partials=form.partials.data,
+            promptWaitTime=form.promptWaitTime.data,
+            submitter=submitter,
+            version=form.version.data,
+            buildNumber=form.buildNumber.data,
+            branch=form.branch.data,
+            mozillaRevision=form.mozillaRevision.data,
+            l10nChangesets=form.l10nChangesets.data,
+            dashboardCheck=form.dashboardCheck.data,
+            mozillaRelbranch=form.mozillaRelbranch.data,
+            comment=form.comment.data,
+            description=form.description.data,
+            isSecurityDriven=form.isSecurityDriven.data,
+            mh_changeset=form.mh_changeset.data)
 
 
 class ThunderbirdRelease(DesktopRelease, db.Model):
@@ -195,13 +214,23 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
 
     @classmethod
     def createFromForm(cls, submitter, form):
-        return cls(form.commRevision.data, form.commRelbranch.data,
-                   form.partials.data, form.promptWaitTime.data, submitter,
-                   form.version.data, form.buildNumber.data, form.branch.data,
-                   form.mozillaRevision.data, form.l10nChangesets.data,
-                   form.dashboardCheck.data, form.mozillaRelbranch.data,
-                   form.comment.data, form.description.data,
-                   form.isSecurityDriven.data)
+        return cls(
+            commRevision=form.commRevision.data,
+            commRelbranch=form.commRelbranch.data,
+            partials=form.partials.data,
+            promptWaitTime=form.promptWaitTime.data,
+            submitter=submitter,
+            version=form.version.data,
+            buildNumber=form.buildNumber.data,
+            branch=form.branch.data,
+            mozillaRevision=form.mozillaRevision.data,
+            l10nChangesets=form.l10nChangesets.data,
+            dashboardCheck=form.dashboardCheck.data,
+            mozillaRelbranch=form.mozillaRelbranch.data,
+            comment=form.comment.data,
+            description=form.description.data,
+            isSecurityDriven=form.isSecurityDriven.data,
+            mh_changeset=form.mh_changeset.data)
 
     def updateFromForm(self, form):
         DesktopRelease.updateFromForm(self, form)

@@ -108,6 +108,7 @@ function viewReleases() {
                 return null;
             }},
             {'mData': 'promptWaitTime', 'mRender': buildPromptWaitTimeLabel},
+            {'mData': 'mh_changeset'},
             {'mData': 'comment', 'mRender': buildCommentCell}
         ]
         ,
@@ -178,6 +179,7 @@ function viewReleases() {
                 return '';
             }},
             {'mData': 'promptWaitTime', 'mRender': buildPromptWaitTimeLabel},
+            {'mData': 'mh_changeset'},
             {'mData': 'comment', 'mRender': buildCommentCell},
             {'mData': 'shippedAt',
              'mRender': function(data, type, full) {

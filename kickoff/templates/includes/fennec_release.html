@@ -66,4 +66,9 @@ $(document).ready(function() {
     {% endif %}
     <div class="help">If a revision is specified this field is disabled and ignored otherwise the relbranch specified will be used put version bumps/tags for this release on. If not specified, one will be generated automatically during tagging. When provided the release will be created from tip of this branch thus it cannot be used in conjunction with revision.</div>
 </div>
+<div class="submit_release">
+    {{ fennecForm.mh_changeset.label()|safe }}
+    {{ fennecForm.mh_changeset()|safe }}
+    <div class="help">Mozharness changeset. Not used in non release promotion scenario.</div>
+</div>
 </div><!-- advanced -->
