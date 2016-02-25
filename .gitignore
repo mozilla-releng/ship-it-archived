@@ -19,6 +19,9 @@ pip-log.txt
 # Unit test / coverage reports
 .coverage
 .tox
+node_modules/
+# .cache used for mysql in docker
+.cache
 
 #Translations
 *.mo
@@ -28,4 +31,3 @@ pip-log.txt
 
 *.db
 *.log
-.vagrant/
