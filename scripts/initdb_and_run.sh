@@ -2,10 +2,14 @@ set -xe
 if [ ! -e /app/.cache/mysql/db.done ]; then
     sleep 30
     echo "Initializing DB..."
-    # No DB import yet, but we still stamp for the initializing
-    # of MySQL's DB to be done, so we don't always have to sleep
+    PYTHONPATH=$(PYTHONPATH):/app/vendor/lib/python python /app/migrate_repo/manage.py version_control mysql://shipit:shipitpw@shipitdb/shipit migrate_repo
+    PYTHONPATH=$(PYTHONPATH):/app/vendor/lib/python python /app/migrate_repo/manage.py upgrade mysql://shipit:shipitpw@shipitdb/shipit migrate_repo
     touch /app/.cache/mysql/db.done
     echo "Done"
+else:
+    sleep 10
+    echo "Upgrading DB..."
+    PYTHONPATH=$(PYTHONPATH):/app/vendor/lib/python python /app/migrate_repo/manage.py upgrade mysql://shipit:shipitpw@shipitdb/shipit migrate_repo
 fi
 
 # run the command passed from docker
