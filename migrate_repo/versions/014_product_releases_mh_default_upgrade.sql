@@ -1,4 +1,6 @@
-CREATE VIEW product_releases AS 
+/* Alter View needs to use the full syntax of the create view,
+  can't just add/drop columns */
+ALTER VIEW product_releases AS 
     select 'firefox' AS product,
         firefox_release.name AS name,
         firefox_release.submitter AS submitter,
@@ -22,7 +24,8 @@ CREATE VIEW product_releases AS
         firefox_release.isSecurityDriven AS isSecurityDriven,
         firefox_release.description AS description,
         NULL AS commRevision,
-        NULL AS commRelbranch
+        NULL AS commRelbranch,
+        firefox_release.mh_changeset AS mh_changeset
         FROM firefox_release
     union
     select 'thunderbird' AS product,
@@ -48,7 +51,8 @@ CREATE VIEW product_releases AS
         thunderbird_release.isSecurityDriven AS isSecurityDriven,
         thunderbird_release.description AS description,
         thunderbird_release.commRevision AS commRevision,
-        thunderbird_release.commRelbranch AS commRelbranch
+        thunderbird_release.commRelbranch AS commRelbranch,
+        thunderbird_release.mh_changeset AS mh_changeset
         FROM thunderbird_release
     union
     select 'fennec' AS product,
@@ -74,5 +78,6 @@ CREATE VIEW product_releases AS
         fennec_release.isSecurityDriven AS isSecurityDriven,
         fennec_release.description AS description,
         NULL AS commRevision,
-        NULL AS commRelbranch
+        NULL AS commRelbranch,
+        fennec_release.mh_changeset AS mh_changeset
         FROM fennec_release;

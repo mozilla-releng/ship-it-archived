@@ -46,13 +46,13 @@ class TestBase(unittest.TestCase):
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
                                comment="yet an other amazying comment",
+                               mh_changeset='xyz',
                                enUSPlatforms=None)
             r.complete = True
             r.ready = True
             # Shipped
             r.status = "postrelease"
             db.session.add(r)
-
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
                                submitter='joe', version='2.0.2esr', buildNumber=1,
@@ -176,6 +176,7 @@ class TestBase(unittest.TestCase):
                                    comment='My great comment!',
                                    enUSPlatforms="foo bar",
                                    isSecurityDriven=True,
+                                   mh_changeset='xyz',
                                    description="we did this release because of bar")
             r.complete = True
             r.ready = True

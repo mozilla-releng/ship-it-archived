@@ -108,6 +108,7 @@ function viewReleases() {
                 return null;
             }},
             {'mData': 'promptWaitTime', 'mRender': buildPromptWaitTimeLabel},
+            {'mData': 'mh_changeset', 'sDefaultContent': 'N/A'},
             {'mData': 'comment', 'mRender': buildCommentCell}
         ]
         ,
@@ -167,7 +168,7 @@ function viewReleases() {
             {'mData': 'mozillaRelbranch'},
             {'mData': 'commRevision', 'sDefaultContent': 'N/A'},
             {'mData': 'commRelbranch', 'sDefaultContent': 'N/A'},
-            {'mData': 'dashboardCheck', 'mRender': yesIfDataIsNotNull},
+            {'mData': 'dashboardCheck', 'sDefaultContent': 'N/A'},
             {'mData': 'name', 'mRender': buildl10nLink},
             {'mData': 'partials',
              'mRender': function(data, type, full) {
@@ -178,6 +179,7 @@ function viewReleases() {
                 return '';
             }},
             {'mData': 'promptWaitTime', 'mRender': buildPromptWaitTimeLabel},
+            {'mData': 'mh_changeset', 'mRender': yesIfDataIsNotNull},
             {'mData': 'comment', 'mRender': buildCommentCell},
             {'mData': 'shippedAt',
              'mRender': function(data, type, full) {
