@@ -68,7 +68,7 @@ $(document).ready(function() {
 </div>
 <div class="submit_release">
     {{ fennecForm.mh_changeset.label()|safe }}
-    {{ fennecForm.mh_changeset()|safe }}
-    <div class="help">Mozharness changeset. Not used in non release promotion scenario.</div>
+    {{ fennecForm.mh_changeset(placeholder='abcdef123456')|safe }}
+    <div class="help">Mozharness changeset. If unset defaults to using the mozilla revision of the build. Not used in non release promotion scenario.</div>
 </div>
 </div><!-- advanced -->

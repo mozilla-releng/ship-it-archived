@@ -93,8 +93,8 @@ $(document).ready(function() {
 </div>
 <div class="submit_release">
     {{ firefoxForm.mh_changeset.label()|safe }}
-    {{ firefoxForm.mh_changeset()|safe }}
-    <div class="help">Mozharness changeset. Not used in non release promotion scenario.</div>
+    {{ firefoxForm.mh_changeset(placeholder='abcdef123456')|safe }}
+    <div class="help">Mozharness changeset. If unset defaults to using the mozilla revision of the build. Not used in non release promotion scenario.</div>
 </div>
 </div> <!-- advanced -->
 
