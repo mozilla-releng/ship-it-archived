@@ -1,6 +1,7 @@
 import datetime
 import random
 import string
+import unittest
 
 import pytz
 
@@ -290,3 +291,68 @@ class TestReleaseView(ViewTest):
         ])
         ret = self.post('/release.html', query_string={'name': 'Thunderbird-2-build2'}, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 403)
+
+class TestReleasesListAPI(ViewTest):
+    uri = '/releases/releaseslist'
+    dataTableVersion = '1.9.4'
+
+    def testGetReleases(self):
+        params = {
+            'iDisplayStart': 0,
+            'iDisplayLength': 10,
+            'datatableVersion': self.dataTableVersion,
+            'complete': True,
+            'iSortCol_0': 0,
+            'mDataProp_0': 'name',
+            'sSortDir_0': 'desc',
+            'iColumns': 17
+        }
+
+        ret = self.get(self.uri, query_string=params)
+        self.assertEquals(ret.status_code, 200)
+
+    def testGetReleasesOrderBySubmittedAt(self):
+        params = {
+            'iDisplayStart': 0,
+            'iDisplayLength': 10,
+            'datatableVersion': self.dataTableVersion,
+            'complete': True,
+            'iSortCol_0': 0,
+            'mDataProp_0': 'submittedAt',
+            'sSortDir_0': 'desc',
+            'iColumns': 17
+        }
+
+        ret = self.get(self.uri, query_string=params)
+        self.assertEquals(ret.status_code, 200)
+
+    def testGetReleasesOrderByShippedAt(self):
+        params = {
+            'iDisplayStart': 0,
+            'iDisplayLength': 10,
+            'datatableVersion': self.dataTableVersion,
+            'complete': True,
+            'iSortCol_0': 0,
+            'mDataProp_0': 'shippedAt',
+            'sSortDir_0': 'asc',
+            'iColumns': 17
+        }
+
+        ret = self.get(self.uri, query_string=params)
+        self.assertEquals(ret.status_code, 200)
+
+    def testGetReleasesWithFilter(self):
+        params = {
+            'iDisplayStart': 0,
+            'iDisplayLength': 10,
+            'datatableVersion': self.dataTableVersion,
+            'complete': True,
+            'iSortCol_0': 1,
+            'mDataProp_1': 'name',
+            'sSortDir_0': 'desc',
+            'iColumns': 17,
+            'sSearch': 'irefo'
+        }
+
+        ret = self.get(self.uri, query_string=params)
+        self.assertEquals(ret.status_code, 200)
