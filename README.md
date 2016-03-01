@@ -30,6 +30,10 @@ To run release-kickoff using a sqlite database
 
 * ```python kickoff-web.py -d sqlite://///var/www/update.db --username=admin --password=password```
 
+Or with MySQL:
+
+* ```python kickoff-web.py -d mysql://root@localhost/ship_it --username=admin --password=password```
+
 Open your Firefox on: **http://127.0.0.1:5000/**
 
 If you're on Mac, Windows, or running Docker in a VM for another reason, you'll need to replace 127.0.0.1 with the IP of your VM.
