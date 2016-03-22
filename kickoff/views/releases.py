@@ -1,13 +1,15 @@
 import logging
 
+from datetime import datetime
+
 from flask import request, jsonify, render_template, Response, redirect, \
     make_response, abort
 from flask.views import MethodView
 
 from kickoff import db
 from kickoff.log import cef_event, CEF_WARN, CEF_INFO
-from kickoff.model import getReleaseTable, getReleases, ProductReleasesView, ReleasesPaginationCriteria
-from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm
+from kickoff.model import getReleaseTable, getReleases, ProductReleasesView, ReleasesPaginationCriteria, ReleaseEvents
+from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm, EditReleaseForm
 
 log = logging.getLogger(__name__)
 
@@ -299,3 +301,44 @@ class Release(MethodView):
         db.session.commit()
         log.debug('%s has been edited', name)
         return redirect('releases.html')
+
+class EditRelease(MethodView):
+    def get(self, releaseName):
+        releaseTable = getReleaseTable(releaseName)
+        release = releaseTable.query.filter_by(name=releaseName).first()
+
+        if not release:
+            abort(404)
+            
+        formRelease = EditReleaseForm(obj = release)
+        formRelease.shippedAtDate.process_data(release._shippedAt)
+        strTime = str(release._shippedAt.time())
+        formRelease.shippedAtTime.data = strTime
+
+        return render_template('edit_release.html', form=formRelease, release=release)
+
+
+    def post(self, releaseName):
+        releaseTable = getReleaseTable(releaseName)
+        release = releaseTable.query.filter_by(name=releaseName).first()
+
+        if not release:
+            abort(404)
+
+        form = EditReleaseForm(request.form, release)
+
+        if not form.validate():
+            errors = []
+            for error in form.errors.values():
+                errors.extend(error)
+
+            return make_response(render_template('edit_release.html', errors=errors, form=form, release=release), 400)
+
+        form.populate_obj(release)
+        release.shippedAt = form.shippedAt
+
+        db.session.add(release)
+        db.session.commit()
+        return redirect('releases.html')
+
+        

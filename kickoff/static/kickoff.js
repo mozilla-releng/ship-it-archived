@@ -33,8 +33,8 @@ function initialSetup() {
 }
 
 function viewReleases() {
-    var submittedAtIndexColumn = 4;
-
+    var submittedAtIndexColumn = 5;
+    var descriptionIndexColumn = 3;
     var returnDataIfIsThunderbird = function(data, type, full) {
         if (full.name.contains('Thunderbird')) {
             return data;
@@ -144,10 +144,14 @@ function viewReleases() {
             htmlDescription += '<input type="checkbox" ' + (aData.isSecurityDriven ? 'checked' : '') + ' id="isSecurityDriven' + iDataIndex + '"  name="isSecurityDriven' + iDataIndex + '" value="Is Sec Driven?" title="Did we do this release to fix a security issue (chemspill)?"/> Is sec driven?</label></div>';
             htmlDescription += '<input type="submit" value="Update" class="submitButton" onclick="return updateDesc(\'' + aData.name + '\', ' + iDataIndex + ')" /></div>';
 
-            var tdDescription = $(nRow).find('td')[2];
+            var tdDescription = $(nRow).find('td')[descriptionIndexColumn];
             $(tdDescription).html(htmlDescription);
         },
         'aoColumns': [
+            {'mData': 'name', 'bSearchable': false, 'bSortable': false,
+             'mRender': function(data, type, full) {
+                return '<a class="btn btn-default btn-xs" href="release/' + data + '/edit_release.html">Edit</a>';
+            }},
             {'mData': 'status',
              'mRender': function(data, type, full) {
                 if (data == 'Complete') {
@@ -288,4 +292,9 @@ function updateDesc(releaseName, id) {
     isSecurityDriven = $('#isSecurityDriven' + id).prop('checked');
     query = 'description=' + description + '&isSecurityDriven=' + isSecurityDriven;
     sendAjaxQuery(releaseName, query);
+}
+
+function editRelease() {
+    $('#shippedAtDate').datepicker({dateFormat: 'yy/mm/dd'});
+    $('#shippedAtTime').mask('00:00:00');
 }
