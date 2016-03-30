@@ -6,12 +6,13 @@ env:
 install:
     - travis_retry sudo apt-get update -qq
     - travis_retry sudo apt-get install -y npm
-    - travis_retry pip install tox coveralls
+    - travis_retry pip install tox coveralls flake8
     - travis_retry npm install
 
 script:
     - tox -e $TOX_ENV
     - ./node_modules/.bin/grunt --verbose
+    - flake8 kickoff/ --exclude=kickoff/test/ --max-line-length=2000 --ignore=E402
 
 after_success:
     - travis_retry pip install coveralls; coveralls;
