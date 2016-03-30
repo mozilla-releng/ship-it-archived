@@ -1,0 +1,77 @@
+<!-- #ex-dev -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<form method="POST" action="/release/{{ release.name }}/edit_release.html">
+	<div class="container">
+		{{ form.hidden_tag() }}
+		<div class="row">
+			<div class="col-sm-12 col-md-12">
+				<h2>Editing - {{ release.name }}</h2>
+			</div>
+		</div>
+
+		{% if errors %}
+		<div class="row">
+			<div class="col-sm-12 col-md-12">
+				<div id='errors' style="margin-left:0px;">
+					<ul>
+					    {% for e in errors %}
+					    <li>{{ e }}</li>
+					    {% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+		<div class="row" style="margin-top: 10px;">
+			<div class="col-sm-4 col-md-4">
+				<label style="white-space: nowrap;">{{form.shippedAtDate.label.text}}</label>
+				<div class="form-inline">
+					<div class="form-group">
+						{{ form.shippedAtDate(class="form-control") }}
+					</div>
+					<div class="form-group">
+						{{ form.shippedAtTime(class="form-control", style="width: 90px;") }}
+						
+					</div>
+				</div>
+			</div>
+
+			<div class="col-sm-4 col-md-4 ">
+				<div class="checkbox">
+					<label style="white-space: nowrap; padding-top: 18px; font-weight: bold;">
+						{{ form.isSecurityDriven }} {{ form.isSecurityDriven.label.text }}
+					</label>
+				</div>
+			</div>
+			<div class="col-sm-4 col-md-4">
+			</div>
+		</div>
+
+		<div class="row" style="margin-top: 10px;">
+			<div class="col-sm-12 col-md-12 " >
+				{{ form.description.label }}
+				{{ form.description(class="form-control") }}
+			</div>
+		</div>
+
+		<div class="row" style="margin-top: 10px; margin-bottom: 50px;">
+			<div class="col-sm-12 col-md-12 " >
+				<button type="submit" class="btn btn-default pull-right">Update</button>
+			</div>
+		</div>
+	</div>
+</form>
+
+<script type="text/javascript" src='{{ url_for("static", filename="jquery.mask.min.js") }}'> </script>
+<script>
+	$(function(){
+		var scriptIndex = new editRelease();
+	});
+</script>
+{% endblock %}

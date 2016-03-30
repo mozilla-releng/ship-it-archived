@@ -1,13 +1,16 @@
 import logging
 
 import simplejson as json
+
+from datetime import datetime
 from ast import literal_eval
 from collections import defaultdict
 from distutils.version import LooseVersion
 
 from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
     Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
-    IntegerField, HiddenField, Regexp, DateTimeField, InputRequired, validators
+    IntegerField, HiddenField, Regexp, DateTimeField, InputRequired, \
+    validators, DateField, SelectField, ValidationError
 
 from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
@@ -394,3 +397,22 @@ class ReleaseEventsAPIForm(Form):
     chunkNum = IntegerField('Chunk Number:', default=1)
     chunkTotal = IntegerField('Chunk Total:', default=1)
     group = StringField('Group:', default='other')
+
+class EditReleaseForm(Form):
+    shippedAtDate = DateField('Shipped date', format='%Y/%m/%d', validators=[DataRequired('Shipped Date is required')])
+    shippedAtTime = StringField('', validators=[DataRequired('Shipped Time is required')])
+    isSecurityDriven = BooleanField('Is Security Driven ?')
+    description = TextAreaField('Description')
+    
+    def validate_shippedAtDate(form, field):
+        dt = form.shippedAt
+
+        if dt > datetime.now():
+            raise ValidationError('Invalid Date')
+
+    @property
+    def shippedAt(self):
+        dt = self.shippedAtDate.data
+        tm = datetime.strptime(self.shippedAtTime.data, '%H:%M:%S').time()
+        dateAndTime = datetime.combine(dt, tm)
+        return dateAndTime
