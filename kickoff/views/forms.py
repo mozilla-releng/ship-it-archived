@@ -10,7 +10,7 @@ from distutils.version import LooseVersion
 from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
     Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
     IntegerField, HiddenField, Regexp, DateTimeField, InputRequired, \
-    validators, DateField, SelectField, ValidationError
+    validators, DateField, ValidationError
 
 from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
@@ -53,7 +53,7 @@ class JSONField(TextAreaField):
                 # we don't save this anywhere. Consumers of the form want the
                 # raw string version, not the parsed object.
                 json.loads(self.data)
-            except ValueError, e:
+            except ValueError as e:
                 log.info("JSON in field '%s' didn't validate" % self.name)
                 log.debug("Raw JSON for '%s' is: %s" % (self.name, repr(self.data)))
                 self.process_errors.append(e.args[0])
@@ -161,7 +161,7 @@ class ReleaseAPIForm(Form):
             else:
                 # Check if there is an other product-version already shipped
                 similar = getReleases(status="postrelease", productFilter=release.product,
-                                  versionFilter=release.version)
+                                      versionFilter=release.version)
                 if similar and self.status.data != "Started":
                     # In most of the cases, it is useless since bug 1121032 has been implemented but keeping it
                     # in case we change/revert in the future and because we cannot always trust the client
@@ -397,6 +397,7 @@ class ReleaseEventsAPIForm(Form):
     chunkNum = IntegerField('Chunk Number:', default=1)
     chunkTotal = IntegerField('Chunk Total:', default=1)
     group = StringField('Group:', default='other')
+
 
 class EditReleaseForm(Form):
     shippedAtDate = DateField('Shipped date', format='%Y/%m/%d', validators=[DataRequired('Shipped Date is required')])

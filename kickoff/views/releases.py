@@ -1,20 +1,18 @@
 import logging
 
-from datetime import datetime
-
 from flask import request, jsonify, render_template, Response, redirect, \
     make_response, abort
 from flask.views import MethodView
 
 from kickoff import db
 from kickoff.log import cef_event, CEF_WARN, CEF_INFO
-from kickoff.model import getReleaseTable, getReleases, ProductReleasesView, ReleasesPaginationCriteria, ReleaseEvents
+from kickoff.model import getReleaseTable, getReleases, ProductReleasesView, ReleasesPaginationCriteria
 from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm, EditReleaseForm
 
 log = logging.getLogger(__name__)
 
 
-def sortedReleases(ready = None):
+def sortedReleases(ready=None):
     def cmpReleases(x, y):
         # Not ready releases should come before ready ones.
         # Incomplete releases should come before completed ones.
@@ -30,8 +28,8 @@ def sortedReleases(ready = None):
                 return 1
         elif y.complete:
             return -1
-        return cmp(y._submittedAt, x._submittedAt)
-    return sorted(getReleases(ready = ready), cmp=cmpReleases)
+        return cmp(y._submittedAt, x._submittedAt)  # NOQA
+    return sorted(getReleases(ready=ready), cmp=cmpReleases)
 
 
 class ReleasesAPI(MethodView):
@@ -93,10 +91,10 @@ class ReleaseAPI(MethodView):
             log.debug('%s: shippedAt being changed to: %s', releaseName, form.shippedAt.data)
             release.shippedAt = form.shippedAt.data
 
-
         db.session.add(release)
         db.session.commit()
         return Response(status=200)
+
 
 class ReleasesListAPI(MethodView):
     def __init__(self):
@@ -108,7 +106,7 @@ class ReleasesListAPI(MethodView):
         self.serchablePrefix = 'bSearchable_'
         self.searchParam = 'sSearch'
 
-    def getTotal(self, complete = None, ready = None, searchFilter = {}):
+    def getTotal(self, complete=None, ready=None, searchFilter={}):
         filter = {}
 
         if complete is not None:
@@ -127,12 +125,12 @@ class ReleasesListAPI(MethodView):
     def checkJQueryDataTableVersion(self):
         version = request.args.get('datatableVersion')
 
-        if version is None or not self.dataTableVersion in version:
+        if version is None or self.dataTableVersion not in version:
             msg = str.format('The Jquery datatable version is {0}. Expected version 1.9.4', version)
             log.warning(msg)
 
     def getOrderByDict(self):
-        #Warning: This is a server-side function that is highly dependent of Jquery Datatables
+        # Warning: This is a server-side function that is highly dependent of Jquery Datatables
         self.checkJQueryDataTableVersion()
 
         order_by = {
@@ -161,7 +159,7 @@ class ReleasesListAPI(MethodView):
         return order_by
 
     def getSearchFilterDict(self):
-        #Warning: This is a server-side function that is highly dependent of Jquery Datatables
+        # Warning: This is a server-side function that is highly dependent of Jquery Datatables
         self.checkJQueryDataTableVersion()
 
         searchFilter = {}
@@ -194,10 +192,10 @@ class ReleasesListAPI(MethodView):
 
         searchFilterDict = self.getSearchFilterDict()
         orderByDict = self.getOrderByDict()
-        total = self.getTotal(complete=complete, ready=ready, searchFilter = searchFilterDict)
+        total = self.getTotal(complete=complete, ready=ready, searchFilter=searchFilterDict)
 
         paginationCriteria = ReleasesPaginationCriteria(start, length, orderByDict)
-        releases = getReleases(complete = complete, ready = ready, paginationCriteria = paginationCriteria, searchFilter = searchFilterDict)
+        releases = getReleases(complete=complete, ready=ready, paginationCriteria=paginationCriteria, searchFilter=searchFilterDict)
 
         paginatedReleases = {
             'releases': [r.toDict() for r in releases],
@@ -206,6 +204,7 @@ class ReleasesListAPI(MethodView):
         }
 
         return jsonify(paginatedReleases)
+
 
 class ReleaseL10nAPI(MethodView):
     def get(self, releaseName):
@@ -230,7 +229,7 @@ class Releases(MethodView):
         # http://stackoverflow.com/questions/8463421/how-to-render-my-select-field-with-wtforms
         # form.readyReleases.choices = [(r.name, r.name) for r in getReleases(ready=False)]
         form = ReleasesForm()
-        return render_template('releases.html', releases=sortedReleases(ready = False), form=form)
+        return render_template('releases.html', releases=sortedReleases(ready=False), form=form)
 
     def post(self):
         starter = request.environ.get('REMOTE_USER')
@@ -258,7 +257,7 @@ class Releases(MethodView):
             r.starter = starter
             db.session.add(r)
         db.session.commit()
-        return render_template('releases.html', releases=sortedReleases(ready = False), form=form)
+        return render_template('releases.html', releases=sortedReleases(ready=False), form=form)
 
 
 class Release(MethodView):
@@ -302,6 +301,7 @@ class Release(MethodView):
         log.debug('%s has been edited', name)
         return redirect('releases.html')
 
+
 class EditRelease(MethodView):
     def get(self, releaseName):
         releaseTable = getReleaseTable(releaseName)
@@ -310,13 +310,12 @@ class EditRelease(MethodView):
         if not release:
             abort(404)
 
-        formRelease = EditReleaseForm(obj = release)
+        formRelease = EditReleaseForm(obj=release)
         formRelease.shippedAtDate.process_data(release._shippedAt)
         strTime = str(release._shippedAt.time())
         formRelease.shippedAtTime.data = strTime
 
         return render_template('edit_release.html', form=formRelease, release=release)
-
 
     def post(self, releaseName):
         releaseTable = getReleaseTable(releaseName)
