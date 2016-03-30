@@ -403,7 +403,7 @@ class EditReleaseForm(Form):
     shippedAtTime = StringField('', validators=[DataRequired('Shipped Time is required')])
     isSecurityDriven = BooleanField('Is Security Driven ?')
     description = TextAreaField('Description')
-    
+
     def validate_shippedAtDate(form, field):
         dt = form.shippedAt
 

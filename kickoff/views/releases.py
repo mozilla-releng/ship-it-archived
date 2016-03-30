@@ -129,7 +129,7 @@ class ReleasesListAPI(MethodView):
 
         if version is None or not self.dataTableVersion in version:
             msg = str.format('The Jquery datatable version is {0}. Expected version 1.9.4', version)
-            log.warning(msg) 
+            log.warning(msg)
 
     def getOrderByDict(self):
         #Warning: This is a server-side function that is highly dependent of Jquery Datatables
@@ -139,12 +139,12 @@ class ReleasesListAPI(MethodView):
             'ready': 'asc',
             'complete': 'asc'
         }
-        
+
         columnCount = request.args.get(self.columnCountParam, type=int)
 
         for i in range(0, columnCount):
             sortIndex = request.args.get(self.sortColumnIndexPrefix + str(i))
-            
+
             if sortIndex is None:
                 break
 
@@ -179,7 +179,7 @@ class ReleasesListAPI(MethodView):
 
     def get(self):
         start = request.args.get('iDisplayStart', type=int)
-        length = request.args.get('iDisplayLength', type=int)       
+        length = request.args.get('iDisplayLength', type=int)
 
         readyParam = request.args.get('ready')
         completeParam = request.args.get('complete')
@@ -198,7 +198,7 @@ class ReleasesListAPI(MethodView):
 
         paginationCriteria = ReleasesPaginationCriteria(start, length, orderByDict)
         releases = getReleases(complete = complete, ready = ready, paginationCriteria = paginationCriteria, searchFilter = searchFilterDict)
-        
+
         paginatedReleases = {
             'releases': [r.toDict() for r in releases],
             'iTotalDisplayRecords': total,
@@ -309,7 +309,7 @@ class EditRelease(MethodView):
 
         if not release:
             abort(404)
-            
+
         formRelease = EditReleaseForm(obj = release)
         formRelease.shippedAtDate.process_data(release._shippedAt)
         strTime = str(release._shippedAt.time())
@@ -340,5 +340,3 @@ class EditRelease(MethodView):
         db.session.add(release)
         db.session.commit()
         return redirect('releases.html')
-
-        
