@@ -13,14 +13,15 @@ if not os.path.isfile(configFile):
 
 parser = SafeConfigParser()
 parser.read(configFile)
-
-connection = connect({
+conn_info = {
     'host': parser.get('credentials', 'host'),
     'port': int(parser.get('credentials', 'port')),
     'user': parser.get('credentials', 'user'),
     'password': parser.get('credentials', 'password'),
     'database': parser.get('credentials', 'database')
-})
+}
+
+connection = connect(**conn_info)
 
 
 def getPartialJSON(channel):
@@ -41,3 +42,4 @@ def saveAllPartial(exportFile):
         json.dump(full, outfile)
 
 saveAllPartial("partial.json")
+connection.close()
