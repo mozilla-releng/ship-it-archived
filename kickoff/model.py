@@ -252,14 +252,16 @@ def getReleaseTable(release):
     else:
         raise ValueError("Can't find release table for release %s" % release)
 
+
 class ReleasesPaginationCriteria:
     def __init__(self, start, length, orderByDict):
         self.start = start
         self.length = length
         self.orderByDict = orderByDict
 
+
 def getReleases(ready=None, complete=None, status=None, productFilter=None, versionFilter=None,
-                versionFilterCategory=None, searchOtherShipped=False, lastRelease=None, paginationCriteria = None, searchFilter = None):
+                versionFilterCategory=None, searchOtherShipped=False, lastRelease=None, paginationCriteria=None, searchFilter=None):
 
     filters = {}
     if ready is not None:
@@ -298,10 +300,10 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
 
                     orderByList = getOrderByList(table, paginationCriteria.orderByDict)
 
-                    qry = qry.order_by(*orderByList).limit(paginationCriteria.length).offset(paginationCriteria.start)                  
+                    qry = qry.order_by(*orderByList).limit(paginationCriteria.length).offset(paginationCriteria.start)
 
             results = qry.all()
-            
+
             for r in results:
                 if not versionFilterCategory:
                     releases.append(r)
@@ -323,12 +325,12 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
 
             for r in results:
                 releases.append(r)
-    
+
     status_groups = {'tag': 'Tagging', 'build': 'Builds', 'repack': 'Repacks',
                      'update': 'Update', 'releasetest': 'Release Test',
                      'readyforrelease': 'Ready For Release',
                      'postrelease': 'Post Release'}
-    
+
     for release in releases:
         status = ReleaseEvents.getCurrentStatus(release.name)
         if status:
@@ -347,6 +349,7 @@ def getReleases(ready=None, complete=None, status=None, productFilter=None, vers
                 release.ReleaseMarkedAsShipped = True
 
     return releases
+
 
 class ReleaseEvents(db.Model):
 
@@ -450,7 +453,7 @@ class ReleaseEvents(db.Model):
 
         for build in build_events:
             builds['platforms'][build.platform] = 1.00
-            builds['progress'] += (1.00/len(builds['platforms']))
+            builds['progress'] += (1.00 / len(builds['platforms']))
 
         return builds
 
@@ -465,7 +468,7 @@ class ReleaseEvents(db.Model):
         for repack in repack_events:
             if repacks['platforms'][repack.platform] != 1:
                 if 'complete' not in repack.event_name:
-                    repacks['platforms'][repack.platform] += (1.00/repack.chunkTotal)
+                    repacks['platforms'][repack.platform] += (1.00 / repack.chunkTotal)
                 else:
                     repacks['platforms'][repack.platform] = 1.00
         repacks['progress'] = (sum(repacks['platforms'].values()) / len(repacks['platforms']))
@@ -499,7 +502,7 @@ class ReleaseEvents(db.Model):
         for update_verify in update_verify_events:
             if update_verifys[update_verify.platform] != 1:
                 if 'complete' not in update_verify.event_name:
-                    update_verifys[update_verify.platform] += (1.00/update_verify.chunkTotal)
+                    update_verifys[update_verify.platform] += (1.00 / update_verify.chunkTotal)
                 else:
                     update_verifys[update_verify.platform] = 1.00
         data = {'platforms': update_verifys, 'progress': 0.00}
@@ -525,7 +528,8 @@ class ReleaseEvents(db.Model):
         release = releaseTable.query.filter_by(name=name).first()
         return json.loads(release.enUSPlatforms)
 
-def getOrderByList(obj, orderByDict = {}):
+
+def getOrderByList(obj, orderByDict={}):
     lst = []
 
     for k, v in orderByDict.iteritems():
@@ -534,6 +538,7 @@ def getOrderByList(obj, orderByDict = {}):
         lst.append(direction())
 
     return lst
+
 
 class ProductReleasesView(Release, db.Model):
     __tablename__ = 'product_releases'
@@ -549,7 +554,7 @@ class ProductReleasesView(Release, db.Model):
         return or_(*searchList)
 
     @classmethod
-    def getSearchList(cls, searchDict = {}):
+    def getSearchList(cls, searchDict={}):
         lst = []
         for k, v in searchDict.iteritems():
             column = getattr(cls, k)

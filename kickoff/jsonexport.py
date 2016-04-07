@@ -66,8 +66,8 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, w
                                 })
             else:
                 results.append([version,
-                               shippedAt
-                               ])
+                                shippedAt
+                                ])
     return results
 
 
@@ -119,12 +119,12 @@ def firefoxVersionsJson():
     versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'] = lastStable[0][0]
     # esr
     lastStable = getFilteredReleases("firefox", ["esr"], lastRelease=True)
-    versions['FIREFOX_ESR'] = lastStable[0][0]+"esr"
+    versions['FIREFOX_ESR'] = lastStable[0][0] + "esr"
     # esr next
     lastStable = getFilteredReleases("firefox", ["esr"], lastRelease=True, ESR_NEXT=True)
     if lastStable:
         # If not found, that means that we are managing only a single ESR
-        versions['FIREFOX_ESR_NEXT'] = lastStable[0][0]+"esr"
+        versions['FIREFOX_ESR_NEXT'] = lastStable[0][0] + "esr"
 
     return returnJSONVersionFile('firefox_versions.json', versions)
 

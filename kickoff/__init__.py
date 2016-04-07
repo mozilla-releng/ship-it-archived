@@ -10,10 +10,10 @@ db = SQLAlchemy()
 import kickoff.jsonexport  # NOQA
 from kickoff.log import cef_event, CEF_WARN
 from kickoff.views.csrf import CSRFView
-from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release, \
-								   ReleaseCommentAPI, ReleasesListAPI, EditRelease
+from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release, ReleaseCommentAPI, ReleasesListAPI, EditRelease
 from kickoff.views.submit import SubmitRelease
 from kickoff.views.status import StatusAPI, Status
+
 
 log = logging.getLogger(__name__)
 

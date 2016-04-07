@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 def sortedEvents():
     def cmpEvents(x, y):
-        return cmp(y.sent, x.sent)
+        return cmp(y.sent, x.sent)  # NOQA
     return sorted(ReleaseEvents.getEvents(), cmp=cmpEvents)
 
 
