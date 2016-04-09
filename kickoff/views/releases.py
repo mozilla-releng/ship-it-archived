@@ -310,10 +310,14 @@ class EditRelease(MethodView):
         if not release:
             abort(404)
             
-        formRelease = EditReleaseForm(obj = release)
-        formRelease.shippedAtDate.process_data(release._shippedAt)
-        strTime = str(release._shippedAt.time())
-        formRelease.shippedAtTime.data = strTime
+        formRelease = EditReleaseForm(obj = release, isShipped = release._shippedAt is not None)
+
+        notShipped = True
+
+        if release._shippedAt:
+            formRelease.shippedAtDate.process_data(release._shippedAt)
+            strTime = str(release._shippedAt.time())
+            formRelease.shippedAtTime.data = strTime
 
         return render_template('edit_release.html', form=formRelease, release=release)
 
@@ -335,7 +339,13 @@ class EditRelease(MethodView):
             return make_response(render_template('edit_release.html', errors=errors, form=form, release=release), 400)
 
         form.populate_obj(release)
-        release.shippedAt = form.shippedAt
+
+        if form.isShipped.data:
+            release.shippedAt = form.shippedAt
+            release.status = 'postrelease'
+        else:
+            release.shippedAt = None
+            release.status = 'Started'
 
         db.session.add(release)
         db.session.commit()

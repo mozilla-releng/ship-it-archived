@@ -294,7 +294,20 @@ function updateDesc(releaseName, id) {
     sendAjaxQuery(releaseName, query);
 }
 
+function releaseIsShippedCheckbox(){
+    if($('#isShipped').is(':checked')){
+            $('.shippedDateInfo').css('display', 'block');
+    }
+    else{
+        $('.shippedDateInfo').css('display', 'none');
+    }
+}
+
 function editRelease() {
     $('#shippedAtDate').datepicker({dateFormat: 'yy/mm/dd'});
     $('#shippedAtTime').mask('00:00:00');
+
+    releaseIsShippedCheckbox();
+
+    $('#isShipped').change(releaseIsShippedCheckbox);
 }
