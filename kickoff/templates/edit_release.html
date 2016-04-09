@@ -1,9 +1,6 @@
-<!-- #ex-dev -->
-
 {% extends "base.html" %}
 
 {% block content %}
-
 
 <form method="POST" action="/release/{{ release.name }}/edit_release.html">
 	<div class="container">
@@ -29,7 +26,30 @@
 		{% endif %}
 
 		<div class="row" style="margin-top: 10px;">
-			<div class="col-sm-4 col-md-4">
+			<div class="col-sm-12 col-md-12 " >
+				{{ form.description.label }}
+				{{ form.description(class="form-control") }}
+			</div>
+		</div>
+
+		<div class="row" style="margin-top: 10px;">
+			<div class="col-sm-2 col-md-2 ">
+				<div class="checkbox">
+					<label style="white-space: nowrap; padding-top: 18px; font-weight: bold;">
+						{{ form.isSecurityDriven }} {{ form.isSecurityDriven.label.text }}
+					</label>
+				</div>
+			</div>
+
+			<div class="col-sm-2 col-md-2 ">
+				<div class="checkbox">
+					<label style="white-space: nowrap; padding-top: 18px; font-weight: bold;">
+						{{ form.isShipped }} {{ form.isShipped.label.text }}
+					</label>
+				</div>
+			</div>
+
+			<div class="col-sm-8 col-md-8 shippedDateInfo" style="display: none;">
 				<label style="white-space: nowrap;">{{form.shippedAtDate.label.text}}</label>
 				<div class="form-inline">
 					<div class="form-group">
@@ -37,32 +57,15 @@
 					</div>
 					<div class="form-group">
 						{{ form.shippedAtTime(class="form-control", style="width: 90px;") }}
-
 					</div>
 				</div>
-			</div>
-
-			<div class="col-sm-4 col-md-4 ">
-				<div class="checkbox">
-					<label style="white-space: nowrap; padding-top: 18px; font-weight: bold;">
-						{{ form.isSecurityDriven }} {{ form.isSecurityDriven.label.text }}
-					</label>
-				</div>
-			</div>
-			<div class="col-sm-4 col-md-4">
-			</div>
-		</div>
-
-		<div class="row" style="margin-top: 10px;">
-			<div class="col-sm-12 col-md-12 " >
-				{{ form.description.label }}
-				{{ form.description(class="form-control") }}
 			</div>
 		</div>
 
 		<div class="row" style="margin-top: 10px; margin-bottom: 50px;">
-			<div class="col-sm-12 col-md-12 " >
-				<button type="submit" class="btn btn-default pull-right">Update</button>
+			<div class="col-sm-12 col-md-12" >
+				<button type="submit" style="margin-left: 10px;" class="btn btn-default pull-right">Update</button>
+				<a class="btn btn-default pull-right" href="/releases.html" alt="Cancel">Cancel</a>
 			</div>
 		</div>
 	</div>
