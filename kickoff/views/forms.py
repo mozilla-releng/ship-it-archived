@@ -400,20 +400,26 @@ class ReleaseEventsAPIForm(Form):
 
 
 class EditReleaseForm(Form):
-    shippedAtDate = DateField('Shipped date', format='%Y/%m/%d', validators=[DataRequired('Shipped Date is required')])
-    shippedAtTime = StringField('', validators=[DataRequired('Shipped Time is required')])
+    shippedAtDate = DateField('Shipped date', format='%Y/%m/%d', validators=[validators.optional(), ])
+    shippedAtTime = StringField('Shipped time')
     isSecurityDriven = BooleanField('Is Security Driven ?')
     description = TextAreaField('Description')
+    isShipped = BooleanField('Is Shipped ?')
 
-    def validate_shippedAtDate(form, field):
-        dt = form.shippedAt
+    def validate_isShipped(form, field):
+        if form.isShipped.data:
+            dt = form.shippedAt
 
-        if dt > datetime.now():
-            raise ValidationError('Invalid Date')
+            if (not dt) or (dt > datetime.now()):
+                raise ValidationError('Invalid Date for Shipped release')
 
     @property
     def shippedAt(self):
-        dt = self.shippedAtDate.data
-        tm = datetime.strptime(self.shippedAtTime.data, '%H:%M:%S').time()
-        dateAndTime = datetime.combine(dt, tm)
+        dateAndTime = None
+
+        if self.shippedAtDate.data:
+            dt = self.shippedAtDate.data
+            tm = datetime.strptime(self.shippedAtTime.data, '%H:%M:%S').time()
+            dateAndTime = datetime.combine(dt, tm)
+
         return dateAndTime
