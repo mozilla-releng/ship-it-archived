@@ -5,3 +5,4 @@ flask-wtf==0.8
 flask-sqlalchemy==0.16
 sqlalchemy-migrate==0.7.2
 cef==0.5
+pytz==2016.3
