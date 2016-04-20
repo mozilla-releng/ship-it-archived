@@ -1,7 +1,13 @@
 import os
 import json
 
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
 from flask import Response
 
 
