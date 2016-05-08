@@ -23,11 +23,24 @@ from kickoff.thunderbirddetails import primary_builds as tb_primary_builds, beta
 from mozilla.release.l10n import parsePlainL10nChangesets
 
 
-def myjsonify(values):
+def myjsonify(values, detailledJson=False):
     # Transform the structure into a dict
     values = OrderedDict(values)
-    # Sort by date
-    values = OrderedDict(sorted(values.items(), key=lambda x: x[1]))
+
+    if detailledJson:
+        # But when this is done on the new json files, it has to be done on
+        # the releases member
+        valuesToOrder = values["releases"]
+    else:
+        valuesToOrder = values
+
+    valuesOrdered = OrderedDict(sorted(valuesToOrder.items(), key=lambda x: x[1]))
+
+    if detailledJson:
+        values["releases"] = valuesOrdered
+    else:
+        values = valuesOrdered
+
     # Don't use jsonsify because jsonify is sorting
     resp = Response(response=json.dumps(values),
                     status=200,
@@ -343,21 +356,21 @@ def getReleasesForJson(product):
 def jsonFirefoxExport():
     """ Export all the firefox versions """
     release_list = getReleasesForJson("firefox")
-    return myjsonify(release_list)
+    return myjsonify(release_list, detailledJson=True)
 
 
 @app.route('/json/mobile_android.json', methods=['GET'])
 def jsonFennecExport():
     """ Export all the fennec versions """
     release_list = getReleasesForJson("fennec")
-    return myjsonify(release_list)
+    return myjsonify(release_list, detailledJson=True)
 
 
 @app.route('/json/thunderbird.json', methods=['GET'])
 def jsonThunderbirdExport():
     """ Export all the thunderbird versions """
     release_list = getReleasesForJson("thunderbird")
-    return myjsonify(release_list)
+    return myjsonify(release_list, detailledJson=True)
 
 
 @app.route('/json/all.json', methods=['GET'])
@@ -369,4 +382,4 @@ def jsonAllExport():
     }
     for release in ("firefox", "fennec", "thunderbird"):
         release_list["releases"].update(getReleasesForJson(release)["releases"])
-    return jsonify(release_list)
+    return myjsonify(release_list, detailledJson=True)
