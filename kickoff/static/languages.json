@@ -227,6 +227,10 @@
         "English": "Galician",
         "native": "Galego"
     },
+    "gn": {
+        "English": "Guarani",
+        "native": "Ava\u00f1e'\u1ebd"
+    },
     "gu": {
         "English": "Gujarati",
         "native": "\u0a97\u0ac1\u0a9c\u0ab0\u0abe\u0aa4\u0ac0"
@@ -346,6 +350,10 @@
     "lt": {
         "English": "Lithuanian",
         "native": "lietuvi\u0173 kalba"
+    },
+    "ltg": {
+        "English": "Latgalian",
+        "native": "Latgalie\u0161u valoda"
     },
     "lv": {
         "English": "Latvian",
