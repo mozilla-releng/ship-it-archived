@@ -1,5 +1,6 @@
 import os
 import json
+from os import path
 
 from collections import defaultdict
 
@@ -9,7 +10,6 @@ except ImportError:
     from ordereddict import OrderedDict
 
 from flask import Response
-
 
 from kickoff import app
 from kickoff import config
@@ -53,7 +53,7 @@ def generateJSONFileList():
     links = []
     for rule in app.url_map.iter_rules():
         url = str(rule)
-        if url.endswith(".json"):
+        if url.endswith(".json") and "<" not in url:
             links.append((url, os.path.basename(url)))
     return sorted(links)
 
@@ -383,3 +383,24 @@ def jsonAllExport():
     for release in ("firefox", "fennec", "thunderbird"):
         release_list["releases"].update(getReleasesForJson(release)["releases"])
     return myjsonify(release_list, detailledJson=True)
+
+
+@app.route('/json/regions/<region>.json', methods=['GET'])
+def regionsExport(region):
+    reg = path.join("regions", region + ".json")
+    return app.send_static_file(reg)
+
+
+def generateRegionsJSONFileList():
+    links = []
+    reg = path.join(path.dirname(__file__), 'static', 'regions')
+    for url in os.listdir(reg):
+        if url.endswith(".json"):
+            links.append((url, os.path.basename(url)))
+    return sorted(links)
+
+
+@app.route('/json/regions/list.html', methods=['GET'])
+def jsonRegionsExports():
+    jsonFiles = generateRegionsJSONFileList()
+    return render_template('regionlist.html', jsonFiles=jsonFiles)
