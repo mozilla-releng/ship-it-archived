@@ -1,4 +1,5 @@
 {
+  "nightly_version": "{{ versions.nightly_version }}",
   "alpha_version": "{{ versions.alpha_version }}",
   "beta_version": "{{ versions.beta_version }}",
   "version": "{{ versions.stable }}",
