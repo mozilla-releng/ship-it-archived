@@ -1,4 +1,5 @@
 {
+  "FIREFOX_NIGHTLY": "{{ versions.FIREFOX_NIGHTLY }}",
   "FIREFOX_AURORA": "{{ versions.FIREFOX_AURORA }}",
   "FIREFOX_ESR": "{{ versions.FIREFOX_ESR }}",
   "FIREFOX_ESR_NEXT": "{{ versions.FIREFOX_ESR_NEXT }}",

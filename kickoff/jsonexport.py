@@ -141,6 +141,7 @@ def firefoxHistoryDevelopmentReleasesJson():
 def firefoxVersionsJson():
 
     versions = {
+        "FIREFOX_NIGHTLY": config.NIGHTLY_VERSION,
         "FIREFOX_AURORA": config.AURORA_VERSION,
         "LATEST_FIREFOX_OLDER_VERSION": config.LATEST_FIREFOX_OLDER_VERSION,
     }
@@ -223,7 +224,8 @@ def firefox_primary_builds_json():
 @app.route('/json/mobile_details.json', methods=['GET'])
 @app.route('/json/mobile_versions.json', methods=['GET'])
 def mobileDetailsJson():
-    versions = {"alpha_version": config.AURORA_VERSION,
+    versions = {"nightly_version": config.NIGHTLY_VERSION,
+                "alpha_version": config.AURORA_VERSION,
                 "ios_version": config.IOS_VERSION,
                 "ios_beta_version": config.IOS_BETA_VERSION
                 }
