@@ -2,7 +2,7 @@
 
 set -e
 
-if [ ! -f /.dockerinit ]; then
+if [ ! -f /.dockerenv ]; then
     echo "We expect to run from docker, see the README for more info"
     exit 1
 fi
