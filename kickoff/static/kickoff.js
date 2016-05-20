@@ -36,7 +36,7 @@ function viewReleases() {
     var submittedAtIndexColumn = 5;
     var descriptionIndexColumn = 3;
     var returnDataIfIsThunderbird = function(data, type, full) {
-        if (full.name.contains('Thunderbird')) {
+        if (full.name.indexOf('Thunderbird') > -1) {
             return data;
         }
 
@@ -60,7 +60,7 @@ function viewReleases() {
     };
 
     var buildPromptWaitTimeLabel = function(data, type, full) {
-        if (full.name.contains('Fennec')) {
+        if (full.name.indexOf('Fennec') > -1) {
             return 'N/A';
         } else if (!data) {
             return 'Default';
@@ -101,7 +101,7 @@ function viewReleases() {
             {'mData': 'partials',
              'sDefaultContent': 'N/A',
             'mRender': function(data, type, full) {
-                if (data && full.name.contains('Fennec')) {
+                if (data && full.name.indexOf('Fennec') > -1) {
                     return commaToNewLine(data);
                 }
 
