@@ -1,4 +1,5 @@
 import simplejson as json
+from unittest import TestCase
 
 from kickoff import config
 from kickoff.test.views.base import ViewTest
@@ -326,3 +327,10 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(allLocales["de"], "Deutschland")
 
 
+class ConfigTest(TestCase):
+
+    def test_esr_next_set(self):
+        self.assertIsNotNone(config.ESR_NEXT)
+
+    def test_esr_next_not_empty(self):
+        self.assertTrue(len(config.ESR_NEXT) > 0)
