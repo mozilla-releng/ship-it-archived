@@ -325,4 +325,12 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(allLocales["fr"], "Frankreich")
         self.assertEquals(allLocales["de"], "Deutschland")
 
+    def test_esr_next_empty(self):
+        config.CURRENT_ESR = "38"
+        config.ESR_NEXT = ""
+        ret = self.get('/json/firefox_versions.json')
+        versions = json.loads(ret.data)
 
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(versions['FIREFOX_ESR'], "38.1.0esr")
+        self.assertEqual(versions["FIREFOX_ESR_NEXT"], "")
