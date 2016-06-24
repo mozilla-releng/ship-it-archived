@@ -1,6 +1,5 @@
 import os
 import json
-from os import path
 
 from collections import defaultdict
 
@@ -17,7 +16,6 @@ from kickoff import config
 from flask import jsonify, render_template, make_response
 
 from kickoff.model import getReleases
-from kickoff.model import getReleaseTable
 
 from kickoff.thunderbirddetails import primary_builds as tb_primary_builds, beta_builds as tb_beta_builds
 
@@ -389,43 +387,3 @@ def jsonAllExport():
     for release in ("firefox", "fennec", "thunderbird"):
         release_list["releases"].update(getReleasesForJson(release)["releases"])
     return myjsonify(release_list, detailledJson=True)
-
-
-@app.route('/json/l10n/<releaseName>.json', methods=['GET'])
-def l10nExport(releaseName):
-    releaseTable = getReleaseTable(releaseName)
-    release = releaseTable.query.filter_by(name=releaseName).first()
-
-    locale_list = defaultdict()
-    locales = parsePlainL10nChangesets(release.l10nChangesets)
-    for key, changeset in locales.iteritems():
-        locale_list[key] = {
-            "changetset": changeset,
-        }
-    l10n_list = {"version": config.JSON_FORMAT_L10N_VERSION,
-                 "shippedAt": release.shippedAt,
-                 "submittedAt": release.submittedAt,
-                 "locales": locale_list,
-                 }
-    return myjsonify(l10n_list)
-
-
-@app.route('/json/regions/<region>.json', methods=['GET'])
-def regionsExport(region):
-    reg = path.join("regions", region + ".json")
-    return app.send_static_file(reg)
-
-
-def generateRegionsJSONFileList():
-    links = []
-    reg = path.join(path.dirname(__file__), 'static', 'regions')
-    for url in os.listdir(reg):
-        if url.endswith(".json"):
-            links.append((url, os.path.basename(url)))
-    return sorted(links)
-
-
-@app.route('/json/regions/list.html', methods=['GET'])
-def jsonRegionsExports():
-    jsonFiles = generateRegionsJSONFileList()
-    return render_template('regionlist.html', jsonFiles=jsonFiles)
