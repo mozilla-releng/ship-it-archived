@@ -84,7 +84,6 @@ class TestJSONRequestsAPI(ViewTest):
         primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         # I guess we will always have more than 20 locales
-        print primary
         self.assertTrue(len(primary) > 20)
         # i guess we will always have french or german
         self.assertTrue('fr' in primary)
@@ -159,7 +158,6 @@ class TestJSONRequestsAPI(ViewTest):
     def testThunderbirdVersions(self):
         ret = self.get('/json/thunderbird_versions.json')
         versions = json.loads(ret.data)
-        print versions
         self.assertEquals(ret.status_code, 200)
 
         self.assertTrue("LATEST_THUNDERBIRD_VERSION" in versions)

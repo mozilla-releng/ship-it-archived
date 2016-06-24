@@ -14,14 +14,13 @@ from kickoff.model import getReleases
 from kickoff.model import getReleaseTable
 from jsonexport import myjsonify
 
-
 @app.route('/json/l10n/<releaseName>.json', methods=['GET'])
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
     releaseTable = getReleaseTable(releaseName)
     release = releaseTable.query.filter_by(name=releaseName).first()
 
-    if release.l10nChangesets == "legacy":
+    if release is None or release.l10nChangesets == "legacy":
         return myjsonify({})
 
     locale_list = defaultdict()
@@ -29,14 +28,14 @@ def l10nExport(releaseName):
         locales = parsePlainL10nChangesets(release.l10nChangesets)
         for key, changeset in locales.iteritems():
             locale_list[key] = {
-                "changetset": changeset,
+                "changeset": changeset,
             }
 
     if "Fennec" in releaseName:
         locales = json.loads(release.l10nChangesets)
         for key, extra in locales.iteritems():
             locale_list[key] = {
-                "changetset": extra['revision'],
+                "changeset": extra['revision'],
                 "platforms": extra['platforms'],
             }
 
@@ -45,6 +44,7 @@ def l10nExport(releaseName):
                  "submittedAt": release.submittedAt,
                  "locales": locale_list,
                  }
+
     return myjsonify(l10n_list)
 
 
