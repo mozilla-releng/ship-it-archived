@@ -304,27 +304,6 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['product'], "fennec")
         self.assertEquals(v['is_security_driven'], False)
 
-    def testJsonListRegionsFiles(self):
-        ret = self.get('/json/regions/list.html')
-        fileList = ret.data
-        self.assertEquals(ret.status_code, 200)
-        self.assertTrue("fr.json" in fileList)
-        self.assertTrue("de.json" in fileList)
-
-    def testJsonListRegionsFilesFr(self):
-        ret = self.get('/json/regions/fr.json')
-        allLocales = json.loads(ret.data)
-        self.assertEquals(ret.status_code, 200)
-        self.assertEquals(allLocales["fr"], "France")
-        self.assertEquals(allLocales["de"], "Allemagne")
-
-    def testJsonListRegionsFilesDe(self):
-        ret = self.get('/json/regions/de.json')
-        allLocales = json.loads(ret.data)
-        self.assertEquals(ret.status_code, 200)
-        self.assertEquals(allLocales["fr"], "Frankreich")
-        self.assertEquals(allLocales["de"], "Deutschland")
-
     def test_esr_next_empty(self):
         config.CURRENT_ESR = "38"
         config.ESR_NEXT = ""
