@@ -14,6 +14,7 @@ from kickoff.model import getReleases
 from kickoff.model import getReleaseTable
 from jsonexport import myjsonify
 
+
 @app.route('/json/l10n/<releaseName>.json', methods=['GET'])
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
