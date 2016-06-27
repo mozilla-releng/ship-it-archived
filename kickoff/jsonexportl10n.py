@@ -37,7 +37,6 @@ def l10nExport(releaseName):
         for key, extra in locales.iteritems():
             locale_list[key] = {
                 "changeset": extra['revision'],
-                "platforms": extra['platforms'],
             }
 
     l10n_list = {"version": config.JSON_FORMAT_L10N_VERSION,

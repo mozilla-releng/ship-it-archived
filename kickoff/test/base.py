@@ -20,7 +20,7 @@ class TestBase(unittest.TestCase):
             db.create_all()
             r = FennecRelease(submitter='joe', version='1', buildNumber=1,
                               branch='a', mozillaRevision='abc',
-                              l10nChangesets='{"hi": { "revision": "fe436c75f71d", "platforms": ["android", "android-multilocale"]  }}',
+                              l10nChangesets='{"hi": { "revision": "fe436c75f71d" }}',
                               dashboardCheck=True,
                               mozillaRelbranch=None)
             r.ready = True
@@ -28,7 +28,7 @@ class TestBase(unittest.TestCase):
 
             r = FennecRelease(submitter='joe', version='4', buildNumber=4,
                               branch='a', mozillaRevision='abc',
-                              l10nChangesets='{"fr": { "revision": "fe436c75f71d", "platforms": ["android", "android-multilocale"]  }}',
+                              l10nChangesets='{"fr": { "revision": "fe436c75f71d" }}',
                               dashboardCheck=True,
                               mozillaRelbranch=None)
             db.session.add(r)
@@ -89,7 +89,7 @@ class TestBase(unittest.TestCase):
 
             r = FennecRelease(submitter='joe', version='24.0', buildNumber=4,
                               branch='a', mozillaRevision='abc',
-                              l10nChangesets='{"an": { "revision": "fe436c75f71d", "platforms": ["android", "android-multilocale"]  }}',
+                              l10nChangesets='{"an": { "revision": "fe436c75f71d" }}',
                               dashboardCheck=True,
                               submittedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
                               shippedAt=datetime(2015, 3, 1, 3, 4, 5, 6),
@@ -102,7 +102,7 @@ class TestBase(unittest.TestCase):
 
             r = FennecRelease(submitter='joe', version='24.0.1', buildNumber=4,
                               branch='a', mozillaRevision='abc',
-                              l10nChangesets='{"an": { "revision": "fe436c75f71d", "platforms": ["android", "android-multilocale"]  }}',
+                              l10nChangesets='{"an": { "revision": "fe436c75f71d" }}',
                               dashboardCheck=True,
                               submittedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
                               shippedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
@@ -115,7 +115,7 @@ class TestBase(unittest.TestCase):
 
             r = FennecRelease(submitter='joe', version='23.0b2', buildNumber=4,
                               branch='a', mozillaRevision='abc',
-                              l10nChangesets='{"an": { "revision": "fe436c75f71d", "platforms": ["android", "android-multilocale"]  }}',
+                              l10nChangesets='{"an": { "revision": "fe436c75f71d" }}',
                               dashboardCheck=True,
                               submittedAt=datetime(2015, 2, 26, 3, 4, 5, 6),
                               shippedAt=datetime(2015, 2, 27, 3, 4, 5, 6),
