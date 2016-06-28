@@ -2,6 +2,7 @@ import requests
 
 from datetime import datetime, date, timedelta
 import json
+import os
 import sys
 
 CRASH_STATS_BASE_URL = "https://crash-stats.mozilla.com/api/"
@@ -55,7 +56,9 @@ def saveAllPartial(exportFile):
                                            timestamp.strftime("%d/%m/%Y"))
     full = {"beta": partialBeta, "release": partialRelease, "esr": partialESR, "lastUpdate": lastUpdate}
 
-    with open(exportFile, "w") as outfile:
+    with open(exportFile + '.tmp', "w") as outfile:
         json.dump(full, outfile)
+    os.rename(exportFile + '.tmp', exportFile)
 
-saveAllPartial("partial.json")
+if __name__ == "__main__":
+    saveAllPartial("partial.json")
