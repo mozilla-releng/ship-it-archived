@@ -122,14 +122,17 @@ QUnit.test( "stripBuildNumber", function( assert ) {
 QUnit.test( "getVersionWithBuildNumber", function( assert ) {
 
     beta=["31.0b2build3", "30.0b9build2", "29.0b10build2", "25.0b5build2", ];
-    release=["33.0.1build2", "32.0.1build2",  "28.0build2", "27.0build2"];
+    release=["33.0.1build2", "33.0build1", "32.0.1build2",  "28.0build2", "27.0build2"];
     esr=["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1"];
+    tb_esr=["45.2.0build1", "45.1.1build2", "45.1.0build3"];
 
     assert.strictEqual(getVersionWithBuildNumber("31.0b2", beta), "31.0b2build3");
     assert.strictEqual(getVersionWithBuildNumber("33.0.1", release), "33.0.1build2");
+    assert.strictEqual(getVersionWithBuildNumber("33.0", release), "33.0build1");
     assert.strictEqual(getVersionWithBuildNumber("27.0", release), "27.0build2");
-    assert.strictEqual(getVersionWithBuildNumber("31.1.0", esr), "31.1.0esrbuild1");
-    assert.strictEqual(getVersionWithBuildNumber("69.1.0", esr), undefined)
+    assert.strictEqual(getVersionWithBuildNumber("31.1.0esr", esr), "31.1.0esrbuild1");
+    assert.strictEqual(getVersionWithBuildNumber("69.1.0esr", esr), undefined)
+    assert.strictEqual(getVersionWithBuildNumber("45.1.1", tb_esr), "45.1.1build2");
 
 });
 
@@ -138,7 +141,7 @@ QUnit.test( "getVersionWithBuildNumber", function( assert ) {
 
 QUnit.test( "populatePartial", function( assert ) {
 
-allPartialJ='{"release": [{"version": "32.0.1", "ADI": 949}, {"version": "31.0", "ADI": 821}, {"version": "30.0.5", "ADI": 661}, {"version": "29.0", "ADI": 438}, {"version": "28.0", "ADI": 256}], "beta": [{"version": "31.0b2", "ADI": 951}, {"version": "31.0b3", "ADI": 879}, {"version": "30.0b9", "ADI": 776}, {"version": "30.0b2", "ADI": 655}, {"version": "29.0b10", "ADI": 273}], "esr": [{"version": "31.1.0", "ADI": 833}, {"version": "29.4.0", "ADI": 763}, {"version": "24.3.0", "ADI": 624}, {"version": "29.0", "ADI": 558}, {"version": "31.3.0", "ADI": 368}]}';
+allPartialJ='{"release": [{"version": "32.0.1", "ADI": 949}, {"version": "31.0", "ADI": 821}, {"version": "30.0.5", "ADI": 661}, {"version": "29.0", "ADI": 438}, {"version": "28.0", "ADI": 256}], "beta": [{"version": "31.0b2", "ADI": 951}, {"version": "31.0b3", "ADI": 879}, {"version": "30.0b9", "ADI": 776}, {"version": "30.0b2", "ADI": 655}, {"version": "29.0b10", "ADI": 273}], "esr": [{"version": "31.1.0esr", "ADI": 833}, {"version": "29.4.0esr", "ADI": 763}, {"version": "24.3.0esr", "ADI": 624}, {"version": "29.0esr", "ADI": 558}, {"version": "31.3.0esr", "ADI": 368}]}';
 allPartial=JSON.parse(allPartialJ);
 
 previousBuilds = {"releases/mozilla-beta": ["31.0b3build4", "31.0b2build2", "30.0b9build2", "29.0b10build2", "25.0b5build2", "30.0b2build1" ],
