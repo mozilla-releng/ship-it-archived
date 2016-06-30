@@ -121,7 +121,7 @@ function addLastVersionAsPartial(version, previousReleases, nb) {
 
 function getVersionWithBuildNumber(version, previousReleases) {
     for (j = 0; j < previousReleases.length; j++) {
-        if (previousReleases[j].indexOf(version) > -1) {
+        if (previousReleases[j].indexOf(version + 'build') > -1) {
             return previousReleases[j];
         }
     }
