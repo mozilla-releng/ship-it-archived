@@ -124,6 +124,7 @@ QUnit.test( "getVersionWithBuildNumber", function( assert ) {
     beta=["31.0b2build3", "30.0b9build2", "29.0b10build2", "25.0b5build2", ];
     release=["33.0.1build2", "33.0build1", "32.0.1build2",  "28.0build2", "27.0build2"];
     esr=["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1"];
+    tb_esr=["45.2.0build1", "45.1.1build2", "45.1.0build3"];
 
     assert.strictEqual(getVersionWithBuildNumber("31.0b2", beta), "31.0b2build3");
     assert.strictEqual(getVersionWithBuildNumber("33.0.1", release), "33.0.1build2");
@@ -131,6 +132,7 @@ QUnit.test( "getVersionWithBuildNumber", function( assert ) {
     assert.strictEqual(getVersionWithBuildNumber("27.0", release), "27.0build2");
     assert.strictEqual(getVersionWithBuildNumber("31.1.0esr", esr), "31.1.0esrbuild1");
     assert.strictEqual(getVersionWithBuildNumber("69.1.0esr", esr), undefined)
+    assert.strictEqual(getVersionWithBuildNumber("45.1.1", tb_esr), "45.1.1build2");
 
 });
 
