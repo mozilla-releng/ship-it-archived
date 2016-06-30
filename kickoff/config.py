@@ -9,3 +9,6 @@ JSON_FORMAT_VERSION = 1
 JSON_FORMAT_L10N_VERSION = 1
 IOS_BETA_VERSION = "5.0"
 IOS_VERSION = "4.0"
+
+# The keyword used in the ship-it db for old release before the changeset/json l10n files
+LEGACY_KEYWORD = "legacy"

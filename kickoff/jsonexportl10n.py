@@ -21,7 +21,7 @@ def l10nExport(releaseName):
     releaseTable = getReleaseTable(releaseName)
     release = releaseTable.query.filter_by(name=releaseName).first()
 
-    if release is None or release.l10nChangesets == "legacy":
+    if release is None or release.l10nChangesets == config.LEGACY_KEYWORD:
         return myjsonify({})
 
     locale_list = defaultdict()
@@ -76,7 +76,7 @@ def generateListPerProduct(product):
     releases = getReleases(ready=True, productFilter=product)
     version_list = []
     for r in releases:
-        if r._shippedAt and r.l10nChangesets != "legacy":
+        if r._shippedAt and r.l10nChangesets != config.LEGACY_KEYWORD:
             # Only list version which shipped with l10n content
             version_list.append(r.name)
     return version_list
