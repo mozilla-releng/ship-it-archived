@@ -33,6 +33,8 @@ def getPartialJSON(channel, timestamp):
         # NB: this merges all RC builds together but we can"t do anything about that
         # TODO - check what happens in the UI
         ADI.append({"version": data["version"].replace("b99", ""), "ADI": data["adi_count"]})
+    # ship-it expects the data to be in descending-ADI order
+    ADI.sort(key=lambda x: x['ADI'], reverse=True)
     return ADI
 
 
