@@ -184,16 +184,16 @@ assert.strictEqual($('#partials').val(), "31.0build1,24.4.0build1,24.3.0build1")
 
 
 // Test case to make sure we will take important ADI in a previous release
-allPartialJ='{"release": [{"version": "36.0.4", "ADI": 5000}, {"version": "36.0.3", "ADI": 5000},  {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}]}';
+allPartialJ='{"release": [{"version": "36.0.4", "ADI": 5000}, {"version": "36.0.3", "ADI": 5000},  {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}, {"version": "36.0.2", "ADI": 300}]}';
 allPartial=JSON.parse(allPartialJ);
 
 
-previousBuilds = {"releases/mozilla-release": ["36.0.4build2", "36.0.3build2",  "36.0build2", "35.0build2"]}
+previousBuilds = {"releases/mozilla-release": ["36.0.4build2", "36.0.3build2",  "36.0.2build2", "36.0build2", "35.0build2"]}
 
 partialElement = $('#partials');
 var result = populatePartial("firefox", "37.0", previousBuilds, partialElement);
 assert.ok( result );
-assert.strictEqual($('#partials').val(), "36.0.4build2,36.0.3build2,35.0build2,");
+assert.strictEqual($('#partials').val(), "36.0.4build2,36.0.3build2,35.0build2,36.0build2");
 
 // Test the case we had during the 38 cycle (beta built from m-r)
 allPartialJ='{"release": [{"version": "38.0.3", "ADI": 5000}, {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}]}';

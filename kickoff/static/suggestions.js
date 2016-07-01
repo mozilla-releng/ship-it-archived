@@ -234,7 +234,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
 
     for (i = 0; i < partialsADIVersion.length; i++) {
 
-        if (partial.indexOf(partialsADIVersion[i]) > -1) {
+        if (partial.indexOf(partialsADIVersion[i]  + 'build') > -1) {
             // We have already this version in the list of partial
             // Go to the next one
             continue;
