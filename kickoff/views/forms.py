@@ -138,7 +138,6 @@ class ReleaseAPIForm(Form):
     # it than complain, because it's purely informational.
     # Use the Column length directly rather than duplicating its value.
     status = StringField('status', filters=[truncateFilter(Release.status.type.length)])
-    enUSPlatforms = JSONField('enUSPlatforms')
     shippedAt = DateTimeField('shippedAt', [validators.optional()])
     description = TextAreaField('description', [validators.optional()])
     isSecurityDriven = BooleanField('isSecurityDriven', [validators.optional()])
@@ -160,15 +159,16 @@ class ReleaseAPIForm(Form):
                 valid = True
             else:
                 # Check if there is an other product-version already shipped
-                similar = getReleases(status="postrelease", productFilter=release.product,
-                                      versionFilter=release.version)
+                similar = getReleases(
+                    shipped=True, productFilter=release.product,
+                    versionFilter=release.version)
                 if similar and self.status.data != "Started":
                     # In most of the cases, it is useless since bug 1121032 has been implemented but keeping it
                     # in case we change/revert in the future and because we cannot always trust the client
                     valid = False
-                    if 'postrelease' not in self.errors:
-                        self.errors['postrelease'] = []
-                    self.errors['postrelease'].append('Version ' + release.version + ' already marked as shipped')
+                    if 'shipped' not in self.errors:
+                        self.errors['shipped'] = []
+                    self.errors['shipped'].append('Version ' + release.version + ' already marked as shipped')
 
         # If the release isn't complete, we can accept changes to readyness or
         # completeness, but marking a release as not ready *and* complete at
@@ -387,16 +387,6 @@ def getReleaseForm(release):
         return ThunderbirdReleaseForm
     else:
         raise ValueError("Can't find release table for release %s" % release)
-
-
-class ReleaseEventsAPIForm(Form):
-    sent = DateTimeField('Sent:', validators=[InputRequired('Sent is required.')])
-    event_name = StringField('Event Name:', validators=[InputRequired('Event Name is required.'), Length(0, 150)])
-    platform = StringField('Platform:')
-    results = IntegerField('Results:', default=0, validators=[InputRequired('Results is required.')])
-    chunkNum = IntegerField('Chunk Number:', default=1)
-    chunkTotal = IntegerField('Chunk Total:', default=1)
-    group = StringField('Group:', default='other')
 
 
 class EditReleaseForm(Form):

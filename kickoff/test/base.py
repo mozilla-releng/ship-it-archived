@@ -49,12 +49,11 @@ class TestBase(unittest.TestCase):
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
                                comment="yet an other amazying comment",
-                               mh_changeset='xyz',
-                               enUSPlatforms=None)
+                               mh_changeset='xyz')
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
@@ -64,12 +63,11 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
+                               comment="yet an other amazying comment")
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
@@ -79,12 +77,11 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2015, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
+                               comment="yet an other amazying comment")
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             r = FennecRelease(submitter='joe', version='24.0', buildNumber=4,
@@ -97,7 +94,7 @@ class TestBase(unittest.TestCase):
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             r = FennecRelease(submitter='joe', version='24.0.1', buildNumber=4,
@@ -110,7 +107,7 @@ class TestBase(unittest.TestCase):
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             r = FennecRelease(submitter='joe', version='23.0b2', buildNumber=4,
@@ -123,7 +120,7 @@ class TestBase(unittest.TestCase):
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
@@ -135,12 +132,11 @@ class TestBase(unittest.TestCase):
                                shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                comment="yet an other amazying comment",
                                isSecurityDriven=True,
-                               description="We did this because of an issue in NSS",
-                               enUSPlatforms=None)
+                               description="We did this because of an issue in NSS")
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
@@ -150,8 +146,7 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 3, 2, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
-                               enUSPlatforms=None)
+                               comment="yet an other amazying comment")
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
@@ -162,12 +157,11 @@ class TestBase(unittest.TestCase):
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                comment="yet an other amazying comment",
-                               enUSPlatforms=None,
                                description="we did this release because of foo")
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
 
             # Thunderbird data
@@ -180,7 +174,6 @@ class TestBase(unittest.TestCase):
                                    submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
                                    shippedAt=datetime(2005, 1, 3, 1, 1, 1, 1),
                                    comment='My great comment!',
-                                   enUSPlatforms="foo bar",
                                    isSecurityDriven=True,
                                    mh_changeset='xyz',
                                    description="we did this release because of bar")
@@ -211,7 +204,7 @@ class TestBase(unittest.TestCase):
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
             db.session.commit()
 
@@ -227,7 +220,7 @@ class TestBase(unittest.TestCase):
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
             db.session.commit()
 
@@ -243,7 +236,7 @@ class TestBase(unittest.TestCase):
             r.complete = True
             r.ready = True
             # Shipped
-            r.status = "postrelease"
+            r.status = "shipped"
             db.session.add(r)
             db.session.commit()
 

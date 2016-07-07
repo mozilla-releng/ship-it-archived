@@ -191,14 +191,14 @@ function viewReleases() {
             }},
             {'mData': 'status',
              'mRender': function(data, type, full) {
-                if (full.status !== 'postrelease' && full.status !== 'Post Release') {
+                if (!full.shippedAt) {
                     if (full.ReleaseMarkedAsShipped) {
                         return 'Other build shipped';
                     } else {
-                        return 'Not shipped <input type="submit" value="Shipped!" class="submitButton" onclick="return updateShip(\'' + full.name + '\', true)" />';
+                        return 'Not shipped <input type="submit" value="Mark as Shipped" class="submitButton" onclick="return updateShip(\'' + full.name + '\', true)" />';
                     }
                 } else {
-                    return 'Shipped <input type="submit" value="Not Shipped" class="submitButton" onclick="return updateShip(\'' + full.name + '\', false)" />';
+                    return 'Shipped <input type="submit" value="Mark as Not Shipped" class="submitButton" onclick="return updateShip(\'' + full.name + '\', false)" />';
                 }
 
             }}
@@ -274,7 +274,7 @@ function sendAjaxQuery(releaseName, query) {
 function updateShip(releaseName, shipped) {
 
     if (shipped) {
-        status = 'postrelease';
+        status = 'shipped';
         var d = new Date();
         // Expects '%Y-%m-%d %H:%M:%S'
         shippedAt = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
