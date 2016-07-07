@@ -1,6 +1,5 @@
 import os
 import json
-from os import path
 
 from collections import defaultdict
 
@@ -388,24 +387,3 @@ def jsonAllExport():
     for release in ("firefox", "fennec", "thunderbird"):
         release_list["releases"].update(getReleasesForJson(release)["releases"])
     return myjsonify(release_list, detailledJson=True)
-
-
-@app.route('/json/regions/<region>.json', methods=['GET'])
-def regionsExport(region):
-    reg = path.join("regions", region + ".json")
-    return app.send_static_file(reg)
-
-
-def generateRegionsJSONFileList():
-    links = []
-    reg = path.join(path.dirname(__file__), 'static', 'regions')
-    for url in os.listdir(reg):
-        if url.endswith(".json"):
-            links.append((url, os.path.basename(url)))
-    return sorted(links)
-
-
-@app.route('/json/regions/list.html', methods=['GET'])
-def jsonRegionsExports():
-    jsonFiles = generateRegionsJSONFileList()
-    return render_template('regionlist.html', jsonFiles=jsonFiles)

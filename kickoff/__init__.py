@@ -8,6 +8,8 @@ db = SQLAlchemy()
 
 # We do need this import to make sure json endpoints are available
 import kickoff.jsonexport  # NOQA
+import kickoff.jsonexportl10n  # NOQA
+
 from kickoff.log import cef_event, CEF_WARN
 from kickoff.views.csrf import CSRFView
 from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release, ReleaseCommentAPI, ReleasesListAPI, EditRelease
