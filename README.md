@@ -1,9 +1,9 @@
 # Release Kick-off
 ## CI Build Status
 
-[![Build Status](https://travis-ci.org/mozilla/ship-it.svg?branch=master)](https://travis-ci.org/mozilla/ship-it)
-[![Coverage Status](https://coveralls.io/repos/github/mozilla/ship-it/badge.svg?branch=master)](https://coveralls.io/github/mozilla/ship-it?branch=master)
-[![Code Health](https://landscape.io/github/mozilla/ship-it/master/landscape.svg?style=flat)](https://landscape.io/github/mozilla/ship-it/master)
+[![Build Status](https://travis-ci.org/mozilla-releng/ship-it.svg?branch=master)](https://travis-ci.org/mozilla-releng/ship-it)
+[![Coverage Status](https://coveralls.io/repos/github/mozilla-releng/ship-it/badge.svg?branch=master)](https://coveralls.io/github/mozilla-releng/ship-it?branch=master)
+[![Code Health](https://landscape.io/github/mozilla-releng/ship-it/master/landscape.svg?style=flat)](https://landscape.io/github/mozilla-releng/ship-it/master)
 
 ## About
 Release kick-off (ship-it) is a Mozilla "internal" tool used to start the release of

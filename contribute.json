@@ -2,7 +2,7 @@
     "name": "Ship-it",
     "description": "The Mozilla tool to start build of Firefox Desktop, Firefox Mobile and Thunderbird",
     "repository": {
-        "url": "https://github.com/mozilla/ship-it",
+        "url": "https://github.com/mozilla-releng/ship-it",
         "license": "BSD 2-Clause"
     },
     "bugs": {
