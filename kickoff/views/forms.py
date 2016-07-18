@@ -7,10 +7,11 @@ from ast import literal_eval
 from collections import defaultdict
 from distutils.version import LooseVersion
 
-from flask.ext.wtf import SelectMultipleField, ListWidget, CheckboxInput, \
-    Form, BooleanField, StringField, Length, TextAreaField, DataRequired, \
-    IntegerField, HiddenField, Regexp, DateTimeField, InputRequired, \
-    validators, DateField, ValidationError
+from flask.ext.wtf import (SelectMultipleField, ListWidget, CheckboxInput,
+                           Form, BooleanField, StringField, TextAreaField,
+                           DataRequired, IntegerField, HiddenField, Regexp,
+                           DateTimeField, validators, DateField,
+                           ValidationError)
 
 from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets

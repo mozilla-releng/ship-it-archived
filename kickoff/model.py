@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import pytz
-import json
 import re
 
 from sqlalchemy import func
@@ -123,8 +122,7 @@ class Release(object):
         """Returns all shipped releases of 'age' or newer."""
         since = datetime.now() - age
         return [
-            r for r in cls.query.
-                filter(cls._submittedAt > since).filter(cls._shippedAt != None).all()
+            r for r in cls.query.filter(cls._submittedAt > since).filter(cls._shippedAt != None).all()
         ]
 
     @classmethod
