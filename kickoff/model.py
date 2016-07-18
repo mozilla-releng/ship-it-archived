@@ -122,7 +122,7 @@ class Release(object):
         """Returns all shipped releases of 'age' or newer."""
         since = datetime.now() - age
         return [
-            r for r in cls.query.filter(cls._submittedAt > since).filter(cls._shippedAt.isnot(None)).all()
+            r for r in cls.query.filter(cls._submittedAt > since).filter(cls._shippedAt != None).all()
         ]
 
     @classmethod
@@ -281,7 +281,7 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
         if filters:
             qry = table.query.filter_by(**filters)
             if shipped:
-                qry = qry.filter(table._shippedAt.isnot(None))
+                qry = qry.filter(table._shippedAt != None)
             if lastRelease and not paginationCriteria:
                 # Retrieve the last X version
                 qry = qry.order_by(table._submittedAt.desc()).limit(40)
