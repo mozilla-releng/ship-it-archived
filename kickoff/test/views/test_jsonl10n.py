@@ -66,3 +66,16 @@ class TestJSONL10NRequestsAPI(ViewTest):
 
         self.assertEquals(jsonFx['submittedAt'], pytz.utc.localize(datetime.datetime(2005, 1, 1, 1, 1, 1, 1)).isoformat())
         self.assertEquals(jsonFx['shippedAt'], pytz.utc.localize(datetime.datetime(2005, 2, 1, 1, 1, 1, 1)).isoformat())
+
+    def testJsonFileBeta(self):
+        ret = self.get('/json/l10n/Firefox-3.0beta.json')
+        jsonFx = json.loads(ret.data)
+        self.assertEquals(ret.status_code, 200)
+
+        betas = jsonFx['betas']
+        self.assertEquals(len(betas), 2)
+        for beta in betas:
+            self.assertTrue('Firefox-3.0b2-build' in beta['name'])
+            self.assertTrue('ja' in beta['locales'])
+            self.assertTrue('submittedAt' in beta)
+            self.assertTrue('shippedAt' in beta)
