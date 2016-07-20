@@ -78,9 +78,6 @@ class ReleaseAPI(MethodView):
         if form.status.data:
             log.debug('%s: status being changed to: %s', releaseName, form.status.data)
             release.status = form.status.data
-        if form.enUSPlatforms.data:
-            log.debug('%s: enUSPlatforms being changed to: %s', releaseName, form.enUSPlatforms.data)
-            release.enUSPlatforms = form.enUSPlatforms.data
         if form.description.data:
             log.debug('%s: description being changed to: %s', releaseName, form.description.data)
             release.description = form.description.data
@@ -339,7 +336,7 @@ class EditRelease(MethodView):
 
         if form.isShipped.data:
             release.shippedAt = form.shippedAt
-            release.status = 'postrelease'
+            release.status = 'shipped'
         else:
             release.shippedAt = None
             release.status = 'Started'
