@@ -150,6 +150,22 @@ class TestBase(unittest.TestCase):
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
+                               submitter='joe', version='3.0b3', buildNumber=1,
+                               branch='a', mozillaRevision='defau',
+                               l10nChangesets='ja zu', dashboardCheck=True,
+                               mozillaRelbranch='FOO',
+                               submittedAt=datetime(2005, 2, 3, 4, 5, 6, 7),
+                               shippedAt=datetime(2005, 2, 3, 4, 5, 6, 7),
+                               comment="yet an other amazying comment",
+                               isSecurityDriven=True,
+                               description="Another beta release for Firefox 3")
+            r.complete = True
+            r.ready = True
+            # Shipped
+            r.status = "shipped"
+            db.session.add(r)
+
+            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
                                submitter='joe', version='3.0.1', buildNumber=1,
                                branch='a', mozillaRevision='def',
                                l10nChangesets='ja zu', dashboardCheck=True,

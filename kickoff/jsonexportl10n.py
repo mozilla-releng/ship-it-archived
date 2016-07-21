@@ -127,7 +127,7 @@ class _L10nReleasesRegistrar:
             if aggregated_base_name not in self._betas_already_processed:
                 aggregated_full_name = aggregated_base_name + 'eta'
                 self.releases.append(aggregated_full_name)
-                # self._betas_already_processed.add(aggregated_base_name)
+                self._betas_already_processed.add(aggregated_base_name)
 
 
 @app.route('/json/l10n/list.html', methods=['GET'])

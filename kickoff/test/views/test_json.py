@@ -59,6 +59,7 @@ class TestJSONRequestsAPI(ViewTest):
         ret = self.get('/json/firefox_history_development_releases.json')
         expected = {
             "3.0b2": "2005-01-02",
+            "3.0b3": "2005-02-03",
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -121,12 +122,12 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(versions['FIREFOX_ESR_NEXT'], "38.1.0esr")
         self.assertEquals(versions['FIREFOX_ESR'], "2.0.2esr")
-        self.assertEquals(versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'], "3.0b2")
+        self.assertEquals(versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'], "3.0b3")
         self.assertEquals(versions['FIREFOX_AURORA'], "23.0a2")
         self.assertEquals(versions['FIREFOX_NIGHTLY'], "24.0a2")
         self.assertEquals(versions['LATEST_FIREFOX_VERSION'], '2.0')
         self.assertEquals(versions['LATEST_FIREFOX_OLDER_VERSION'], "3.6.28")
-        self.assertEquals(versions['LATEST_FIREFOX_DEVEL_VERSION'], "3.0b2")
+        self.assertEquals(versions['LATEST_FIREFOX_DEVEL_VERSION'], "3.0b3")
         self.assertTrue("FIREFOX_NIGHTLY" in versions)
         self.assertTrue("FIREFOX_AURORA" in versions)
         self.assertTrue("FIREFOX_ESR" in versions)

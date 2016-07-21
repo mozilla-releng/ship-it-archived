@@ -1,6 +1,7 @@
 import pytz
 import simplejson as json
 import datetime
+import re
 
 from kickoff import config
 from kickoff.test.views.base import ViewTest
@@ -36,6 +37,10 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertTrue("Fennec-23.0b2-build4" in fileList)
         self.assertTrue("Thunderbird-24.0b2-build2.json" in fileList)
         self.assertTrue("Firefox-2.0-build1.json" in fileList)
+        # Check if we have duplicates of a given beta aggregation
+        aggregated_entries = \
+            [i for i, htmlLine in enumerate(fileList.split('<br />')) if "Firefox-3.0beta.json" in htmlLine]
+        self.assertEquals(len(aggregated_entries), 1)
 
     def testJsonFileFX(self):
         ret = self.get('/json/l10n/Firefox-2.0-build1.json')
@@ -67,15 +72,17 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertEquals(jsonFx['submittedAt'], pytz.utc.localize(datetime.datetime(2005, 1, 1, 1, 1, 1, 1)).isoformat())
         self.assertEquals(jsonFx['shippedAt'], pytz.utc.localize(datetime.datetime(2005, 2, 1, 1, 1, 1, 1)).isoformat())
 
+    FIREFOX_BETA_3_REGEX = re.compile(r"Firefox-3\.0b\d+-build\d+")
+
     def testJsonFileBeta(self):
         ret = self.get('/json/l10n/Firefox-3.0beta.json')
         jsonFx = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
 
         betas = jsonFx['betas']
-        self.assertEquals(len(betas), 2)
+        self.assertEquals(len(betas), 3)
         for beta in betas:
-            self.assertTrue('Firefox-3.0b2-build' in beta['name'])
+            self.assertTrue(self.FIREFOX_BETA_3_REGEX.match(beta['name']) is not None)
             self.assertTrue('ja' in beta['locales'])
             self.assertTrue('submittedAt' in beta)
             self.assertTrue('shippedAt' in beta)
