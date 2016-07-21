@@ -15,26 +15,23 @@ from kickoff.model import getReleaseTable
 from jsonexport import myjsonify
 
 
-BETA_AGGREGATION_KEYWORD = "beta"
-
-
 @app.route('/json/l10n/<releaseName>.json', methods=['GET'])
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
     releaseTable = getReleaseTable(releaseName)
 
-    if releaseName.endswith(BETA_AGGREGATION_KEYWORD):
+    if releaseName.endswith(config.BETA_AGGREGATION_KEYWORD):
         l10n_list = _aggregateBetaLocales(releaseTable, releaseName)
     else:
         l10n_list = _getLocalesByReleaseName(releaseTable, releaseName)
 
-    l10n_list["version"] = config.JSON_FORMAT_L10N_VERSION,
+    l10n_list["version"] = config.JSON_FORMAT_L10N_VERSION
     return myjsonify(l10n_list)
 
 
 def _aggregateBetaLocales(releaseTable, releaseName):
     # We need to keep the first "b", so we can look up names like "Firefox-32.0b"
-    beta_keyword_length = len(BETA_AGGREGATION_KEYWORD) - 1
+    beta_keyword_length = len(config.BETA_AGGREGATION_KEYWORD) - 1
     betas_substring = releaseName[:-beta_keyword_length]
 
     releases = releaseTable.query.filter(releaseTable.name.contains(betas_substring))

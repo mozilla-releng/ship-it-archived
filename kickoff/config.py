@@ -12,3 +12,4 @@ IOS_VERSION = "4.0"
 
 # The keyword used in the ship-it db for old release before the changeset/json l10n files
 LEGACY_KEYWORD = "legacy"
+BETA_AGGREGATION_KEYWORD = "beta"
