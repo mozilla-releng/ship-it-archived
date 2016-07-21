@@ -31,3 +31,6 @@ node_modules/
 
 *.db
 *.log
+
+# IDEs
+.idea/
