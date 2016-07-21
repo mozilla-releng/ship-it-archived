@@ -2,6 +2,7 @@ import os
 from collections import defaultdict
 from os import path
 import json
+import re
 
 from flask import render_template
 
@@ -100,12 +101,33 @@ def jsonRegionsExports():
 
 def generateListPerProduct(product):
     releases = getReleases(ready=True, productFilter=product)
-    version_list = []
+    registrar = _L10nReleasesRegistrar()
     for r in releases:
-        if r._shippedAt and r.l10nChangesets != config.LEGACY_KEYWORD:
-            # Only list version which shipped with l10n content
-            version_list.append(r.name)
-    return version_list
+        registrar.addRelease(r)
+    return registrar.releases
+
+
+class _L10nReleasesRegistrar:
+    # Matches strings like "Firefox-19.0b1-build1" and stores "Firefox-19.0b"
+    BETA_REGEX = re.compile(r"([^\-]+-(\d+\.)+0b)\d+-build\d+")
+
+    def __init__(self):
+        self.releases = []
+        self._betas_already_processed = set()
+
+    def addRelease(self, release):
+        if release.isShippedWithL10n:
+            self._addAggregatedBetaIfNeeded(release)
+            self.releases.append(release.name)
+
+    def _addAggregatedBetaIfNeeded(self, release):
+        first_beta_match = self.BETA_REGEX.match(release.name)
+        if first_beta_match is not None:
+            aggregated_base_name = first_beta_match.group(1)
+            if aggregated_base_name not in self._betas_already_processed:
+                aggregated_full_name = aggregated_base_name + 'eta'
+                self.releases.append(aggregated_full_name)
+                # self._betas_already_processed.add(aggregated_base_name)
 
 
 @app.route('/json/l10n/list.html', methods=['GET'])

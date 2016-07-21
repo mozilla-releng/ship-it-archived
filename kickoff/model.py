@@ -8,7 +8,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.expression import or_
 from mozilla.release.info import getReleaseName
 
-from kickoff import db
+from kickoff import db, config
 
 
 class Release(object):
@@ -83,6 +83,10 @@ class Release(object):
             self.description = description
         self.isSecurityDriven = isSecurityDriven
         self.mh_changeset = mh_changeset
+
+    @property
+    def isShippedWithL10n(self):
+        return self._shippedAt and self.l10nChangesets != config.LEGACY_KEYWORD
 
     def toDict(self):
         me = {'product': self.product}
