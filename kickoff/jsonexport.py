@@ -182,12 +182,8 @@ def generateLocalizedBuilds(buildsVersionLocales, l10nchangesets, lastVersion):
 
 def fillPrereleaseVersion(buildsVersionLocales, channel='aurora'):
     # Our default values are for Aurora
-    locales = config.SUPPORTED_AURORA_LOCALES
-    version = config.AURORA_VERSION
-
-    if channel == 'nightly':
-        locales = config.SUPPORTED_NIGHTLY_LOCALES
-        version = config.NIGHTLY_VERSION
+    locales = config.SUPPORTED_NIGHTLY_LOCALES if channel == 'nightly' else config.SUPPORTED_AURORA_LOCALES
+    version = config.NIGHTLY_VERSION if channel == 'nightly' else config.AURORA_VERSION
 
     for localeCode in locales:
         if localeCode not in buildsVersionLocales.keys():

@@ -91,6 +91,14 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('en-US' in primary)
         # but no just en
         self.assertTrue('en' not in primary)
+        # We will always have Nightly and Aurora builds for French
+        self.assertTrue('fr' in config.SUPPORTED_NIGHTLY_LOCALES)
+        self.assertTrue('fr' in config.SUPPORTED_AURORA_LOCALES)
+        self.assertEquals(len(primary['fr']), 2)
+        # We don't have Nightly builds for Acholi but have Aurora builds
+        self.assertFalse('ach' in config.SUPPORTED_NIGHTLY_LOCALES)
+        self.assertTrue('ach' in config.SUPPORTED_AURORA_LOCALES)
+        self.assertEquals(len(primary['ach']), 1)
 
     def testTBPrimaryBuilds(self):
         ret = self.get('/json/thunderbird_primary_builds.json')
