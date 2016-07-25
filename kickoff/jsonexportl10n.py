@@ -31,11 +31,9 @@ def l10nExport(releaseName):
 
 
 def _aggregateBetaLocales(releaseTable, releaseName):
-    # We need to keep the first "b", so we can look up names like "Firefox-32.0b"
-    beta_keyword_length = len(config.BETA_AGGREGATION_KEYWORD) - 1
-    betas_substring = releaseName[:-beta_keyword_length]
+    beta_prefix = releaseName.replace("beta", "b")
 
-    releases = releaseTable.query.filter(releaseTable.name.contains(betas_substring))
+    releases = releaseTable.query.filter(releaseTable.name.contains(beta_prefix))
     releases_with_locales = [_getReleaseLocales(release) for release in releases]
 
     return {
@@ -125,7 +123,8 @@ class _L10nReleasesRegistrar:
         if beta_name_match is not None:
             aggregated_base_name = beta_name_match.group(1)
             if aggregated_base_name not in self._betas_already_processed:
-                aggregated_full_name = aggregated_base_name + 'eta'
+                # Remove trailing "b" to add "beta"
+                aggregated_full_name = aggregated_base_name[:-1] + 'beta'
                 self.releases.append(aggregated_full_name)
                 self._betas_already_processed.add(aggregated_base_name)
 
