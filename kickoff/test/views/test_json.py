@@ -87,6 +87,13 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue(len(primary) > 20)
         # i guess we will always have french or german
         self.assertTrue('fr' in primary)
+        self.assertTrue('23.0a2' in primary['fr'])
+        self.assertTrue('24.0a1' in primary['fr'])
+        self.assertTrue("Windows" in primary['fr']['23.0a2'])
+        self.assertTrue("Linux" in primary['fr']['24.0a1'])
+        self.assertTrue("OS X" in primary['de']['24.0a1'])
+        self.assertEquals(primary['fr']['23.0a2']["Windows"]["filesize"], 0)
+        self.assertEquals(primary['fr']['24.0a1']["Windows"]["filesize"], 0)
         self.assertTrue('de' in primary)
         self.assertTrue('en-US' in primary)
         # but no just en
@@ -122,7 +129,7 @@ class TestJSONRequestsAPI(ViewTest):
         config.CURRENT_ESR = "2"
         config.ESR_NEXT = "38"
         config.AURORA_VERSION = "23.0a2"
-        config.NIGHTLY_VERSION = "24.0a2"
+        config.NIGHTLY_VERSION = "24.0a1"
         ret = self.get('/json/firefox_versions.json')
         versions = json.loads(ret.data)
 
@@ -131,7 +138,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['FIREFOX_ESR'], "2.0.2esr")
         self.assertEquals(versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'], "3.0b2")
         self.assertEquals(versions['FIREFOX_AURORA'], "23.0a2")
-        self.assertEquals(versions['FIREFOX_NIGHTLY'], "24.0a2")
+        self.assertEquals(versions['FIREFOX_NIGHTLY'], "24.0a1")
         self.assertEquals(versions['LATEST_FIREFOX_VERSION'], '2.0')
         self.assertEquals(versions['LATEST_FIREFOX_OLDER_VERSION'], "3.6.28")
         self.assertEquals(versions['LATEST_FIREFOX_DEVEL_VERSION'], "3.0b2")
@@ -148,7 +155,7 @@ class TestJSONRequestsAPI(ViewTest):
     def testMobileVersions(self):
         config.CURRENT_ESR = "2"
         config.ESR_NEXT = "38"
-        config.NIGHTLY_VERSION = "24.0a2"
+        config.NIGHTLY_VERSION = "24.0a1"
         config.AURORA_VERSION = "23.0a2"
         config.IOS_VERSION = "1.1"
         config.IOS_BETA_VERSION = "1.2"
@@ -156,7 +163,7 @@ class TestJSONRequestsAPI(ViewTest):
         versions = json.loads(ret.data)
 
         self.assertEquals(ret.status_code, 200)
-        self.assertEquals(versions['nightly_version'], "24.0a2")
+        self.assertEquals(versions['nightly_version'], "24.0a1")
         self.assertEquals(versions['alpha_version'], "23.0a2")
         self.assertEquals(versions['beta_version'], "23.0b2")
         self.assertEquals(versions['version'], "24.0")

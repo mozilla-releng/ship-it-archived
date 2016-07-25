@@ -167,15 +167,28 @@ def firefoxVersionsJson():
     return returnJSONVersionFile('firefox_versions.json', versions)
 
 
+def _generateDummyFileSizeMetaData(lastVersion):
+    version = {lastVersion: {}}
+    # This is a legacy list. Product details used to provide the filesize for the download page
+    # No longer the case but we keep it to keep the compatibility
+    oses = ["Windows", "OS X", "Linux"]
+    for os_ in oses:
+        # We insert filesize to backward compatibility
+        version[lastVersion][os_] = {"filesize": 0}
+    return version
+
+
 def generateLocalizedBuilds(buildsVersionLocales, l10nchangesets, lastVersion):
     # The l10n format for desktop is 'locale changeset'
     # parse it
     locales = parsePlainL10nChangesets(l10nchangesets)
+
     for localeCode in locales:
+        version = _generateDummyFileSizeMetaData(lastVersion)
         if localeCode not in buildsVersionLocales.keys():
-            buildsVersionLocales[localeCode] = [lastVersion]
+            buildsVersionLocales[localeCode] = version
         else:
-            buildsVersionLocales[localeCode] += [lastVersion]
+            buildsVersionLocales[localeCode].update(version)
 
     return buildsVersionLocales
 
@@ -183,13 +196,15 @@ def generateLocalizedBuilds(buildsVersionLocales, l10nchangesets, lastVersion):
 def fillPrereleaseVersion(buildsVersionLocales, channel='aurora'):
     # Our default values are for Aurora
     locales = config.SUPPORTED_NIGHTLY_LOCALES if channel == 'nightly' else config.SUPPORTED_AURORA_LOCALES
-    version = config.NIGHTLY_VERSION if channel == 'nightly' else config.AURORA_VERSION
+    versionBranch = config.NIGHTLY_VERSION if channel == 'nightly' else config.AURORA_VERSION
 
     for localeCode in locales:
+        # insert the filesize info for backward compa
+        version = _generateDummyFileSizeMetaData(versionBranch)
         if localeCode not in buildsVersionLocales.keys():
-            buildsVersionLocales[localeCode] = [version]
+            buildsVersionLocales[localeCode] = version
         else:
-            buildsVersionLocales[localeCode] += [version]
+            buildsVersionLocales[localeCode].update(version)
 
     return buildsVersionLocales
 
