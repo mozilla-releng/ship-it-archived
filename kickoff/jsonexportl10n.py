@@ -39,7 +39,7 @@ def _aggregateBetaLocales(releaseTable, releaseName):
     releases_with_locales = [_getReleaseLocales(release) for release in releases]
 
     return {
-        "betas": releases_with_locales
+        "releases": releases_with_locales
     }
 
 
