@@ -1,41 +1,26 @@
+var ESR_REGEX = /^(\d+)\.[\d.]*\desr$/; // Examples: 31.0esr or 31.1.0esr
+var THUNDERBIRD_REGEX = /^(\d+)\.[\d.]*\d$/;
+
+function doesRegexMatch(string, regex) {
+    return string.match(regex) != null;
+}
+
 function isBeta(version) {
-    // Beta version
-    betaRE = /^\d+\.[\d.]+b\d+$/;
-    if (version.match(betaRE) != null) {
-        // 32.0b2 or 38.0.5b2
-        return true;
-    }
-    return false;
+    // Examples: 32.0b2, 38.0.5b2 or 32.0b10
+    return doesRegexMatch(version, /^\d+\.[\d.]+b\d+$/);
 }
 
 function isESR(version) {
-    // ESR version
-    esrRE = /^(\d+)\.[\d.]*\desr$/;
-    esrVersion = version.match(esrRE);
-    if (esrVersion != null) {
-        // 31.0esr or 31.1.0esr
-        return true;
-    }
-    return false;
+    return doesRegexMatch(version, ESR_REGEX);
 }
 
 function isRelease(version) {
-    versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+$/;
-    if (version.match(versionRE) != null) {
-        // Probably a release. Can be 31.0 or 32.0.1
-        return true;
-    }
-    return false;
+    // Examples: 31.0 or 32.0.1
+    return doesRegexMatch(version, /^\d+\.\d+$|^\d+\.\d\.\d+$/);
 }
 
 function isTBRelease(version) {
-    tbRE = /^(\d+)\.[\d.]*\d$/;
-    tbVersion = version.match(tbRE);
-    if (tbVersion != null) {
-        // 31.0 or 31.0.1
-        return true;
-    }
-    return false;
+    return doesRegexMatch(version, THUNDERBIRD_REGEX);
 }
 
 function isFennec(name) {
@@ -65,28 +50,22 @@ function guessBranchFromVersion(name, version) {
         return '';
     }
 
-    // Beta version
     if (isBeta(version)) {
-        // 32.0b2
         return base + 'beta';
     }
 
-    // ESR version
     if (isESR(version)) {
-        // 31.0esr or 31.1.0esr
-        return base + 'esr' + esrVersion[1];
+        var esrVersion = version.match(ESR_REGEX)[1];
+        return base + 'esr' + esrVersion;
     }
 
     // Manage Thunderbird case (Stable release but using an ESR branch)
-    if (isTB(name)) {
-        if (isTBRelease(version)) {
-            // 31.0 or 31.0.1
-            return base + 'esr' + tbVersion[1];
-        }
+    if (isTB(name) && isTBRelease(version)) {
+        var tbVersion = version.match(THUNDERBIRD_REGEX)[1];
+        return base + 'esr' + tbVersion;
     }
 
     if (isRelease(version)) {
-        // Probably a release. Can be 31.0 or 32.0.1
         return base + 'release';
     }
     return '';
