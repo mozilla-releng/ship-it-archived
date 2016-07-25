@@ -1,41 +1,39 @@
+var VERSIONS = [
+    { number: '32.0b2', type: 'beta' },
+    { number: '32.0b10', type: 'beta' },
+    { number: '32.0.3b2', type: 'beta' },
+    { number: '32.02', type: 'erroneousValue' }, // Missing b for beta
+    { number: '32.b2', type: 'erroneousValue' }, // Missing subversion
+    { number: '32.0a2', type: 'devEdition' },
+    { number: '32.0', type: 'release' },
+    { number: '32.0.1', type: 'release' },
+    { number: '32.2', type: 'release' },
+    { number: '32.0esr', type: 'esr' },
+    { number: '32.0.1esr', type: 'esr' }
+];
 
-QUnit.test( "isBeta", function( assert ) {
-assert.ok( isBeta("32.0b2"));
-assert.ok( isBeta("32.0b10"));
-assert.ok( isBeta("32.0.3b2"));
-assert.ok( isBeta("32.02") == false);
-assert.ok( isBeta("32.b2") == false);
-assert.ok( isBeta("32.0a2") == false);
-assert.ok( isBeta("32.0") == false);
-assert.ok( isBeta("32.0.1esr") == false);
-});
+function assertAgainstAllVersions(assert, functionToTest) {
+    VERSIONS.forEach(function(version) {
+        var type = functionToTest.name.substring('is'.length).toLowerCase();
+        var expectedCondition = version.type === type;
 
+        var message = version.number + ' is ';
+        if (!expectedCondition) {
+            message += 'NOT ';
+        }
+        message += 'detected as ' + type;
 
-///////////////////////////////////////////////////
+        assert.ok(
+          functionToTest(version.number) === expectedCondition,
+          message
+        );
+    });
+}
 
-QUnit.test( "isESR", function( assert ) {
-assert.ok( isESR("32.0b2") == false);
-assert.ok( isESR("32.02") == false);
-assert.ok( isESR("32.b2") == false);
-assert.ok( isESR("32.0a2") == false);
-assert.ok( isESR("32.0.1") == false);
-assert.ok( isESR("32.0.1b2") == false);
-assert.ok( isESR("32.0.1esr"));
-assert.ok( isESR("32.0esr"));
-});
-
-
-///////////////////////////////////////////////////
-
-QUnit.test( "isRelease", function( assert ) {
-assert.ok( isRelease("32.0b2") == false);
-assert.ok( isRelease("32.2"));
-assert.ok( isRelease("32.2.3"));
-assert.ok( isRelease("32.0.5b2") == false);
-assert.ok( isRelease("32.b2") == false);
-assert.ok( isRelease("32.0a2") == false);
-assert.ok( isRelease("32.0.1esr") == false);
-assert.ok( isRelease("32.0esr") == false);
+[isBeta, isESR, isRelease].forEach(function(functionToTest) {
+  QUnit.test(functionToTest.name, function(assert) {
+      assertAgainstAllVersions(assert, functionToTest)
+  });
 });
 
 
