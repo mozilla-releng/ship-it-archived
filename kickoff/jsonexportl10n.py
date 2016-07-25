@@ -117,10 +117,10 @@ class _L10nReleasesRegistrar:
 
     def addRelease(self, release):
         if release.isShippedWithL10n:
-            self._addAggregatedBetaIfNeeded(release)
+            self._addAggregatedBetaOnlyOnce(release)
             self.releases.append(release.name)
 
-    def _addAggregatedBetaIfNeeded(self, release):
+    def _addAggregatedBetaOnlyOnce(self, release):
         first_beta_match = self.BETA_REGEX.match(release.name)
         if first_beta_match is not None:
             aggregated_base_name = first_beta_match.group(1)
