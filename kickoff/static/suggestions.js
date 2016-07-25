@@ -16,7 +16,7 @@ function isESR(version) {
 
 function isRelease(version) {
     // Examples: 31.0 or 32.0.1
-    return doesRegexMatch(version, /^\d+\.\d+$|^\d+\.\d\.\d+$/);
+    return doesRegexMatch(version, /^(\d+\.)+\d$/);
 }
 
 function isTBRelease(version) {
