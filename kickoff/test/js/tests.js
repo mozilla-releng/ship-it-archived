@@ -1,6 +1,7 @@
 
 QUnit.test( "isBeta", function( assert ) {
 assert.ok( isBeta("32.0b2"));
+assert.ok( isBeta("32.0b10"));
 assert.ok( isBeta("32.0.3b2"));
 assert.ok( isBeta("32.02") == false);
 assert.ok( isBeta("32.b2") == false);
