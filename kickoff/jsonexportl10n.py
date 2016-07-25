@@ -121,9 +121,9 @@ class _L10nReleasesRegistrar:
             self.releases.append(release.name)
 
     def _addAggregatedBetaOnlyOnce(self, release):
-        first_beta_match = self.BETA_REGEX.match(release.name)
-        if first_beta_match is not None:
-            aggregated_base_name = first_beta_match.group(1)
+        beta_name_match = self.BETA_REGEX.match(release.name)
+        if beta_name_match is not None:
+            aggregated_base_name = beta_name_match.group(1)
             if aggregated_base_name not in self._betas_already_processed:
                 aggregated_full_name = aggregated_base_name + 'eta'
                 self.releases.append(aggregated_full_name)
