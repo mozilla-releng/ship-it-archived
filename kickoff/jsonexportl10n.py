@@ -16,9 +16,10 @@ from kickoff.model import getReleaseTable
 from jsonexportcommon import myjsonify
 
 JSON_VER = str(config.JSON_FORMAT_L10N_VERSION)
+BASE_JSON_PATH_L10N = '/json/' + JSON_VER + '/l10n/'
+BASE_JSON_PATH_REGIONS = '/json/' + JSON_VER + '/regions/'
 
-
-@app.route('/json/' + JSON_VER + '/l10n/<releaseName>.json', methods=['GET'])
+@app.route(BASE_JSON_PATH_L10N + '<releaseName>.json', methods=['GET'])
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
     releaseTable = getReleaseTable(releaseName)
@@ -75,7 +76,7 @@ def _getReleaseLocales(release):
     }
 
 
-@app.route('/json/' + JSON_VER + '/regions/<region>.json', methods=['GET'])
+@app.route(BASE_JSON_PATH_REGIONS + '<region>.json', methods=['GET'])
 def regionsExport(region):
     # Export a l10n region
     reg = path.join("regions", region + ".json")
@@ -95,12 +96,12 @@ def generateRegionsJSONFileList():
     reg = path.join(path.dirname(__file__), 'static', 'regions')
     for url in os.listdir(reg):
         if url.endswith(".json"):
-            url = '/json/' + JSON_VER + '/regions/' + url
+            url = BASE_JSON_PATH_REGIONS + url
             links.append((url, os.path.basename(url)))
     return sorted(links)
 
 
-@app.route('/json/' + JSON_VER + '/regions/list.html', methods=['GET'])
+@app.route(BASE_JSON_PATH_REGIONS + 'list.html', methods=['GET'])
 def jsonRegionsExports():
     # Export the list generated regions
     jsonFiles = generateRegionsJSONFileList()
@@ -126,7 +127,7 @@ class _L10nReleasesRegistrar:
     def addRelease(self, release):
         if release.isShippedWithL10n:
             self._addAggregatedBetaOnlyOnce(release)
-            self.releases.append(('/json/' + JSON_VER + '/l10n/' + release.name + ".json", release.name))
+            self.releases.append((BASE_JSON_PATH_L10N + '' + release.name + ".json", release.name))
 
     def _addAggregatedBetaOnlyOnce(self, release):
         beta_name_match = self.BETA_REGEX.match(release.name)
@@ -135,11 +136,11 @@ class _L10nReleasesRegistrar:
             if aggregated_base_name not in self._betas_already_processed:
                 # Remove trailing "b" to add "beta"
                 aggregated_full_name = aggregated_base_name[:-1] + 'beta'
-                self.releases.append(('/json/' + JSON_VER + '/l10n/' + aggregated_full_name + ".json", aggregated_full_name))
+                self.releases.append((BASE_JSON_PATH_L10N + '' + aggregated_full_name + ".json", aggregated_full_name))
                 self._betas_already_processed.add(aggregated_base_name)
 
 
-@app.route('/json/' + JSON_VER + '/l10n/list.html', methods=['GET'])
+@app.route(BASE_JSON_PATH_L10N + 'list.html', methods=['GET'])
 def jsonl10nExports():
     version_list = generateL10NJSONFileList()
     return render_template('localeVersionList.html', jsonFiles=version_list)

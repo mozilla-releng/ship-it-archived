@@ -90,30 +90,30 @@ def returnJSONVersionFile(template, versions):
 
 # Firefox JSON
 JSON_VER = str(config.JSON_FORMAT_VERSION)
+BASE_JSON_PATH = '/json/' + JSON_VER
 
-
-@app.route('/json/' + JSON_VER + '/firefox_history_major_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/firefox_history_major_releases.json', methods=['GET'])
 def firefoxHistoryMajorReleasesJson():
     # Match X.Y and 14.0.1 (special case)
     values = getFilteredReleases("firefox", "major")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/firefox_history_stability_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/firefox_history_stability_releases.json', methods=['GET'])
 def firefoxHistoryStabilityReleasesJson():
     # Match X.Y.Z (including esr) + W.X.Y.Z (example 1.5.0.8)
     values = getFilteredReleases("firefox", "stability")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/firefox_history_development_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/firefox_history_development_releases.json', methods=['GET'])
 def firefoxHistoryDevelopmentReleasesJson():
     # Match 23.b2, 1.0rc2, 3.6.3plugin1 or 3.6.4build7
     values = getFilteredReleases("firefox", "dev")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/firefox_versions.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/firefox_versions.json', methods=['GET'])
 def firefoxVersionsJson():
 
     versions = {
@@ -209,7 +209,7 @@ def updateLocaleWithVersionsTable(product):
     return buildsVersionLocales
 
 
-@app.route('/json/' + JSON_VER + '/firefox_primary_builds.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/firefox_primary_builds.json', methods=['GET'])
 def firefox_primary_builds_json():
     buildsVersionLocales = updateLocaleWithVersionsTable("firefox")
     return jsonify(buildsVersionLocales)
@@ -218,8 +218,8 @@ def firefox_primary_builds_json():
 # Mobile JSON
 
 
-@app.route('/json/' + JSON_VER + '/mobile_details.json', methods=['GET'])
-@app.route('/json/' + JSON_VER + '/mobile_versions.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/mobile_details.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/mobile_versions.json', methods=['GET'])
 def mobileDetailsJson():
     versions = {"nightly_version": config.NIGHTLY_VERSION,
                 "alpha_version": config.AURORA_VERSION,
@@ -235,19 +235,19 @@ def mobileDetailsJson():
     return returnJSONVersionFile('mobile_versions.json', versions)
 
 
-@app.route('/json/' + JSON_VER + '/mobile_history_major_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/mobile_history_major_releases.json', methods=['GET'])
 def mobileHistoryMajorReleasesJson():
     values = getFilteredReleases("fennec", "major")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/mobile_history_stability_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/mobile_history_stability_releases.json', methods=['GET'])
 def mobileHistoryReleasesJson():
     values = getFilteredReleases("fennec", "stability")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/mobile_history_development_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/mobile_history_development_releases.json', methods=['GET'])
 def mobileHistoryDevelopmentReleasesJson():
     # Match 23.b2, 1.0rc2, 3.6.3plugin1 or 3.6.4build7
     values = getFilteredReleases("fennec", "dev")
@@ -256,26 +256,26 @@ def mobileHistoryDevelopmentReleasesJson():
 
 # THUNDERBIRD JSON
 
-@app.route('/json/' + JSON_VER + '/thunderbird_history_major_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/thunderbird_history_major_releases.json', methods=['GET'])
 def thunderbirdHistoryMajorReleasesJson():
     values = getFilteredReleases("thunderbird", "major")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/thunderbird_history_stability_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/thunderbird_history_stability_releases.json', methods=['GET'])
 def thunderbirdHistoryReleasesJson():
     values = getFilteredReleases("thunderbird", "stability")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/thunderbird_history_development_releases.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/thunderbird_history_development_releases.json', methods=['GET'])
 def thunderbirdHistoryDevelopmentReleasesJson():
     # Match 23.b2, 1.0rc2, 3.6.3plugin1 or 3.6.4build7
     values = getFilteredReleases("thunderbird", "dev")
     return myjsonify(values)
 
 
-@app.route('/json/' + JSON_VER + '/thunderbird_versions.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/thunderbird_versions.json', methods=['GET'])
 def thunderbirdVersionsJson():
     versions = {}
     # Stable
@@ -287,7 +287,7 @@ def thunderbirdVersionsJson():
     return returnJSONVersionFile('thunderbird_versions.json', versions)
 
 
-@app.route('/json/' + JSON_VER + '/thunderbird_primary_builds.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/thunderbird_primary_builds.json', methods=['GET'])
 def thunderbirdPrimaryBuildsJson():
     # default values
     lastStable = getFilteredReleases("thunderbird", ["major", "stability"], lastRelease=True)
@@ -298,12 +298,12 @@ def thunderbirdPrimaryBuildsJson():
     return myjsonify(tb_prim)
 
 
-@app.route('/json/' + JSON_VER + '/thunderbird_beta_builds.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/thunderbird_beta_builds.json', methods=['GET'])
 def thunderbirdBetaBuildsJson():
     return myjsonify(tb_beta_builds)
 
 
-@app.route('/json/' + JSON_VER + '/languages.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/languages.json', methods=['GET'])
 def languagesJson():
     return app.send_static_file('languages.json')
 
@@ -351,28 +351,28 @@ def getReleasesForJson(product):
     return release_list
 
 
-@app.route('/json/' + JSON_VER + '/firefox.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/firefox.json', methods=['GET'])
 def jsonFirefoxExport():
     """ Export all the firefox versions """
     release_list = getReleasesForJson("firefox")
     return myjsonify(release_list, detailledJson=True)
 
 
-@app.route('/json/' + JSON_VER + '/mobile_android.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/mobile_android.json', methods=['GET'])
 def jsonFennecExport():
     """ Export all the fennec versions """
     release_list = getReleasesForJson("fennec")
     return myjsonify(release_list, detailledJson=True)
 
 
-@app.route('/json/' + JSON_VER + '/thunderbird.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/thunderbird.json', methods=['GET'])
 def jsonThunderbirdExport():
     """ Export all the thunderbird versions """
     release_list = getReleasesForJson("thunderbird")
     return myjsonify(release_list, detailledJson=True)
 
 
-@app.route('/json/' + JSON_VER + '/all.json', methods=['GET'])
+@app.route(BASE_JSON_PATH + '/all.json', methods=['GET'])
 def jsonAllExport():
     """ Export all the release available in a single file """
     release_list = {

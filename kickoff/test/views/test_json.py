@@ -4,11 +4,12 @@ from kickoff import config
 from kickoff.test.views.base import ViewTest
 
 JSON_VER = str(config.JSON_FORMAT_VERSION)
+BASE_JSON_PATH = '/json/' + JSON_VER
 
 class TestJSONRequestsAPI(ViewTest):
 
     def testMajorReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/firefox_history_major_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/firefox_history_major_releases.json')
         expected = {
             "2.0": "2005-01-04",
         }
@@ -16,7 +17,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testFennecMajorReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/mobile_history_major_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/mobile_history_major_releases.json')
         expected = {
             "24.0": "2015-03-01",
         }
@@ -24,7 +25,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testThunderbirdMajorReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/thunderbird_history_major_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/thunderbird_history_major_releases.json')
         expected = {
             "23.0": "2005-01-03",
         }
@@ -32,7 +33,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testStablityReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/firefox_history_stability_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/firefox_history_stability_releases.json')
         expected = {'2.0.2': '2005-01-04',
                     "3.0.1": "2005-01-02",
                     "38.1.0": "2015-01-04",
@@ -41,7 +42,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testFennecStableReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/mobile_history_stability_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/mobile_history_stability_releases.json')
         expected = {
             "24.0.1": "2015-02-26",
         }
@@ -49,7 +50,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testThunderbirdStableReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/thunderbird_history_stability_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/thunderbird_history_stability_releases.json')
         expected = {
             "23.0.1": "2014-02-03",
         }
@@ -57,7 +58,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testBetaReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/firefox_history_development_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/firefox_history_development_releases.json')
         expected = {
             "3.0b2": "2005-01-02",
             "3.0b3": "2005-02-03",
@@ -66,7 +67,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testFennecBetaReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/mobile_history_development_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/mobile_history_development_releases.json')
         expected = {
             "23.0b2": "2015-02-27",
         }
@@ -74,7 +75,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testThunderbirdBetaReleases(self):
-        ret = self.get('/json/' + JSON_VER + '/thunderbird_history_development_releases.json')
+        ret = self.get(BASE_JSON_PATH + '/thunderbird_history_development_releases.json')
         expected = {
             "24.0b2": "2005-02-01",
         }
@@ -82,7 +83,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(json.loads(ret.data), expected)
 
     def testPrimaryBuilds(self):
-        ret = self.get('/json/' + JSON_VER + '/firefox_primary_builds.json')
+        ret = self.get(BASE_JSON_PATH + '/firefox_primary_builds.json')
         primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         # I guess we will always have more than 20 locales
@@ -110,7 +111,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(len(primary['ach']), 1)
 
     def testTBPrimaryBuilds(self):
-        ret = self.get('/json/' + JSON_VER + '/thunderbird_primary_builds.json')
+        ret = self.get(BASE_JSON_PATH + '/thunderbird_primary_builds.json')
         primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         # I guess we will always have more than 20 locales
@@ -123,7 +124,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('en' not in primary)
 
     def testTBBetaBuilds(self):
-        ret = self.get('/json/' + JSON_VER + '/thunderbird_beta_builds.json')
+        ret = self.get(BASE_JSON_PATH + '/thunderbird_beta_builds.json')
         primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
 
@@ -132,7 +133,7 @@ class TestJSONRequestsAPI(ViewTest):
         config.ESR_NEXT = "38"
         config.AURORA_VERSION = "23.0a2"
         config.NIGHTLY_VERSION = "24.0a1"
-        ret = self.get('/json/' + JSON_VER + '/firefox_versions.json')
+        ret = self.get(BASE_JSON_PATH + '/firefox_versions.json')
         versions = json.loads(ret.data)
 
         self.assertEquals(ret.status_code, 200)
@@ -161,7 +162,7 @@ class TestJSONRequestsAPI(ViewTest):
         config.AURORA_VERSION = "23.0a2"
         config.IOS_VERSION = "1.1"
         config.IOS_BETA_VERSION = "1.2"
-        ret = self.get('/json/' + JSON_VER + '/mobile_versions.json')
+        ret = self.get(BASE_JSON_PATH + '/mobile_versions.json')
         versions = json.loads(ret.data)
 
         self.assertEquals(ret.status_code, 200)
@@ -173,7 +174,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['ios_beta_version'], "1.2")
 
     def testThunderbirdVersions(self):
-        ret = self.get('/json/' + JSON_VER + '/thunderbird_versions.json')
+        ret = self.get(BASE_JSON_PATH + '/thunderbird_versions.json')
         versions = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
 
@@ -207,7 +208,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("/json/" + JSON_VER + "/regions/fr.json" in fileList)
 
     def testFirefox(self):
-        ret = self.get('/json/' + JSON_VER + '/firefox.json')
+        ret = self.get(BASE_JSON_PATH + '/firefox.json')
         firefoxReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(firefoxReleases["version"], 1)
@@ -230,7 +231,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['description'], None)
 
     def testThunderbird(self):
-        ret = self.get('/json/' + JSON_VER + '/thunderbird.json')
+        ret = self.get(BASE_JSON_PATH + '/thunderbird.json')
         thunderbirdReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(thunderbirdReleases["version"], 1)
@@ -252,7 +253,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['is_security_driven'], False)
 
     def testFennec(self):
-        ret = self.get('/json/' + JSON_VER + '/mobile_android.json')
+        ret = self.get(BASE_JSON_PATH + '/mobile_android.json')
         fennecReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(fennecReleases["version"], 1)
@@ -273,7 +274,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['is_security_driven'], False)
 
     def testAll(self):
-        ret = self.get('/json/' + JSON_VER + '/all.json')
+        ret = self.get(BASE_JSON_PATH + '/all.json')
         allReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(allReleases["version"], 1)
@@ -326,7 +327,7 @@ class TestJSONRequestsAPI(ViewTest):
     def test_esr_next_empty(self):
         config.CURRENT_ESR = "38"
         config.ESR_NEXT = ""
-        ret = self.get('/json/' + JSON_VER + '/firefox_versions.json')
+        ret = self.get(BASE_JSON_PATH + '/firefox_versions.json')
         versions = json.loads(ret.data)
 
         self.assertEquals(ret.status_code, 200)
