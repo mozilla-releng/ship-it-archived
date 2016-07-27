@@ -2,6 +2,7 @@ import os
 from collections import defaultdict
 from os import path
 import json
+import re
 
 from flask import render_template
 
@@ -19,33 +20,57 @@ from jsonexport import myjsonify
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
     releaseTable = getReleaseTable(releaseName)
-    release = releaseTable.query.filter_by(name=releaseName).first()
 
+    if releaseName.endswith(config.BETA_AGGREGATION_KEYWORD):
+        l10n_list = _aggregateBetaLocales(releaseTable, releaseName)
+    else:
+        l10n_list = _getLocalesByReleaseName(releaseTable, releaseName)
+
+    l10n_list["version"] = config.JSON_FORMAT_L10N_VERSION
+    return myjsonify(l10n_list)
+
+
+def _aggregateBetaLocales(releaseTable, releaseName):
+    beta_prefix = releaseName.replace("beta", "b")
+
+    releases = releaseTable.query.filter(releaseTable.name.contains(beta_prefix))
+    releases_with_locales = [_getReleaseLocales(release) for release in releases]
+
+    return {
+        "releases": releases_with_locales
+    }
+
+
+def _getLocalesByReleaseName(releaseTable, releaseName):
+    release = releaseTable.query.filter_by(name=releaseName).first()
+    return _getReleaseLocales(release)
+
+
+def _getReleaseLocales(release):
     if release is None or release.l10nChangesets == config.LEGACY_KEYWORD:
         return myjsonify({})
 
     locale_list = defaultdict()
-    if "Firefox" in releaseName or "Thunderbird" in releaseName:
+    if "Firefox" in release.name or "Thunderbird" in release.name:
         locales = parsePlainL10nChangesets(release.l10nChangesets)
         for key, changeset in locales.iteritems():
             locale_list[key] = {
                 "changeset": changeset,
             }
 
-    if "Fennec" in releaseName:
+    if "Fennec" in release.name:
         locales = json.loads(release.l10nChangesets)
         for key, extra in locales.iteritems():
             locale_list[key] = {
                 "changeset": extra['revision'],
             }
 
-    l10n_list = {"version": config.JSON_FORMAT_L10N_VERSION,
-                 "shippedAt": release.shippedAt,
-                 "submittedAt": release.submittedAt,
-                 "locales": locale_list,
-                 }
-
-    return myjsonify(l10n_list)
+    return {
+        "name": release.name,
+        "shippedAt": release.shippedAt,
+        "submittedAt": release.submittedAt,
+        "locales": locale_list,
+    }
 
 
 @app.route('/json/regions/<region>.json', methods=['GET'])
@@ -74,12 +99,34 @@ def jsonRegionsExports():
 
 def generateListPerProduct(product):
     releases = getReleases(ready=True, productFilter=product)
-    version_list = []
+    registrar = _L10nReleasesRegistrar()
     for r in releases:
-        if r._shippedAt and r.l10nChangesets != config.LEGACY_KEYWORD:
-            # Only list version which shipped with l10n content
-            version_list.append(r.name)
-    return version_list
+        registrar.addRelease(r)
+    return registrar.releases
+
+
+class _L10nReleasesRegistrar:
+    # Matches strings like "Firefox-19.0b1-build1" and stores "Firefox-19.0b"
+    BETA_REGEX = re.compile(r"([^\-]+-(\d+\.)+0b)\d+-build\d+")
+
+    def __init__(self):
+        self.releases = []
+        self._betas_already_processed = set()
+
+    def addRelease(self, release):
+        if release.isShippedWithL10n:
+            self._addAggregatedBetaOnlyOnce(release)
+            self.releases.append(release.name)
+
+    def _addAggregatedBetaOnlyOnce(self, release):
+        beta_name_match = self.BETA_REGEX.match(release.name)
+        if beta_name_match is not None:
+            aggregated_base_name = beta_name_match.group(1)
+            if aggregated_base_name not in self._betas_already_processed:
+                # Remove trailing "b" to add "beta"
+                aggregated_full_name = aggregated_base_name[:-1] + 'beta'
+                self.releases.append(aggregated_full_name)
+                self._betas_already_processed.add(aggregated_base_name)
 
 
 @app.route('/json/l10n/list.html', methods=['GET'])
