@@ -6,32 +6,34 @@ import re
 from kickoff import config
 from kickoff.test.views.base import ViewTest
 
+JSON_VER = config.JSON_FORMAT_L10N_VERSION
+BASE_JSON_PATH = '/json/' + JSON_VER
 
 class TestJSONL10NRequestsAPI(ViewTest):
 
     def testJsonListRegionsFiles(self):
-        ret = self.get('/json/regions/list.html')
+        ret = self.get(BASE_JSON_PATH + '/regions/list.html')
         fileList = ret.data
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("fr.json" in fileList)
         self.assertTrue("de.json" in fileList)
 
     def testJsonListRegionsFilesFr(self):
-        ret = self.get('/json/regions/fr.json')
+        ret = self.get(BASE_JSON_PATH + '/regions/fr.json')
         allLocales = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(allLocales["fr"], "France")
         self.assertEquals(allLocales["de"], "Allemagne")
 
     def testJsonListRegionsFilesDe(self):
-        ret = self.get('/json/regions/de.json')
+        ret = self.get(BASE_JSON_PATH + '/regions/de.json')
         allLocales = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(allLocales["fr"], "Frankreich")
         self.assertEquals(allLocales["de"], "Deutschland")
 
     def testJsonListl10nFiles(self):
-        ret = self.get('/json/l10n/list.html')
+        ret = self.get(BASE_JSON_PATH + '/l10n/list.html')
         fileList = ret.data
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("Fennec-23.0b2-build4" in fileList)
@@ -43,7 +45,7 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertEquals(len(aggregated_entries), 1)
 
     def testJsonFileFX(self):
-        ret = self.get('/json/l10n/Firefox-2.0-build1.json')
+        ret = self.get(BASE_JSON_PATH + '/l10n/Firefox-2.0-build1.json')
         jsonFx = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("ja" in jsonFx["locales"])
@@ -53,7 +55,7 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertEquals(jsonFx['shippedAt'], pytz.utc.localize(datetime.datetime(2005, 1, 4, 3, 4, 5, 6)).isoformat())
 
     def testJsonFileFennec(self):
-        ret = self.get('/json/l10n/Fennec-24.0-build4.json')
+        ret = self.get(BASE_JSON_PATH + '/l10n/Fennec-24.0-build4.json')
         jsonFx = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("an" in jsonFx["locales"])
@@ -63,7 +65,7 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertEquals(jsonFx['shippedAt'], pytz.utc.localize(datetime.datetime(2015, 3, 1, 3, 4, 5, 6)).isoformat())
 
     def testJsonFileTB(self):
-        ret = self.get('/json/l10n/Thunderbird-24.0b2-build2.json')
+        ret = self.get(BASE_JSON_PATH + '/l10n/Thunderbird-24.0b2-build2.json')
         jsonFx = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("yy" in jsonFx["locales"])
@@ -75,7 +77,7 @@ class TestJSONL10NRequestsAPI(ViewTest):
     FIREFOX_BETA_3_REGEX = re.compile(r"Firefox-3\.0b\d+-build\d+")
 
     def testJsonFileBeta(self):
-        ret = self.get('/json/l10n/Firefox-3.0beta.json')
+        ret = self.get(BASE_JSON_PATH + '/l10n/Firefox-3.0beta.json')
         jsonFx = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
 

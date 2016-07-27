@@ -13,10 +13,14 @@ from mozilla.release.l10n import parsePlainL10nChangesets
 
 from kickoff.model import getReleases
 from kickoff.model import getReleaseTable
-from jsonexport import myjsonify
+from jsonexportcommon import myjsonify
+
+JSON_VER = config.JSON_FORMAT_L10N_VERSION
+BASE_JSON_PATH_L10N = '/json/' + JSON_VER + '/l10n/'
+BASE_JSON_PATH_REGIONS = '/json/' + JSON_VER + '/regions/'
 
 
-@app.route('/json/l10n/<releaseName>.json', methods=['GET'])
+@app.route(BASE_JSON_PATH_L10N + '<releaseName>.json', methods=['GET'])
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
     releaseTable = getReleaseTable(releaseName)
@@ -26,7 +30,6 @@ def l10nExport(releaseName):
     else:
         l10n_list = _getLocalesByReleaseName(releaseTable, releaseName)
 
-    l10n_list["version"] = config.JSON_FORMAT_L10N_VERSION
     return myjsonify(l10n_list)
 
 
@@ -73,11 +76,20 @@ def _getReleaseLocales(release):
     }
 
 
-@app.route('/json/regions/<region>.json', methods=['GET'])
+@app.route(BASE_JSON_PATH_REGIONS + '<region>.json', methods=['GET'])
 def regionsExport(region):
     # Export a l10n region
     reg = path.join("regions", region + ".json")
     return app.send_static_file(reg)
+
+
+def generateL10NJSONFileList():
+    # Export all the l10n available changeset for all products
+    version_list = []
+    version_list += generateListPerProduct("firefox")
+    version_list += generateListPerProduct("fennec")
+    version_list += generateListPerProduct("thunderbird")
+    return version_list
 
 
 def generateRegionsJSONFileList():
@@ -86,11 +98,12 @@ def generateRegionsJSONFileList():
     reg = path.join(path.dirname(__file__), 'static', 'regions')
     for url in os.listdir(reg):
         if url.endswith(".json"):
+            url = BASE_JSON_PATH_REGIONS + url
             links.append((url, os.path.basename(url)))
     return sorted(links)
 
 
-@app.route('/json/regions/list.html', methods=['GET'])
+@app.route(BASE_JSON_PATH_REGIONS + 'list.html', methods=['GET'])
 def jsonRegionsExports():
     # Export the list generated regions
     jsonFiles = generateRegionsJSONFileList()
@@ -116,7 +129,7 @@ class _L10nReleasesRegistrar:
     def addRelease(self, release):
         if release.isShippedWithL10n:
             self._addAggregatedBetaOnlyOnce(release)
-            self.releases.append(release.name)
+            self.releases.append((BASE_JSON_PATH_L10N + release.name + ".json", release.name))
 
     def _addAggregatedBetaOnlyOnce(self, release):
         beta_name_match = self.BETA_REGEX.match(release.name)
@@ -125,16 +138,11 @@ class _L10nReleasesRegistrar:
             if aggregated_base_name not in self._betas_already_processed:
                 # Remove trailing "b" to add "beta"
                 aggregated_full_name = aggregated_base_name[:-1] + 'beta'
-                self.releases.append(aggregated_full_name)
+                self.releases.append((BASE_JSON_PATH_L10N + aggregated_full_name + ".json", aggregated_full_name))
                 self._betas_already_processed.add(aggregated_base_name)
 
 
-@app.route('/json/l10n/list.html', methods=['GET'])
+@app.route(BASE_JSON_PATH_L10N + 'list.html', methods=['GET'])
 def jsonl10nExports():
-    # Export all the l10n available changeset for all products
-    version_list = []
-    version_list += generateListPerProduct("firefox")
-    version_list += generateListPerProduct("fennec")
-    version_list += generateListPerProduct("thunderbird")
-
+    version_list = generateL10NJSONFileList()
     return render_template('localeVersionList.html', jsonFiles=version_list)
