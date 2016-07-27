@@ -89,7 +89,7 @@ def returnJSONVersionFile(template, versions):
 
 
 # Firefox JSON
-JSON_VER = str(config.JSON_FORMAT_VERSION)
+JSON_VER = config.JSON_FORMAT_VERSION
 BASE_JSON_PATH = '/json/' + JSON_VER
 
 

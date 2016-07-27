@@ -3,7 +3,7 @@ import simplejson as json
 from kickoff import config
 from kickoff.test.views.base import ViewTest
 
-JSON_VER = str(config.JSON_FORMAT_VERSION)
+JSON_VER = config.JSON_FORMAT_VERSION
 BASE_JSON_PATH = '/json/' + JSON_VER
 
 class TestJSONRequestsAPI(ViewTest):

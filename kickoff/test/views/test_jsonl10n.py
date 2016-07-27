@@ -6,7 +6,7 @@ import re
 from kickoff import config
 from kickoff.test.views.base import ViewTest
 
-JSON_VER = str(config.JSON_FORMAT_L10N_VERSION)
+JSON_VER = config.JSON_FORMAT_L10N_VERSION
 BASE_JSON_PATH = '/json/' + JSON_VER
 
 class TestJSONL10NRequestsAPI(ViewTest):

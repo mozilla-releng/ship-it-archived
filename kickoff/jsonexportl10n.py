@@ -15,7 +15,7 @@ from kickoff.model import getReleases
 from kickoff.model import getReleaseTable
 from jsonexportcommon import myjsonify
 
-JSON_VER = str(config.JSON_FORMAT_L10N_VERSION)
+JSON_VER = config.JSON_FORMAT_L10N_VERSION
 BASE_JSON_PATH_L10N = '/json/' + JSON_VER + '/l10n/'
 BASE_JSON_PATH_REGIONS = '/json/' + JSON_VER + '/regions/'
 
