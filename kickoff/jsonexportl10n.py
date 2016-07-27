@@ -81,6 +81,13 @@ def regionsExport(region):
     reg = path.join("regions", region + ".json")
     return app.send_static_file(reg)
 
+def generateL10NJSONFileList():
+    # Export all the l10n available changeset for all products
+    version_list = []
+    version_list += generateListPerProduct("firefox")
+    version_list += generateListPerProduct("fennec")
+    version_list += generateListPerProduct("thunderbird")
+    return version_list
 
 def generateRegionsJSONFileList():
     # Generate the list of file of regions
@@ -88,6 +95,7 @@ def generateRegionsJSONFileList():
     reg = path.join(path.dirname(__file__), 'static', 'regions')
     for url in os.listdir(reg):
         if url.endswith(".json"):
+            url = '/json/' + JSON_VER + '/regions/' + url
             links.append((url, os.path.basename(url)))
     return sorted(links)
 
@@ -118,7 +126,7 @@ class _L10nReleasesRegistrar:
     def addRelease(self, release):
         if release.isShippedWithL10n:
             self._addAggregatedBetaOnlyOnce(release)
-            self.releases.append(release.name)
+            self.releases.append(('/json/' + JSON_VER + '/l10n/' + release.name + ".json", release.name))
 
     def _addAggregatedBetaOnlyOnce(self, release):
         beta_name_match = self.BETA_REGEX.match(release.name)
@@ -127,16 +135,11 @@ class _L10nReleasesRegistrar:
             if aggregated_base_name not in self._betas_already_processed:
                 # Remove trailing "b" to add "beta"
                 aggregated_full_name = aggregated_base_name[:-1] + 'beta'
-                self.releases.append(aggregated_full_name)
+                self.releases.append(('/json/' + JSON_VER + '/l10n/' + aggregated_full_name + ".json", aggregated_full_name))
                 self._betas_already_processed.add(aggregated_base_name)
 
 
 @app.route('/json/' + JSON_VER + '/l10n/list.html', methods=['GET'])
 def jsonl10nExports():
-    # Export all the l10n available changeset for all products
-    version_list = []
-    version_list += generateListPerProduct("firefox")
-    version_list += generateListPerProduct("fennec")
-    version_list += generateListPerProduct("thunderbird")
-
+    version_list = generateL10NJSONFileList()
     return render_template('localeVersionList.html', jsonFiles=version_list)
