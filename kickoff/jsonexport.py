@@ -3,13 +3,6 @@ import json
 
 from collections import defaultdict
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
-
-from flask import Response
-
 from kickoff import app
 from kickoff import config
 
@@ -21,31 +14,8 @@ from kickoff.thunderbirddetails import primary_builds as tb_primary_builds, beta
 
 from mozilla.release.l10n import parsePlainL10nChangesets
 
-
-def myjsonify(values, detailledJson=False):
-    # Transform the structure into a dict
-    values = OrderedDict(values)
-
-    if detailledJson:
-        # But when this is done on the new json files, it has to be done on
-        # the releases member
-        valuesToOrder = values["releases"]
-    else:
-        valuesToOrder = values
-
-    valuesOrdered = OrderedDict(sorted(valuesToOrder.items(), key=lambda x: x[1]))
-
-    if detailledJson:
-        values["releases"] = valuesOrdered
-    else:
-        values = valuesOrdered
-
-    # Don't use jsonsify because jsonify is sorting
-    resp = Response(response=json.dumps(values),
-                    status=200,
-                    mimetype="application/json")
-    return(resp)
-
+from jsonexportcommon import myjsonify
+from jsonexportl10n import generateRegionsJSONFileList
 
 def generateJSONFileList():
     """ From the flask endpoint, generate a list of json files """

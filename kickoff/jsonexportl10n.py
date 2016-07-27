@@ -13,7 +13,7 @@ from mozilla.release.l10n import parsePlainL10nChangesets
 
 from kickoff.model import getReleases
 from kickoff.model import getReleaseTable
-from jsonexport import myjsonify
+from jsonexportcommon import myjsonify
 
 JSON_VER = str(config.JSON_FORMAT_L10N_VERSION)
 
