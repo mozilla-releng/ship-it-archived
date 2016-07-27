@@ -189,14 +189,14 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("LATEST_FIREFOX_VERSION" not in versions)
 
     def testJsonListFiles(self):
-        ret = self.get('/json/' + JSON_VER + '/json_exports.json')
+        ret = self.get('/json_exports.json')
         fileList = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("/json/" + JSON_VER + "/mobile_versions.json" in fileList)
         self.assertTrue("/json/" + JSON_VER + "/firefox_history_major_releases.json" in fileList)
 
     def testJsonListFilesText(self):
-        ret = self.get('/' + JSON_VER + '/json_exports.txt')
+        ret = self.get('/json_exports.txt')
         fileList = ret.data
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("/json/" + JSON_VER + "/mobile_versions.json" in fileList)

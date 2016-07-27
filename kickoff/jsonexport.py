@@ -311,14 +311,14 @@ def jsonExports():
     return render_template('json_exports.html', jsonFiles=jsonFiles, json_ver=JSON_VER)
 
 
-@app.route('/json/' + JSON_VER + '/json_exports.json', methods=['GET'])
+@app.route('/json/json_exports.json', methods=['GET'])
 def jsonExportsJson():
     """ Export the list of files a friendly way to json """
     jsonFiles = generateJSONFileList()
     return myjsonify(jsonFiles)
 
 
-@app.route('/' + JSON_VER + '/json_exports.txt', methods=['GET'])
+@app.route('/json_exports.txt', methods=['GET'])
 def jsonExportsTxt():
     """ Export the list of files a friendly way to txt """
     jsonFiles = generateJSONFileList()
