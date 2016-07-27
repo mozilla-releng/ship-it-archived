@@ -130,7 +130,7 @@ class _L10nReleasesRegistrar:
     def addRelease(self, release):
         if release.isShippedWithL10n:
             self._addAggregatedBetaOnlyOnce(release)
-            self.releases.append((BASE_JSON_PATH_L10N + '' + release.name + ".json", release.name))
+            self.releases.append((BASE_JSON_PATH_L10N + release.name + ".json", release.name))
 
     def _addAggregatedBetaOnlyOnce(self, release):
         beta_name_match = self.BETA_REGEX.match(release.name)
@@ -139,7 +139,7 @@ class _L10nReleasesRegistrar:
             if aggregated_base_name not in self._betas_already_processed:
                 # Remove trailing "b" to add "beta"
                 aggregated_full_name = aggregated_base_name[:-1] + 'beta'
-                self.releases.append((BASE_JSON_PATH_L10N + '' + aggregated_full_name + ".json", aggregated_full_name))
+                self.releases.append((BASE_JSON_PATH_L10N + aggregated_full_name + ".json", aggregated_full_name))
                 self._betas_already_processed.add(aggregated_base_name)
 
 
