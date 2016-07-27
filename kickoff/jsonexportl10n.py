@@ -30,7 +30,6 @@ def l10nExport(releaseName):
     else:
         l10n_list = _getLocalesByReleaseName(releaseTable, releaseName)
 
-    l10n_list["version"] = config.JSON_FORMAT_L10N_VERSION
     return myjsonify(l10n_list)
 
 

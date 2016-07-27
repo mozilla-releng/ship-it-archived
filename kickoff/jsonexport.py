@@ -346,8 +346,7 @@ def getReleasesForJson(product):
             "description": r["description"],
             "is_security_driven": r["isSecurityDriven"] is True
         }
-    release_list = {"version": config.JSON_FORMAT_VERSION,
-                    "releases": release_list
+    release_list = {"releases": release_list
                     }
     return release_list
 
@@ -377,7 +376,6 @@ def jsonThunderbirdExport():
 def jsonAllExport():
     """ Export all the release available in a single file """
     release_list = {
-        "version": config.JSON_FORMAT_VERSION,
         "releases": {}
     }
     for release in ("firefox", "fennec", "thunderbird"):

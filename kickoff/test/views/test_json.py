@@ -211,7 +211,6 @@ class TestJSONRequestsAPI(ViewTest):
         ret = self.get(BASE_JSON_PATH + '/firefox.json')
         firefoxReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
-        self.assertEquals(firefoxReleases["version"], 1)
         firefoxReleases = firefoxReleases["releases"]
         self.assertTrue("firefox-3.0b2" in firefoxReleases)
         self.assertTrue("firefox-2.0.2esr" in firefoxReleases)
@@ -234,7 +233,6 @@ class TestJSONRequestsAPI(ViewTest):
         ret = self.get(BASE_JSON_PATH + '/thunderbird.json')
         thunderbirdReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
-        self.assertEquals(thunderbirdReleases["version"], 1)
         thunderbirdReleases = thunderbirdReleases["releases"]
         self.assertTrue("thunderbird-23.0" in thunderbirdReleases)
         self.assertTrue("thunderbird-24.0b2" in thunderbirdReleases)
@@ -256,7 +254,6 @@ class TestJSONRequestsAPI(ViewTest):
         ret = self.get(BASE_JSON_PATH + '/mobile_android.json')
         fennecReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
-        self.assertEquals(fennecReleases["version"], 1)
         fennecReleases = fennecReleases["releases"]
         self.assertTrue("fennec-23.0b2" in fennecReleases)
         self.assertTrue("fennec-24.0" in fennecReleases)
@@ -277,7 +274,6 @@ class TestJSONRequestsAPI(ViewTest):
         ret = self.get(BASE_JSON_PATH + '/all.json')
         allReleases = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
-        self.assertEquals(allReleases["version"], 1)
         allReleases = allReleases["releases"]
         self.assertTrue("firefox-3.0b2" in allReleases)
         self.assertTrue("firefox-2.0.2esr" in allReleases)
