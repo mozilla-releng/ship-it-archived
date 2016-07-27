@@ -194,6 +194,8 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("/json/" + JSON_VER + "/mobile_versions.json" in fileList)
         self.assertTrue("/json/" + JSON_VER + "/firefox_history_major_releases.json" in fileList)
+        self.assertTrue("/json/" + JSON_VER + "/l10n/Firefox-3.0beta.json" in fileList)
+        self.assertTrue("/json/" + JSON_VER + "/regions/fr.json" in fileList)
 
     def testJsonListFilesText(self):
         ret = self.get('/json_exports.txt')
@@ -201,6 +203,8 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         self.assertTrue("/json/" + JSON_VER + "/mobile_versions.json" in fileList)
         self.assertTrue("/json/" + JSON_VER + "/firefox_history_major_releases.json" in fileList)
+        self.assertTrue("/json/" + JSON_VER + "/l10n/Firefox-3.0beta.json" in fileList)
+        self.assertTrue("/json/" + JSON_VER + "/regions/fr.json" in fileList)
 
     def testFirefox(self):
         ret = self.get('/json/' + JSON_VER + '/firefox.json')
