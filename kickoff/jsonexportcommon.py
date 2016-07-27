@@ -6,6 +6,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+
 def myjsonify(values, detailledJson=False):
     # Transform the structure into a dict
     values = OrderedDict(values)

@@ -1,5 +1,4 @@
 import os
-import json
 
 from collections import defaultdict
 
@@ -16,6 +15,7 @@ from mozilla.release.l10n import parsePlainL10nChangesets
 
 from jsonexportcommon import myjsonify
 from jsonexportl10n import generateRegionsJSONFileList, generateL10NJSONFileList
+
 
 def generateJSONFileList(withL10Nfiles=False):
     """ From the flask endpoint, generate a list of json files """
@@ -91,6 +91,7 @@ def returnJSONVersionFile(template, versions):
 # Firefox JSON
 JSON_VER = str(config.JSON_FORMAT_VERSION)
 BASE_JSON_PATH = '/json/' + JSON_VER
+
 
 @app.route(BASE_JSON_PATH + '/firefox_history_major_releases.json', methods=['GET'])
 def firefoxHistoryMajorReleasesJson():

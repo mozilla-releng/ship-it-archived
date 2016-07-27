@@ -19,6 +19,7 @@ JSON_VER = str(config.JSON_FORMAT_L10N_VERSION)
 BASE_JSON_PATH_L10N = '/json/' + JSON_VER + '/l10n/'
 BASE_JSON_PATH_REGIONS = '/json/' + JSON_VER + '/regions/'
 
+
 @app.route(BASE_JSON_PATH_L10N + '<releaseName>.json', methods=['GET'])
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
@@ -82,6 +83,7 @@ def regionsExport(region):
     reg = path.join("regions", region + ".json")
     return app.send_static_file(reg)
 
+
 def generateL10NJSONFileList():
     # Export all the l10n available changeset for all products
     version_list = []
@@ -89,6 +91,7 @@ def generateL10NJSONFileList():
     version_list += generateListPerProduct("fennec")
     version_list += generateListPerProduct("thunderbird")
     return version_list
+
 
 def generateRegionsJSONFileList():
     # Generate the list of file of regions
