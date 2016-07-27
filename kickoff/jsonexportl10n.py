@@ -15,8 +15,10 @@ from kickoff.model import getReleases
 from kickoff.model import getReleaseTable
 from jsonexport import myjsonify
 
+JSON_VER = str(config.JSON_FORMAT_L10N_VERSION)
 
-@app.route('/json/l10n/<releaseName>.json', methods=['GET'])
+
+@app.route('/json/' + JSON_VER + '/l10n/<releaseName>.json', methods=['GET'])
 def l10nExport(releaseName):
     # Export the l10n changeset for a product
     releaseTable = getReleaseTable(releaseName)
@@ -73,7 +75,7 @@ def _getReleaseLocales(release):
     }
 
 
-@app.route('/json/regions/<region>.json', methods=['GET'])
+@app.route('/json/' + JSON_VER + '/regions/<region>.json', methods=['GET'])
 def regionsExport(region):
     # Export a l10n region
     reg = path.join("regions", region + ".json")
@@ -90,7 +92,7 @@ def generateRegionsJSONFileList():
     return sorted(links)
 
 
-@app.route('/json/regions/list.html', methods=['GET'])
+@app.route('/json/' + JSON_VER + '/regions/list.html', methods=['GET'])
 def jsonRegionsExports():
     # Export the list generated regions
     jsonFiles = generateRegionsJSONFileList()
@@ -129,7 +131,7 @@ class _L10nReleasesRegistrar:
                 self._betas_already_processed.add(aggregated_base_name)
 
 
-@app.route('/json/l10n/list.html', methods=['GET'])
+@app.route('/json/' + JSON_VER + '/l10n/list.html', methods=['GET'])
 def jsonl10nExports():
     # Export all the l10n available changeset for all products
     version_list = []
