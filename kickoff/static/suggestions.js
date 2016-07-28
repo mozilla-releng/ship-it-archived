@@ -1,41 +1,28 @@
+var REGEXES = {
+    beta: /^\d+\.[\d.]+b\d+$/,      // Examples: 32.0b2, 38.0.5b2 or 32.0b10
+    release: /^(\d+\.)+\d$/,        // Examples: 31.0 or 32.0.1
+    esr: /^(\d+)\.[\d.]*\desr$/,    // Examples: 31.0esr or 31.1.0esr
+    thunderbird: /^(\d+)\.[\d.]*\d$/,
+};
+
+function doesRegexMatch(string, regex) {
+    return string.match(regex) !== null;
+}
+
 function isBeta(version) {
-    // Beta version
-    betaRE = /^\d+\.[\d.]+b\d$/;
-    if (version.match(betaRE) != null) {
-        // 32.0b2 or 38.0.5b2
-        return true;
-    }
-    return false;
+    return doesRegexMatch(version, REGEXES.beta);
 }
 
 function isESR(version) {
-    // ESR version
-    esrRE = /^(\d+)\.[\d.]*\desr$/;
-    esrVersion = version.match(esrRE);
-    if (esrVersion != null) {
-        // 31.0esr or 31.1.0esr
-        return true;
-    }
-    return false;
+    return doesRegexMatch(version, REGEXES.esr);
 }
 
 function isRelease(version) {
-    versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+$/;
-    if (version.match(versionRE) != null) {
-        // Probably a release. Can be 31.0 or 32.0.1
-        return true;
-    }
-    return false;
+    return doesRegexMatch(version, REGEXES.release);
 }
 
 function isTBRelease(version) {
-    tbRE = /^(\d+)\.[\d.]*\d$/;
-    tbVersion = version.match(tbRE);
-    if (tbVersion != null) {
-        // 31.0 or 31.0.1
-        return true;
-    }
-    return false;
+    return doesRegexMatch(version, REGEXES.thunderbird);
 }
 
 function isFennec(name) {
@@ -65,28 +52,22 @@ function guessBranchFromVersion(name, version) {
         return '';
     }
 
-    // Beta version
     if (isBeta(version)) {
-        // 32.0b2
         return base + 'beta';
     }
 
-    // ESR version
     if (isESR(version)) {
-        // 31.0esr or 31.1.0esr
-        return base + 'esr' + esrVersion[1];
+        var esrVersion = version.match(REGEXES.esr)[1];
+        return base + 'esr' + esrVersion;
     }
 
     // Manage Thunderbird case (Stable release but using an ESR branch)
-    if (isTB(name)) {
-        if (isTBRelease(version)) {
-            // 31.0 or 31.0.1
-            return base + 'esr' + tbVersion[1];
-        }
+    if (isTB(name) && isTBRelease(version)) {
+        var tbVersion = version.match(REGEXES.thunderbird)[1];
+        return base + 'esr' + tbVersion;
     }
 
     if (isRelease(version)) {
-        // Probably a release. Can be 31.0 or 32.0.1
         return base + 'release';
     }
     return '';
@@ -160,9 +141,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     partialsADI = [];
     isFxBeta = false;
 
-    // Beta version
-    betaRE = /^\d+\.\db\d+$/;
-    betaVersion = version.match(betaRE);
+    betaVersion = version.match(REGEXES.beta);
     if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
         previousReleases = previousBuilds[base + 'beta'].sort().reverse();
         nbPartial = 3;
@@ -173,11 +152,11 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         isFxBeta = true;
     }
 
-    // Release version
-    versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+|^\d+\.[\d.]*\desr$/;
-    releaseVersion = version.match(versionRE);
-    if (releaseVersion != null) {
-        if (isTB(name) || isESR(version)) {
+    var isCurrentVersionESR = isESR(version);
+    var isCurrentVersionRelease = isRelease(version);
+
+    if (isCurrentVersionRelease || isCurrentVersionESR) {
+        if (isTB(name) || isCurrentVersionESR) {
             // Thunderbird and Fx ESR are using mozilla-esr as branch
             base = guessBranchFromVersion(name, version);
             if (typeof previousBuilds[base] !== 'undefined') {
@@ -188,15 +167,8 @@ function populatePartial(name, version, previousBuilds, partialElement) {
             previousReleases = previousBuilds[base + 'release'];
         }
 
-        if (isESR(version)) {
-            // Use the ESR partial
-            partialsADI = allPartial.esr;
-        } else {
-            partialsADI = allPartial.release;
-        }
-        // For thunderbird, use only the four last
-
-        nbPartial = 4;
+        partialsADI = isCurrentVersionESR ? allPartial.esr : allPartial.release;
+        nbPartial = 4; // For thunderbird, use only the four last
     }
 
     // Transform the partialsADI datastruct in a single array to
