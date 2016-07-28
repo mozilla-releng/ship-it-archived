@@ -141,9 +141,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     partialsADI = [];
     isFxBeta = false;
 
-    // Beta version
-    betaRE = /^\d+\.\db\d+$/;
-    betaVersion = version.match(betaRE);
+    betaVersion = version.match(REGEXES.beta);
     if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
         previousReleases = previousBuilds[base + 'beta'].sort().reverse();
         nbPartial = 3;
@@ -154,11 +152,11 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         isFxBeta = true;
     }
 
-    // Release version
-    versionRE = /^\d+\.\d+$|^\d+\.\d\.\d+|^\d+\.[\d.]*\desr$/;
-    releaseVersion = version.match(versionRE);
-    if (releaseVersion != null) {
-        if (isTB(name) || isESR(version)) {
+    var isCurrentVersionESR = isESR(version);
+    var isCurrentVersionRelease = isRelease(version);
+
+    if (isCurrentVersionRelease || isCurrentVersionESR) {
+        if (isTB(name) || isCurrentVersionESR) {
             // Thunderbird and Fx ESR are using mozilla-esr as branch
             base = guessBranchFromVersion(name, version);
             if (typeof previousBuilds[base] !== 'undefined') {
@@ -169,15 +167,8 @@ function populatePartial(name, version, previousBuilds, partialElement) {
             previousReleases = previousBuilds[base + 'release'];
         }
 
-        if (isESR(version)) {
-            // Use the ESR partial
-            partialsADI = allPartial.esr;
-        } else {
-            partialsADI = allPartial.release;
-        }
-        // For thunderbird, use only the four last
-
-        nbPartial = 4;
+        partialsADI = isCurrentVersionESR ? allPartial.esr : allPartial.release;
+        nbPartial = 4; // For thunderbird, use only the four last
     }
 
     // Transform the partialsADI datastruct in a single array to
