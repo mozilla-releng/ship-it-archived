@@ -90,15 +90,22 @@ assert.strictEqual( guessBranchFromVersion("firefox", "31.0.1esr"), "releases/mo
 QUnit.test( "addLastVersionAsPartial", function( assert ) {
     name="firefox";
     base = getBaseRepository(name);
-    previousBuilds = {"releases/mozilla-beta": ["31.0b2build2", "30.0b9build2", "29.0b10build2", "25.0b5build2", ],
-                      "releases/mozilla-release": ["33.0.1build2", "32.0.1build2",  "28.0build2", "27.0build2"],
-                      "releases/mozilla-esr31": ["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1" ]};
+    previousBuilds = {
+        "releases/mozilla-beta": [
+            "31.0b2build2", "30.0b9build2", "29.0b10build2", "25.0b5build2",
+            // Test data for human sort. See bug 1289627.
+            "48.0b1build2","47.0b9build1","47.0b8build1", "48.0b9build1", "48.0b7build1", "48.0b6build1"
+        ],
+        "releases/mozilla-release": ["33.0.1build2", "32.0.1build2",  "28.0build2", "27.0build2"],
+        "releases/mozilla-esr31": ["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1" ]
+    };
 
     previousReleases = previousBuilds[base + 'release'].sort().reverse();
     assert.deepEqual( addLastVersionAsPartial("35.0", previousReleases, 1), ["33.0.1build2"]);
 
     previousReleases = previousBuilds[base + 'beta'].sort().reverse();
     assert.deepEqual( addLastVersionAsPartial("35.0b2", previousReleases, 1), ["31.0b2build2"]);
+    assert.deepEqual( addLastVersionAsPartial("48.0b10", previousReleases, 3), ["48.0b9build1", "48.0b7build1", "48.0b6build1"]);
 
     previousReleases = previousBuilds[base + 'esr31'].sort().reverse();
     assert.deepEqual( addLastVersionAsPartial("38.0esr", previousReleases, 1), ["31.1.0esrbuild1"]);
