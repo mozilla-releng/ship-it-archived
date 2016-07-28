@@ -1,26 +1,28 @@
-var ESR_REGEX = /^(\d+)\.[\d.]*\desr$/; // Examples: 31.0esr or 31.1.0esr
-var THUNDERBIRD_REGEX = /^(\d+)\.[\d.]*\d$/;
+var REGEXES = {
+    beta: /^\d+\.[\d.]+b\d+$/,      // Examples: 32.0b2, 38.0.5b2 or 32.0b10
+    release: /^(\d+\.)+\d$/,        // Examples: 31.0 or 32.0.1
+    esr: /^(\d+)\.[\d.]*\desr$/,    // Examples: 31.0esr or 31.1.0esr
+    thunderbird: /^(\d+)\.[\d.]*\d$/,
+};
 
 function doesRegexMatch(string, regex) {
-    return string.match(regex) != null;
+    return string.match(regex) !== null;
 }
 
 function isBeta(version) {
-    // Examples: 32.0b2, 38.0.5b2 or 32.0b10
-    return doesRegexMatch(version, /^\d+\.[\d.]+b\d+$/);
+    return doesRegexMatch(version, REGEXES.beta);
 }
 
 function isESR(version) {
-    return doesRegexMatch(version, ESR_REGEX);
+    return doesRegexMatch(version, REGEXES.esr);
 }
 
 function isRelease(version) {
-    // Examples: 31.0 or 32.0.1
-    return doesRegexMatch(version, /^(\d+\.)+\d$/);
+    return doesRegexMatch(version, REGEXES.release);
 }
 
 function isTBRelease(version) {
-    return doesRegexMatch(version, THUNDERBIRD_REGEX);
+    return doesRegexMatch(version, REGEXES.thunderbird);
 }
 
 function isFennec(name) {
@@ -55,13 +57,13 @@ function guessBranchFromVersion(name, version) {
     }
 
     if (isESR(version)) {
-        var esrVersion = version.match(ESR_REGEX)[1];
+        var esrVersion = version.match(REGEXES.esr)[1];
         return base + 'esr' + esrVersion;
     }
 
     // Manage Thunderbird case (Stable release but using an ESR branch)
     if (isTB(name) && isTBRelease(version)) {
-        var tbVersion = version.match(THUNDERBIRD_REGEX)[1];
+        var tbVersion = version.match(REGEXES.thunderbird)[1];
         return base + 'esr' + tbVersion;
     }
 
