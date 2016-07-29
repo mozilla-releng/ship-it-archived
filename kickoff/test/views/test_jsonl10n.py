@@ -82,9 +82,11 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
 
         beta_releases = jsonFx['releases']
-        self.assertEquals(len(beta_releases), 3)
+        self.assertEquals(len(beta_releases), 2)
         for beta in beta_releases:
             self.assertTrue(self.FIREFOX_BETA_3_REGEX.match(beta['name']) is not None)
             self.assertTrue('ja' in beta['locales'])
             self.assertTrue('submittedAt' in beta)
             self.assertTrue('shippedAt' in beta)
+        # 3.0b2 build 2 didn't shipped. Making sure we don't add it to the list
+        self.assertTrue("Firefox-3.0b2-build2" not in beta_releases)
