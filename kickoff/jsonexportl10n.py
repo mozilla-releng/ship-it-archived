@@ -36,7 +36,7 @@ def l10nExport(releaseName):
 def _aggregateBetaLocales(releaseTable, releaseName):
     beta_prefix = releaseName.replace("beta", "b")
 
-    releases = releaseTable.query.filter(releaseTable.name.contains(beta_prefix))
+    releases = releaseTable.query.filter(releaseTable.name.contains(beta_prefix)).filter(releaseTable._shippedAt != None)
     releases_with_locales = [_getReleaseLocales(release) for release in releases]
 
     return {

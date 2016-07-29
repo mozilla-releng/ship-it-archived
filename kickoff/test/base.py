@@ -138,7 +138,6 @@ class TestBase(unittest.TestCase):
                                l10nChangesets='ja zu', dashboardCheck=True,
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2005, 3, 2, 3, 4, 5, 6),
                                comment="yet an other amazying comment")
             db.session.add(r)
 
