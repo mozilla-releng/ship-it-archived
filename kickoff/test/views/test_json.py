@@ -117,6 +117,9 @@ class TestJSONRequestsAPI(ViewTest):
         # That assertion also tests that we have well-formed ESR numbers
         self.assertTrue('2.0.2esr' in primary['en-US'])
         self.assertEquals(len(primary['en-US']), 5)
+        # ja-JP-mac is not a locale we want to expose into product-details
+        self.assertFalse('ja-JP-mac' in primary)
+
 
     def testTBPrimaryBuilds(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird_primary_builds.json')

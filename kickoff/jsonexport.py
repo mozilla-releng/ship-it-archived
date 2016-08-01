@@ -210,6 +210,9 @@ def updateLocaleWithVersionsTable(product):
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'aurora')
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'nightly')
 
+    # Backward compatibility: don't expose ja-JP-mac in product-details json API
+    del buildsVersionLocales['ja-JP-mac']
+
     return buildsVersionLocales
 
 
