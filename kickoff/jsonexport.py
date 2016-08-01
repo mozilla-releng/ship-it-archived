@@ -158,6 +158,9 @@ def generateLocalizedBuilds(buildsVersionLocales, l10nchangesets, lastVersion):
     # parse it
     locales = parsePlainL10nChangesets(l10nchangesets)
 
+    # We don't have an l10n changeset for en-US but we need en-US in the output
+    locales['en-US'] = 'abcd123456'
+
     for localeCode in locales:
         version = _generateDummyFileSizeMetaData(lastVersion)
         if localeCode not in buildsVersionLocales.keys():
@@ -203,7 +206,7 @@ def updateLocaleWithVersionsTable(product):
     lastStable = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
                                                    lastStable[0][2],
-                                                   lastStable[0][0])
+                                                   lastStable[0][0] + "esr")
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'aurora')
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'nightly')
 
