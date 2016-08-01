@@ -140,7 +140,9 @@ QUnit.test( "getVersionWithBuildNumber", function( assert ) {
 
 QUnit.test( "populatePartial", function( assert ) {
 
-allPartialJ='{"release": [{"version": "32.0.1", "ADI": 949}, {"version": "31.0", "ADI": 821}, {"version": "30.0.5", "ADI": 661}, {"version": "29.0", "ADI": 438}, {"version": "28.0", "ADI": 256}], "beta": [{"version": "31.0b2", "ADI": 951}, {"version": "31.0b3", "ADI": 879}, {"version": "30.0b9", "ADI": 776}, {"version": "30.0b2", "ADI": 655}, {"version": "29.0b10", "ADI": 273}], "esr": [{"version": "31.1.0esr", "ADI": 833}, {"version": "29.4.0esr", "ADI": 763}, {"version": "24.3.0esr", "ADI": 624}, {"version": "29.0esr", "ADI": 558}, {"version": "31.3.0esr", "ADI": 368}]}';
+allPartialJ='{"release": [{"version": "32.0.1", "ADI": 949}, {"version": "31.0", "ADI": 821}, {"version": "30.0.5", "ADI": 661}, {"version": "29.0", "ADI": 438}, {"version": "28.0", "ADI": 256}],' +
+            ' "beta": [{"version": "31.0b2", "ADI": 951}, {"version": "31.0b3", "ADI": 879}, {"version": "30.0b9", "ADI": 776}, {"version": "30.0b2", "ADI": 655}, {"version": "29.0b10", "ADI": 273}],' +
+            ' "esr": [{"version": "31.1.0esr", "ADI": 833}, {"version": "29.4.0esr", "ADI": 763}, {"version": "24.3.0esr", "ADI": 624}, {"version": "29.0esr", "ADI": 558}, {"version": "31.3.0esr", "ADI": 368}]}';
 allPartial=JSON.parse(allPartialJ);
 
 previousBuilds = {"releases/mozilla-beta": ["31.0b3build4", "31.0b2build2", "30.0b9build2", "29.0b10build2", "25.0b5build2", "30.0b2build1" ],
