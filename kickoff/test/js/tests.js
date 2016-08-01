@@ -209,11 +209,11 @@ assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 allPartialJ='{"release": [{"version": "38.0.3", "ADI": 5000}, {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}]}';
 allPartial=JSON.parse(allPartialJ);
 
-previousBuilds = {"releases/mozilla-release": ["38.0.5bbuild2", "38.0.3build2", "38.0b6build2",  "36.0build2", "35.0build2"]}
+previousBuilds = {"releases/mozilla-release": ["38.0.5b3build2", "38.0.3build2", "38.0b6build2",  "36.0build2", "35.0build2"]}
 
 partialElement = $('#partials');
 var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
 assert.ok( result );
-assert.strictEqual($('#partials').val(), "38.0.5bbuild2,38.0.3build2,35.0build2,36.0build2");
+assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 
 });
