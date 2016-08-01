@@ -114,7 +114,8 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('24.0a1' in primary['en-US'])
         self.assertTrue('3.0b3' in primary['en-US'])
         self.assertTrue('2.0' in primary['en-US'])
-        self.assertTrue('2.0.2' in primary['en-US'])
+        # That assertion also tests that we have well-formed ESR numbers
+        self.assertTrue('2.0.2esr' in primary['en-US'])
         self.assertEquals(len(primary['en-US']), 5)
 
     def testTBPrimaryBuilds(self):

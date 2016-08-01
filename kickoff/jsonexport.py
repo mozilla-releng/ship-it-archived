@@ -206,7 +206,7 @@ def updateLocaleWithVersionsTable(product):
     lastStable = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
                                                    lastStable[0][2],
-                                                   lastStable[0][0])
+                                                   lastStable[0][0] + "esr")
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'aurora')
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'nightly')
 
