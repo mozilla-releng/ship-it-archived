@@ -158,6 +158,9 @@ def generateLocalizedBuilds(buildsVersionLocales, l10nchangesets, lastVersion):
     # parse it
     locales = parsePlainL10nChangesets(l10nchangesets)
 
+    # We don't have an l10n changeset for en-US but we need en-US in the output
+    locales['en-US'] = 'abcd123456'
+
     for localeCode in locales:
         version = _generateDummyFileSizeMetaData(lastVersion)
         if localeCode not in buildsVersionLocales.keys():

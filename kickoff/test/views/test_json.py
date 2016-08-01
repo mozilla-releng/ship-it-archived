@@ -109,6 +109,13 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertFalse('ach' in config.SUPPORTED_NIGHTLY_LOCALES)
         self.assertTrue('ach' in config.SUPPORTED_AURORA_LOCALES)
         self.assertEquals(len(primary['ach']), 1)
+        # We always have en-US for all channels
+        self.assertTrue('23.0a2' in primary['en-US'])
+        self.assertTrue('24.0a1' in primary['en-US'])
+        self.assertTrue('3.0b3' in primary['en-US'])
+        self.assertTrue('2.0' in primary['en-US'])
+        self.assertTrue('2.0.2' in primary['en-US'])
+        self.assertEquals(len(primary['en-US']), 5)
 
     def testTBPrimaryBuilds(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird_primary_builds.json')
