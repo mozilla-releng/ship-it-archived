@@ -10,6 +10,7 @@ JSON_FORMAT_VERSION = "1.0"
 JSON_FORMAT_L10N_VERSION = "1.0"
 IOS_BETA_VERSION = "6.0"
 IOS_VERSION = "5.0"
+LATEST_THUNDERBIRD_ALPHA_VERSION = "49.0a2"
 
 # The keyword used in the ship-it db for old release before the changeset/json l10n files
 LEGACY_KEYWORD = "legacy"
