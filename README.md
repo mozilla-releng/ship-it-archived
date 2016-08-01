@@ -36,9 +36,12 @@ Or with MySQL:
 
 Open your Firefox on: **http://127.0.0.1:5000/**
 
-If you're on Mac, Windows, or running Docker in a VM for another reason, you'll need to replace 127.0.0.1 with the IP of your VM.
+If you're on Mac or Windows you'll need Docker for Mac or Docker for Windows v1.12.0 or higher. Or if you're
+running Docker in a VM for another reason, you'll need to replace 127.0.0.1 with the IP of your VM.
 
-To have the auto completion in the various forms, please enter some releases to feed the database.
+To have the auto completion in the various forms there needs to be some releases in the database. A
+snapshot of data is included in the repo. You can reset the db by remove the .cache/mysql directory
+and run `docker-compose up`.
 
 ## Testing
 
