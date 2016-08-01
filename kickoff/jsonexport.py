@@ -281,14 +281,12 @@ def thunderbirdHistoryDevelopmentReleasesJson():
 
 @app.route(BASE_JSON_PATH + '/thunderbird_versions.json', methods=['GET'])
 def thunderbirdVersionsJson():
-    versions = {}
-    # Stable
-    lastStable = getFilteredReleases("thunderbird", ["major", "stability"], lastRelease=True)
-    versions["LATEST_THUNDERBIRD_VERSION"] = lastStable[0][0]
-    # beta
-    lastBeta = getFilteredReleases("thunderbird", ["dev"], lastRelease=True)
-    versions["LATEST_THUNDERBIRD_DEVEL_VERSION"] = lastBeta[0][0]
-    return returnJSONVersionFile('thunderbird_versions.json', versions)
+    versions = {
+        "LATEST_THUNDERBIRD_VERSION": getFilteredReleases("thunderbird", ["major", "stability"], lastRelease=True)[0][0],
+        "LATEST_THUNDERBIRD_DEVEL_VERSION": getFilteredReleases("thunderbird", ["dev"], lastRelease=True)[0][0],
+        "LATEST_THUNDERBIRD_ALPHA_VERSION": config.LATEST_THUNDERBIRD_ALPHA_VERSION,
+    }
+    return myjsonify(versions)
 
 
 @app.route(BASE_JSON_PATH + '/thunderbird_primary_builds.json', methods=['GET'])
