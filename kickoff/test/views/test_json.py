@@ -184,6 +184,27 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['ios_version'], "1.1")
         self.assertEquals(versions['ios_beta_version'], "1.2")
 
+    def testMobileDetails(self):
+        config.CURRENT_ESR = "2"
+        config.ESR_NEXT = "38"
+        config.NIGHTLY_VERSION = "24.0a1"
+        config.AURORA_VERSION = "23.0a2"
+        config.IOS_VERSION = "1.1"
+        config.IOS_BETA_VERSION = "1.2"
+        ret = self.get(BASE_JSON_PATH + '/mobile_details.json')
+        details = json.loads(ret.data)
+
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(details['nightly_version'], "24.0a1")
+        self.assertEquals(details['alpha_version'], "23.0a2")
+        self.assertEquals(details['beta_version'], "23.0b2")
+        self.assertEquals(details['version'], "24.0")
+        self.assertEquals(details['ios_version'], "1.1")
+        self.assertEquals(details['ios_beta_version'], "1.2")
+        self.assertTrue("builds" in details)
+        self.assertTrue("alpha_builds" in details)
+        self.assertTrue("beta_builds" in details)
+
     def testThunderbirdVersions(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird_versions.json')
         versions = json.loads(ret.data)

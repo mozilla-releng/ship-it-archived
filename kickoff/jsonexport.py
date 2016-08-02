@@ -224,22 +224,26 @@ def firefox_primary_builds_json():
 
 # Mobile JSON
 
+def mobileVersions():
+    versions = {
+        "nightly_version": config.NIGHTLY_VERSION,
+        "alpha_version": config.AURORA_VERSION,
+        "ios_version": config.IOS_VERSION,
+        "ios_beta_version": config.IOS_BETA_VERSION,
+        "stable": getFilteredReleases("fennec", ["major", "stability"], lastRelease=True)[0][0],
+        "beta_version": getFilteredReleases("fennec", ["dev"], lastRelease=True)[0][0]
+    }
+    return versions
+
+
+@app.route(BASE_JSON_PATH + '/mobile_versions.json', methods=['GET'])
+def mobileVersionsJson():
+    return returnJSONVersionFile('mobile_versions.json', mobileVersions())
+
 
 @app.route(BASE_JSON_PATH + '/mobile_details.json', methods=['GET'])
-@app.route(BASE_JSON_PATH + '/mobile_versions.json', methods=['GET'])
 def mobileDetailsJson():
-    versions = {"nightly_version": config.NIGHTLY_VERSION,
-                "alpha_version": config.AURORA_VERSION,
-                "ios_version": config.IOS_VERSION,
-                "ios_beta_version": config.IOS_BETA_VERSION
-                }
-
-    lastStable = getFilteredReleases("fennec", ["major", "stability"], lastRelease=True)
-    versions['stable'] = lastStable[0][0]
-
-    lastBeta = getFilteredReleases("fennec", ["dev"], lastRelease=True)
-    versions['beta_version'] = lastBeta[0][0]
-    return returnJSONVersionFile('mobile_versions.json', versions)
+    return returnJSONVersionFile('mobile_details.json', mobileVersions())
 
 
 @app.route(BASE_JSON_PATH + '/mobile_history_major_releases.json', methods=['GET'])
