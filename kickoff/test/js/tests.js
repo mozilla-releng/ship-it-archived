@@ -156,7 +156,7 @@ var result = populatePartial("firefox", "33.2", previousBuilds, partialElement);
 assert.ok( result );
 // 33.0.1 has 0 as ADI but this is ok
 // Take the two next partials with the most ADI
-assert.strictEqual($('#partials').val(), "33.0.1build2,32.0.1build2,31.0build2,30.0.5build7")
+assert.strictEqual($('#partials').val(), "33.0.1build2,32.0.1build2,31.0build2")
 
 // Beta (will use partialFXBeta)
 partialElement = $('#partials');
@@ -173,7 +173,7 @@ assert.strictEqual($('#partials').val(), "");
 partialElement = $('#partials');
 var result = populatePartial("firefox", "31.2.0esr", previousBuilds, partialElement);
 assert.ok( result );
-assert.strictEqual($('#partials').val(), "31.1.0esrbuild1,29.4.0esrbuild1,24.3.0esrbuild1,29.0esrbuild1");
+assert.strictEqual($('#partials').val(), "31.1.0esrbuild1");
 
 // Thunderbird
 previousBuilds = {"releases/comm-esr31": ["31.0build1", "24.1.0build1", "24.3.0build1", "24.4.0build1"]},
@@ -194,7 +194,7 @@ previousBuilds = {"releases/mozilla-release": ["36.0.4build2", "36.0.3build2",  
 partialElement = $('#partials');
 var result = populatePartial("firefox", "37.0", previousBuilds, partialElement);
 assert.ok( result );
-assert.strictEqual($('#partials').val(), "36.0.4build2,36.0.3build2,35.0build2,36.0build2");
+assert.strictEqual($('#partials').val(), "36.0.4build2,36.0.3build2,35.0build2");
 
 // Test the case we had during the 38 cycle (beta built from m-r)
 allPartialJ='{"release": [{"version": "38.0.3", "ADI": 5000}, {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}]}';

@@ -168,7 +168,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         }
 
         partialsADI = isCurrentVersionESR ? allPartial.esr : allPartial.release;
-        nbPartial = 4; // For thunderbird, use only the four last
+        nbPartial = isCurrentVersionESR ? 1 : 3; // 1 for ESR; max of 3 for promotion until we chain tasks instead of group
     }
 
     // Transform the partialsADI datastruct in a single array to
