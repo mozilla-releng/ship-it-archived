@@ -95,13 +95,13 @@ QUnit.test( "addLastVersionAsPartial", function( assert ) {
                       "releases/mozilla-esr31": ["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1" ]};
 
     previousReleases = previousBuilds[base + 'release'].sort().reverse();
-    assert.strictEqual( addLastVersionAsPartial("35.0", previousReleases, 1), "33.0.1build2,");
+    assert.deepEqual( addLastVersionAsPartial("35.0", previousReleases, 1), ["33.0.1build2"]);
 
     previousReleases = previousBuilds[base + 'beta'].sort().reverse();
-    assert.strictEqual( addLastVersionAsPartial("35.0b2", previousReleases, 1), "31.0b2build2,");
+    assert.deepEqual( addLastVersionAsPartial("35.0b2", previousReleases, 1), ["31.0b2build2"]);
 
     previousReleases = previousBuilds[base + 'esr31'].sort().reverse();
-    assert.strictEqual( addLastVersionAsPartial("38.0esr", previousReleases, 1), "31.1.0esrbuild1,");
+    assert.deepEqual( addLastVersionAsPartial("38.0esr", previousReleases, 1), ["31.1.0esrbuild1"]);
 });
 
 
