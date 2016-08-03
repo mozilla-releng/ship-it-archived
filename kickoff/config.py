@@ -1,5 +1,5 @@
 # Not used
-NIGHTLY_VERSION = "50.0a1"
+NIGHTLY_VERSION = "51.0a1"
 AURORA_VERSION = "49.0a2"
 LATEST_THUNDERBIRD_ALPHA_VERSION = "49.0a2"
 SUPPORTED_AURORA_LOCALES = ['ach', 'af', 'an', 'ar', 'as', 'ast', 'az', 'be', 'bg', 'bn-BD', 'bn-IN', 'br', 'brx', 'bs', 'ca', 'cak', 'cs', 'cy', 'da', 'de', 'dsb', 'el', 'en-GB', 'en-US', 'en-ZA', 'eo', 'es-AR', 'es-CL', 'es-ES', 'es-MX', 'et', 'eu', 'fa', 'ff', 'fi', 'fr', 'fy-NL', 'ga-IE', 'gd', 'gl', 'gn', 'gu-IN', 'he', 'hi-IN', 'hr', 'hsb', 'hu', 'hy-AM', 'id', 'is', 'it', 'ja', 'ja-JP-mac', 'ka', 'kk', 'km', 'kn', 'ko', 'kok', 'ks', 'lij', 'lt', 'ltg', 'lv', 'mai', 'mk', 'ml', 'mr', 'ms', 'nb-NO', 'ne-NP', 'nl', 'nn-NO', 'or', 'pa-IN', 'pl', 'pt-BR', 'pt-PT', 'rm', 'ro', 'ru', 'sat', 'si', 'sk', 'sl', 'sq', 'son', 'sr', 'sv-SE', 'ta', 'te', 'th', 'tr', 'uk', 'ur', 'uz', 'vi', 'xh', 'zh-CN', 'zh-TW']
