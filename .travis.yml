@@ -2,6 +2,7 @@ language: python
 env:
     - TOX_ENV=py26
     - TOX_ENV=py27
+    - TOX_ENV=py34
 
 install:
     - travis_retry sudo apt-get update -qq
