@@ -74,7 +74,7 @@ function guessBranchFromVersion(name, version) {
 }
 
 function addLastVersionAsPartial(version, previousReleases, nb) {
-    partialList = '';
+    partialList = [];
     nbAdded = 0;
     // We always add the last released version to the list
     for (k = 0; k < previousReleases.length; k++) {
@@ -89,7 +89,7 @@ function addLastVersionAsPartial(version, previousReleases, nb) {
         }
 
         if (previousRelease < version) {
-            partialList += previousReleases[k] + ',';
+            partialList.push(previousReleases[k]);
             nbAdded++;
             if (nb == nbAdded) {
                 return partialList;
@@ -168,7 +168,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         }
 
         partialsADI = isCurrentVersionESR ? allPartial.esr : allPartial.release;
-        nbPartial = 4; // For thunderbird, use only the four last
+        nbPartial = isCurrentVersionESR ? 1 : 3; // 1 for ESR; max of 3 for promotion until we chain tasks instead of group
     }
 
     // Transform the partialsADI datastruct in a single array to
@@ -185,7 +185,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     // Check that all partials match a build.
     partialConsistencyCheck(partialsADIVersion, previousReleases);
 
-    partial = '';
+    partial = [];
     partialAdded = 0;
 
     // When we have the ADI for Firefox Beta or Thunderbird, we can remove
@@ -194,9 +194,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
         // No ADI, select the three first
         partial = addLastVersionAsPartial(version, previousReleases, 3);
         partialAdded = 3;
-        // Remove the last ","
-        partial = partial.slice(0,-1);
-        partialElement.val(partial);
+        partialElement.val(partial.join());
         return true;
     } else {
         // The first partial will always be the previous published release
@@ -205,33 +203,20 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     }
 
     for (i = 0; i < partialsADIVersion.length; i++) {
-
-        if (partial.indexOf(partialsADIVersion[i]  + 'build') > -1) {
-            // We have already this version in the list of partial
-            // Go to the next one
-            continue;
-        }
-        // Build a previous release should not occur but it is the case
-        // don't provide past partials
         newPartial = getVersionWithBuildNumber(partialsADIVersion[i], previousReleases);
-        if (newPartial != undefined) {
-            // Only add when we found a matching version
-            partial += newPartial;
+        if (newPartial != undefined &&
+            partial.indexOf(newPartial) < 0) {
+            // Only add when we found a matching version we haven't used already
+            partial.push(newPartial);
             partialAdded++;
         }
 
-        if (i + 1 != partialsADIVersion.length &&
-            partialAdded != nbPartial &&
-            newPartial != undefined) {
-            // We don't want a trailing ","
-            partial += ',';
-        }
         if (partialAdded == nbPartial) {
             // We have enough partials. Bye bye.
             break;
         }
     }
-    partialElement.val(partial);
+    partialElement.val(partial.join());
     return true;
 }
 
