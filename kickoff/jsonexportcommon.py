@@ -7,8 +7,7 @@ except ImportError:
     from ordereddict import OrderedDict
 
 
-def myjsonify(values, detailledJson=False):
-    # Transform the structure into a dict
+def jsonify_by_sorting_values(values, detailledJson=False):
     values = OrderedDict(values)
 
     if detailledJson:
@@ -25,8 +24,16 @@ def myjsonify(values, detailledJson=False):
     else:
         values = valuesOrdered
 
-    # Don't use jsonsify because jsonify is sorting
-    resp = Response(response=json.dumps(values),
+    # jsonsify from flask is not used on purpose. It sorts the JSON by the hashes of the keys
+    return _craft_response(json.dumps(values))
+
+
+def jsonify_by_sorting_keys(values):
+    return _craft_response(json.dumps(values, sort_keys=True, indent=4))
+
+
+def _craft_response(json_value):
+    resp = Response(response=json_value,
                     status=200,
                     mimetype="application/json")
     return(resp)

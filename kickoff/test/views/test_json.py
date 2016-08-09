@@ -84,8 +84,8 @@ class TestJSONRequestsAPI(ViewTest):
 
     def testPrimaryBuilds(self):
         ret = self.get(BASE_JSON_PATH + '/firefox_primary_builds.json')
-        primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
+        primary = json.loads(ret.data)
         # I guess we will always have more than 20 locales
         self.assertTrue(len(primary) > 20)
         # i guess we will always have french or german
@@ -120,6 +120,12 @@ class TestJSONRequestsAPI(ViewTest):
         # ja-JP-mac is not a locale we want to expose into product-details
         self.assertFalse('ja-JP-mac' in primary)
 
+    def testPrimaryBuildsAreSorted(self):
+        ret = self.get(BASE_JSON_PATH + '/firefox_primary_builds.json')
+        self.assertEquals(ret.status_code, 200)
+        givenString = ret.data
+        sortedJsonString = json.dumps(json.loads(givenString), sort_keys=True, indent=4)
+        self.assertEqual(givenString, sortedJsonString)
 
     def testTBPrimaryBuilds(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird_primary_builds.json')

@@ -5,7 +5,7 @@ from collections import defaultdict
 from kickoff import app
 from kickoff import config
 
-from flask import jsonify, render_template, make_response
+from flask import render_template, make_response
 
 from kickoff.model import getReleases
 
@@ -13,7 +13,7 @@ from kickoff.thunderbirddetails import primary_builds as tb_primary_builds, beta
 
 from mozilla.release.l10n import parsePlainL10nChangesets
 
-from jsonexportcommon import myjsonify
+from jsonexportcommon import jsonify_by_sorting_values, jsonify_by_sorting_keys
 from jsonexportl10n import generateRegionsJSONFileList, generateL10NJSONFileList
 
 
@@ -97,21 +97,21 @@ BASE_JSON_PATH = '/json/' + JSON_VER
 def firefoxHistoryMajorReleasesJson():
     # Match X.Y and 14.0.1 (special case)
     values = getFilteredReleases("firefox", "major")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/firefox_history_stability_releases.json', methods=['GET'])
 def firefoxHistoryStabilityReleasesJson():
     # Match X.Y.Z (including esr) + W.X.Y.Z (example 1.5.0.8)
     values = getFilteredReleases("firefox", "stability")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/firefox_history_development_releases.json', methods=['GET'])
 def firefoxHistoryDevelopmentReleasesJson():
     # Match 23.b2, 1.0rc2, 3.6.3plugin1 or 3.6.4build7
     values = getFilteredReleases("firefox", "dev")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/firefox_versions.json', methods=['GET'])
@@ -219,7 +219,7 @@ def updateLocaleWithVersionsTable(product):
 @app.route(BASE_JSON_PATH + '/firefox_primary_builds.json', methods=['GET'])
 def firefox_primary_builds_json():
     buildsVersionLocales = updateLocaleWithVersionsTable("firefox")
-    return jsonify(buildsVersionLocales)
+    return jsonify_by_sorting_keys(buildsVersionLocales)
 
 
 # Mobile JSON
@@ -249,20 +249,20 @@ def mobileDetailsJson():
 @app.route(BASE_JSON_PATH + '/mobile_history_major_releases.json', methods=['GET'])
 def mobileHistoryMajorReleasesJson():
     values = getFilteredReleases("fennec", "major")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/mobile_history_stability_releases.json', methods=['GET'])
 def mobileHistoryReleasesJson():
     values = getFilteredReleases("fennec", "stability")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/mobile_history_development_releases.json', methods=['GET'])
 def mobileHistoryDevelopmentReleasesJson():
     # Match 23.b2, 1.0rc2, 3.6.3plugin1 or 3.6.4build7
     values = getFilteredReleases("fennec", "dev")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 # THUNDERBIRD JSON
@@ -270,20 +270,20 @@ def mobileHistoryDevelopmentReleasesJson():
 @app.route(BASE_JSON_PATH + '/thunderbird_history_major_releases.json', methods=['GET'])
 def thunderbirdHistoryMajorReleasesJson():
     values = getFilteredReleases("thunderbird", "major")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/thunderbird_history_stability_releases.json', methods=['GET'])
 def thunderbirdHistoryReleasesJson():
     values = getFilteredReleases("thunderbird", "stability")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/thunderbird_history_development_releases.json', methods=['GET'])
 def thunderbirdHistoryDevelopmentReleasesJson():
     # Match 23.b2, 1.0rc2, 3.6.3plugin1 or 3.6.4build7
     values = getFilteredReleases("thunderbird", "dev")
-    return myjsonify(values)
+    return jsonify_by_sorting_values(values)
 
 
 @app.route(BASE_JSON_PATH + '/thunderbird_versions.json', methods=['GET'])
@@ -293,7 +293,7 @@ def thunderbirdVersionsJson():
         "LATEST_THUNDERBIRD_DEVEL_VERSION": getFilteredReleases("thunderbird", ["dev"], lastRelease=True)[0][0],
         "LATEST_THUNDERBIRD_ALPHA_VERSION": config.LATEST_THUNDERBIRD_ALPHA_VERSION,
     }
-    return myjsonify(versions)
+    return jsonify_by_sorting_values(versions)
 
 
 @app.route(BASE_JSON_PATH + '/thunderbird_primary_builds.json', methods=['GET'])
@@ -304,12 +304,12 @@ def thunderbirdPrimaryBuildsJson():
     tb_prim = {}
     for key in tb_primary_builds:
         tb_prim[key] = common
-    return myjsonify(tb_prim)
+    return jsonify_by_sorting_values(tb_prim)
 
 
 @app.route(BASE_JSON_PATH + '/thunderbird_beta_builds.json', methods=['GET'])
 def thunderbirdBetaBuildsJson():
-    return myjsonify(tb_beta_builds)
+    return jsonify_by_sorting_values(tb_beta_builds)
 
 
 @app.route(BASE_JSON_PATH + '/languages.json', methods=['GET'])
@@ -327,7 +327,7 @@ def jsonExports():
 def jsonExportsJson():
     """ Export the list of files a friendly way to json """
     jsonFiles = generateJSONFileList(withL10Nfiles=True)
-    return myjsonify(jsonFiles)
+    return jsonify_by_sorting_values(jsonFiles)
 
 
 @app.route('/json_exports.txt', methods=['GET'])
@@ -363,21 +363,21 @@ def getReleasesForJson(product):
 def jsonFirefoxExport():
     """ Export all the firefox versions """
     release_list = getReleasesForJson("firefox")
-    return myjsonify(release_list, detailledJson=True)
+    return jsonify_by_sorting_values(release_list, detailledJson=True)
 
 
 @app.route(BASE_JSON_PATH + '/mobile_android.json', methods=['GET'])
 def jsonFennecExport():
     """ Export all the fennec versions """
     release_list = getReleasesForJson("fennec")
-    return myjsonify(release_list, detailledJson=True)
+    return jsonify_by_sorting_values(release_list, detailledJson=True)
 
 
 @app.route(BASE_JSON_PATH + '/thunderbird.json', methods=['GET'])
 def jsonThunderbirdExport():
     """ Export all the thunderbird versions """
     release_list = getReleasesForJson("thunderbird")
-    return myjsonify(release_list, detailledJson=True)
+    return jsonify_by_sorting_values(release_list, detailledJson=True)
 
 
 @app.route(BASE_JSON_PATH + '/all.json', methods=['GET'])
@@ -388,4 +388,4 @@ def jsonAllExport():
     }
     for release in ("firefox", "fennec", "thunderbird"):
         release_list["releases"].update(getReleasesForJson(release)["releases"])
-    return myjsonify(release_list, detailledJson=True)
+    return jsonify_by_sorting_values(release_list, detailledJson=True)
