@@ -33,16 +33,15 @@ function Release(string) {
 }
 
 function _compareNumbers(first, second) {
-    // first and second may be both undefined
-    if (first === second) {
-        return 0;
+    if (first === undefined) {
+        if (second === undefined) {
+            return 0;
+        }
+
+        return -1; // Example: 31.1 is previous to 31.1.1
     }
 
-    var result = first - second;
-    if (isNaN(result)) {
-        throw new Error('One of the paramater is not a Number');
-    }
-    return result;
+    return first - second;
 }
 
 Release.POSSIBLE_TYPES = [

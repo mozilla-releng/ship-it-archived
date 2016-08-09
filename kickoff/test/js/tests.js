@@ -247,3 +247,52 @@ QUnit.test('is*()', function(assert) {
         }
     });
 });
+
+QUnit.test('isStrictlyPreviousTo()', function(assert) {
+    var data = [
+        { previous: '32.0', next: '33.0' },
+        { previous: '32.0', next: '32.1' },
+        { previous: '32.0', next: '32.0.1' },
+        { previous: '32.0build1', next: '32.0build2' },
+
+        { previous: '32.1', next: '33.0' },
+        { previous: '32.1', next: '32.2' },
+        { previous: '32.1', next: '32.1.1' },
+        { previous: '32.1build1', next: '32.1build2' },
+
+        { previous: '32.0.1', next: '33.0' },
+        { previous: '32.0.1', next: '32.1' },
+        { previous: '32.0.1', next: '32.0.2' },
+        { previous: '32.0.1build1', next: '32.0.1build2' },
+
+        { previous: '32.0b1', next: '33.0b1' },
+        { previous: '32.0b1', next: '32.0b2' },
+        { previous: '32.0b1build1', next: '32.0b1build2' },
+
+        { previous: '2.0', next: '10.0' },
+        { previous: '10.2', next: '10.10' },
+        { previous: '10.0.2', next: '10.0.10' },
+        { previous: '10.0build2', next: '10.0build10' },
+        { previous: '10.0b2', next: '10.0b10' },
+    ];
+
+    data = data.map(function(couple) {
+        return {
+            previous: new Release(couple.previous),
+            next: new Release(couple.next),
+        };
+    });
+
+    data.forEach(function(couple) {
+        assert.ok(
+            couple.previous.isStrictlyPreviousTo(couple.next),
+            couple.previous + ' is NOT declared as previous to ' + couple.next
+        );
+        assert.ok(
+            !couple.next.isStrictlyPreviousTo(couple.previous),
+            couple.next + ' IS declared as previous to ' + couple.previous
+        );
+    });
+
+
+});
