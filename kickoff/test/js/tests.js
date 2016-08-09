@@ -1,41 +1,61 @@
 var VERSIONS = [
-    { number: '32.0b2', type: 'beta' },
-    { number: '32.0b10', type: 'beta' },
-    { number: '32.0.3b2', type: 'beta' },
-    { number: '32.02', type: 'erroneousValue' }, // Missing b for beta
-    { number: '32.b2', type: 'erroneousValue' }, // Missing subversion
-    { number: '32.0a2', type: 'devEdition' },
-    { number: '32.0', type: 'release' },
-    { number: '32.0.1', type: 'release' },
-    { number: '32.2', type: 'release' },
-    { number: '32.0esr', type: 'esr' },
-    { number: '32.0.1esr', type: 'esr' }
+    { string: '32.0a1', type: 'nightly' },
+    { string: '32.0a2', type: 'devedition' },
+    { string: '32.0b2', type: 'beta' },
+    { string: '32.0b10', type: 'beta' },
+    { string: '32.0.3b2', type: 'beta' },
+    { string: '32.02', type: 'release' }, // Is parsed as 32.2
+    { string: '32.0', type: 'release' },
+    { string: '32.0.1', type: 'release' },
+    { string: '32.2', type: 'release' },
+    { string: '32.0esr', type: 'esr' },
+    { string: '32.0.1esr', type: 'esr' },
+    { string: '32.b2', type: 'erroneousValue' }, // Missing subversion
 ];
 
-function assertAgainstAllVersions(assert, functionToTest) {
-    VERSIONS.forEach(function(version) {
-        var type = functionToTest.name.substring('is'.length).toLowerCase();
-        var expectedCondition = version.type === type;
+function assertVersionHasType(assert, version, hasType, expectedType) {
+    var expectedCondition = version.type === expectedType;
 
-        var message = version.number + ' is ';
-        if (!expectedCondition) {
-            message += 'NOT ';
-        }
-        message += 'detected as ' + type;
+    var message = version.string + ' is ';
+    if (expectedCondition) {
+        message += 'NOT ';
+    }
+    message += 'detected as ' + expectedType;
 
-        assert.ok(
-          functionToTest(version.number) === expectedCondition,
-          message
-        );
-    });
+    assert.equal(hasType, expectedCondition, message);
 }
+
 
 [isBeta, isESR, isRelease].forEach(function(functionToTest) {
   QUnit.test(functionToTest.name, function(assert) {
-      assertAgainstAllVersions(assert, functionToTest)
+      VERSIONS.forEach(function(version) {
+          var expectedType = functionToTest.name.substring('is'.length).toLowerCase();
+          var hasType = functionToTest(version.string);
+          assertVersionHasType(assert, version, hasType, expectedType)
+      });
   });
 });
 
+
+QUnit.test('is*', function(assert) {
+    VERSIONS.forEach(function(versionData) {
+        var release;
+        try {
+            release = new Release(versionData.string);
+
+            Release.POSSIBLE_TYPES.forEach(function(field) {
+                var expectedType = field.substring('is'.length).toLowerCase();
+                var hasType = release[field];
+
+                assertVersionHasType(assert, versionData, hasType, expectedType)
+            });
+        } catch (err) {
+            if (!(err instanceof MissingFieldError && versionData.type === 'erroneousValue')) {
+                throw err;
+            }
+        }
+    });
+});
 
 ///////////////////////////////////////////////////
 

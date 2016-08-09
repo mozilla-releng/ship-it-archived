@@ -1,6 +1,8 @@
 var REGEXES = {
     beta: /^\d+\.[\d.]+b\d+(build\d+)?$/, // Examples: 32.0b2, 38.0.5b2, 32.0b10 or 32.0b10build1
-    release: /^(\d+\.)+\d$/,        // Examples: 31.0 or 32.0.1
+    release: /^(\d+\.)+\d+$/,        // Examples: 31.0 or 32.0.1
+    nightly: /^.*\da1.*/,
+    devEdition: /^.*\da2.*/,
     esr: /^.*\desr.*$/,    // Examples: 31.0esr or 31.1.0esr
     thunderbird: /^(\d+)\.[\d.]*\d$/,
     majorNumber: /^(\d+)\..+/,
@@ -9,6 +11,10 @@ var REGEXES = {
     betaNumber: /^.*\db(\d+).*/,
     buildNumber: /^.*build(\d+)$/,
 };
+
+function doesRegexMatch(string, regex) {
+    return string.match(regex) !== null;
+}
 
 function Release(string) {
     ['majorNumber', 'minorNumber'].forEach(function(field) {
@@ -19,11 +25,11 @@ function Release(string) {
         this._assignFieldIfItExists(field, string);
     }, this);
 
-    this.isEsr = string.match(REGEXES.esr) !== null;
+    this.isDevEdition = doesRegexMatch(string, REGEXES.devEdition);
+    this.isNightly = doesRegexMatch(string, REGEXES.nightly);
+    this.isEsr = doesRegexMatch(string, REGEXES.esr);
 
-    if (this.isEsr && this.isBeta) {
-        throw new Error('Release cannot be an ESR and a Beta at the same time');
-    }
+    this._performSanityCheck();
 }
 
 function _compareNumbers(first, second) {
@@ -39,7 +45,12 @@ function _compareNumbers(first, second) {
     return result;
 }
 
+Release.POSSIBLE_TYPES = [
+    'isNightly', 'isDevEdition', 'isBeta', 'isEsr', 'isRelease'
+];
+
 Release.prototype = {
+
     _assignMandatoryField: function(field, string) {
         var matchResults = string.match(REGEXES[field]);
         if (matchResults === null) {
@@ -58,12 +69,30 @@ Release.prototype = {
         }
     },
 
+    _performSanityCheck: function() {
+        var firstFieldToMatch = '';
+
+        Release.POSSIBLE_TYPES.reduce(function(previousValue, currentField) {
+            var currentValue = this[currentField];
+            if (currentValue === true) {
+                if (previousValue === true) {
+                    throw new Error('Release cannot match "' + firstFieldToMatch +
+                        '" and "' + currentField + '"'
+                    );
+                }
+
+                firstFieldToMatch = currentField;
+            }
+            return currentValue;
+        }, false);
+    },
+
     get isBeta() {
         return this.betaNumber !== undefined;
     },
 
-    get isProductionRelease() {
-        return !(this.isBeta || this.isEsr);
+    get isRelease() {
+        return !(this.isNightly || this.isDevEdition || this.isBeta || this.isEsr);
     },
 
     isStrictlyPreviousTo: function(otherRelease) {

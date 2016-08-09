@@ -1,7 +1,3 @@
-function doesRegexMatch(string, regex) {
-    return string.match(regex) !== null;
-}
-
 function isBeta(version) {
     return doesRegexMatch(version, REGEXES.beta);
 }
