@@ -28,7 +28,7 @@ def jsonify_by_sorting_values(values, detailledJson=False):
 
 
 def jsonify_by_sorting_keys(values):
-    return _craft_response(json.dumps(values, sort_keys=True))
+    return _craft_response(json.dumps(values, sort_keys=True, indent=4))
 
 
 def _craft_response(json_value):
