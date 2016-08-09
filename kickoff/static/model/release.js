@@ -43,7 +43,7 @@ Release.prototype = {
     _assignMandatoryField: function(field, string) {
         var matchResults = string.match(REGEXES[field]);
         if (matchResults === null) {
-            throw new MissingFieldError(field);
+            throw new MissingFieldError(string, field);
         }
         this[field] = parseInt(matchResults[1]);
     },
@@ -76,14 +76,7 @@ Release.prototype = {
         @throws Error if they're not from the same channel
     */
     _compare: function(otherRelease) {
-        ['isBeta', 'isEsr', 'isProductionRelease'].forEach(function(field) {
-            // In the 38 cycle, we built the 38 beta version from the
-            // mozilla-release branch. We don't want beta partials for a release
-            // This is confusing ship-it (and us)
-            if (this[field] !== otherRelease[field]) {
-                throw new NotComparableError(field);
-            }
-        }, this);
+        this._checkOtherIsOfSameType(otherRelease);
 
         var orderedFields = ['majorNumber', 'minorNumber', 'patchNumber', 'betaNumber'];
         for (var i = 0; i < orderedFields.length; i++) {
@@ -103,6 +96,17 @@ Release.prototype = {
         }
 
         return 0;
+    },
+
+    _checkOtherIsOfSameType: function(otherRelease) {
+        Release.POSSIBLE_TYPES.forEach(function(field) {
+            // In the 38 cycle, we built the 38 beta version from the
+            // mozilla-release branch. We don't want beta partials for a release
+            // This is confusing ship-it (and us)
+            if (this[field] !== otherRelease[field]) {
+                throw new NotComparableError(this, otherRelease, field);
+            }
+        }, this);
     },
 
     toString: function() {

@@ -1,16 +1,16 @@
-function MissingFieldError(field) {
+function MissingFieldError(string, field) {
     this.name = 'MissingFieldError';
-    this.message = 'Release does not contain a ' + field;
+    this.message = 'Release "' + string + '" does not contain a valid ' + field;
     this.stack = (new Error()).stack;
 }
 
 MissingFieldError.prototype = Object.create(Error.prototype);
 MissingFieldError.prototype.constructor = MissingFieldError;
 
-function NotComparableError(field) {
+function NotComparableError(first, second, field) {
     this.name = 'NotComparableError';
-    this.message = 'Cannot compare these two releases. One verifies "' + field +
-    '" but the second one does not';
+    this.message = 'Cannot compare "' + first + '" and "' + second +
+        '". One verifies "' + field + '" but the second one does not.';
     this.stack = (new Error()).stack;
 }
 
