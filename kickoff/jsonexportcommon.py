@@ -25,8 +25,15 @@ def myjsonify(values, detailledJson=False):
     else:
         values = valuesOrdered
 
-    # Don't use jsonsify because jsonify is sorting
-    resp = Response(response=json.dumps(values),
+    return _craft_response(json.dumps(values))
+
+
+def jsonify_by_sorting_keys(values):
+    return _craft_response(json.dumps(values, sort_keys=True))
+
+
+def _craft_response(json_value):
+    resp = Response(response=json_value,
                     status=200,
                     mimetype="application/json")
     return(resp)

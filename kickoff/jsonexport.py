@@ -5,7 +5,7 @@ from collections import defaultdict
 from kickoff import app
 from kickoff import config
 
-from flask import jsonify, render_template, make_response
+from flask import render_template, make_response
 
 from kickoff.model import getReleases
 
@@ -13,7 +13,7 @@ from kickoff.thunderbirddetails import primary_builds as tb_primary_builds, beta
 
 from mozilla.release.l10n import parsePlainL10nChangesets
 
-from jsonexportcommon import myjsonify
+from jsonexportcommon import myjsonify, jsonify_by_sorting_keys
 from jsonexportl10n import generateRegionsJSONFileList, generateL10NJSONFileList
 
 
@@ -219,7 +219,7 @@ def updateLocaleWithVersionsTable(product):
 @app.route(BASE_JSON_PATH + '/firefox_primary_builds.json', methods=['GET'])
 def firefox_primary_builds_json():
     buildsVersionLocales = updateLocaleWithVersionsTable("firefox")
-    return jsonify(buildsVersionLocales)
+    return jsonify_by_sorting_keys(buildsVersionLocales)
 
 
 # Mobile JSON
