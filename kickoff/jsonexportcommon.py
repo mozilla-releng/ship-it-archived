@@ -7,8 +7,7 @@ except ImportError:
     from ordereddict import OrderedDict
 
 
-def myjsonify(values, detailledJson=False):
-    # Transform the structure into a dict
+def jsonify_by_sorting_values(values, detailledJson=False):
     values = OrderedDict(values)
 
     if detailledJson:
