@@ -36,27 +36,6 @@ function assertVersionHasType(assert, version, hasType, expectedType) {
   });
 });
 
-
-QUnit.test('is*', function(assert) {
-    VERSIONS.forEach(function(versionData) {
-        var release;
-        try {
-            release = new Release(versionData.string);
-
-            Release.POSSIBLE_TYPES.forEach(function(field) {
-                var expectedType = field.substring('is'.length).toLowerCase();
-                var hasType = release[field];
-
-                assertVersionHasType(assert, versionData, hasType, expectedType)
-            });
-        } catch (err) {
-            if (!(err instanceof MissingFieldError && versionData.type === 'erroneousValue')) {
-                throw err;
-            }
-        }
-    });
-});
-
 ///////////////////////////////////////////////////
 
 QUnit.test( "isTBRelease", function( assert ) {
@@ -245,4 +224,26 @@ var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 
+});
+
+
+QUnit.module('model/Release');
+QUnit.test('is*()', function(assert) {
+    VERSIONS.forEach(function(versionData) {
+        var release;
+        try {
+            release = new Release(versionData.string);
+
+            Release.POSSIBLE_TYPES.forEach(function(field) {
+                var expectedType = field.substring('is'.length).toLowerCase();
+                var hasType = release[field];
+
+                assertVersionHasType(assert, versionData, hasType, expectedType)
+            });
+        } catch (err) {
+            if (!(err instanceof MissingFieldError && versionData.type === 'erroneousValue')) {
+                throw err;
+            }
+        }
+    });
 });
