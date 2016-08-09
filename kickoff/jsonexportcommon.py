@@ -24,6 +24,7 @@ def jsonify_by_sorting_values(values, detailledJson=False):
     else:
         values = valuesOrdered
 
+    # jsonsify from flask is not used on purpose. It sorts the JSON by the hashes of the keys
     return _craft_response(json.dumps(values))
 
 
