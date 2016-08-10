@@ -216,7 +216,7 @@ function _getElmoShortName(productName) {
     }
 }
 
-function _getElmoUrl(productName, version) {
+function getElmoUrl(productName, version) {
     var branch = guessBranchFromVersion(productName, version);
 
     var shortName = _getElmoShortName(productName);
@@ -248,7 +248,7 @@ function populateL10nChangesets(productName, version) {
     changesetsElement.prop('disabled', true);
 
     $.ajax({
-        url: _getElmoUrl(productName, version)
+        url: getElmoUrl(productName, version)
     }).done(function(changesets) {
         changesetsElement.val(changesets);
     }).fail(function() {

@@ -225,6 +225,32 @@ assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 
 });
 
+QUnit.test('getElmoUrl()', function(assert) {
+    var data = [{
+        product: 'firefox', version: '32.0',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
+    }, {
+        product: 'thunderbird', version: '32.0',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=tb32',
+    }, {
+        product: 'fennec', version: '32.0',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
+            '&multi_android-multilocale_repo=releases/mozilla-release&multi_android-multilocale_rev=default' +
+            '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
+    }, {
+        product: 'fennec', version: '32.0b1',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
+            '&multi_android-multilocale_repo=releases/mozilla-beta&multi_android-multilocale_rev=default' +
+            '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            getElmoUrl(piece.product, piece.version),
+            piece.expectedUrl
+        );
+    });
+});
 
 QUnit.module('model/Release');
 
