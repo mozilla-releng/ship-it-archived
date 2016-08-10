@@ -33,13 +33,9 @@ function Release(string) {
 }
 
 function _compareNumbers(first, second) {
-    if (first === undefined) {
-        if (second === undefined) {
-            return 0;
-        }
-
-        return -1; // Example: 31.1 is previous to 31.1.1
-    }
+    // first may be undefined when comparing 31.0 with 31.0.1, for instance
+    first = first || 0;
+    second = second || 0; // Same here with 31.0.1 and 31.0
 
     return first - second;
 }
