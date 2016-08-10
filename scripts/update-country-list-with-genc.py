@@ -1,9 +1,12 @@
-# pip install vertica-python
+import sys
+sys.path.append("../kickoff/")  # NOQA
 import json
 import ConfigParser
 import StringIO
 import urllib2
 from collections import OrderedDict
+from config import SUPPORTED_AURORA_LOCALES
+from config import SUPPORTED_NIGHTLY_LOCALES
 
 
 def readConfFile(url):
@@ -26,13 +29,29 @@ def saveJSON(url, country):
         with open("../kickoff/static/regions/%s.json" % country, "w") as text_file:
                 text_file.write(dump)
 
+
+def getListLocalesFromURL(URL):
+        response = urllib2.urlopen(URL)
+        return response.read().splitlines()
+
 enUSURL = "https://hg.mozilla.org/mozilla-central/raw-file/tip/toolkit/locales/en-US/chrome/global/regionNames.properties"
 saveJSON(enUSURL, "en-US")
 
 
 listLocaleURL = "https://raw.githubusercontent.com/mozilla-l10n/mozilla-l10n-query/master/app/sources/aurora.txt"
-
-response = urllib2.urlopen(listLocaleURL)
-for loc in response.read().splitlines():
+nbLocaleMissing = 0
+for loc in getListLocalesFromURL(listLocaleURL):
         url = "https://hg.mozilla.org/releases/l10n/mozilla-aurora/%s/raw-file/tip/toolkit/chrome/global/regionNames.properties" % loc
         saveJSON(url, loc)
+        if loc not in SUPPORTED_AURORA_LOCALES:
+                nbLocaleMissing = nbLocaleMissing + 1
+                print("Warning: '%s' NOT found in SUPPORTED_AURORA_LOCALES" % loc)
+print("%d locales not in SUPPORTED_AURORA_LOCALES (my, lo, tsz and wo are expected)" % nbLocaleMissing)
+
+nbLocaleMissing = 0
+listLocaleNightlyURL = "https://raw.githubusercontent.com/mozilla-l10n/mozilla-l10n-query/master/app/sources/central.txt"
+for loc in getListLocalesFromURL(listLocaleNightlyURL):
+        if loc not in SUPPORTED_NIGHTLY_LOCALES:
+                nbLocaleMissing = nbLocaleMissing + 1
+                print("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % loc)
+print("%d locales not in SUPPORTED_NIGHTLY_LOCALES" % nbLocaleMissing)
