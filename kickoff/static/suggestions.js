@@ -203,6 +203,38 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     return true;
 }
 
+function populateL10nChangesets(name, value) {
+    var VERSION_SUFFIX = '-version';
+
+    var productName = name.substring(0, VERSION_SUFFIX.length - 1);
+
+    var shortName;
+    // TODO: Extract the logic in a separate class
+    if (productName === 'firefox') {
+        shortName = 'fx';
+    } else if (productName === 'thunderbird') {
+        shortName = 'tb';
+    } else if (productName === 'fennec') {
+        shortName = 'fennec';
+    } else {
+        throw new Error('unsupported product');
+    }
+
+    // TODO: Replace with release.majorVersion once bug 1289627 lands
+    var majorVersion = value.match(/(\d+)\..+/)[1];
+    // TODO: Support fennect URL
+    var url = 'https://l10n.mozilla.org/shipping/l10n-changesets?av=' + shortName + majorVersion;
+
+    // TODO: Make the UI show that the request is processing
+    $.ajax({
+        url: url
+    }).done(function(changesets) {
+        $('#' + productName + '-l10nChangesets').val(changesets);
+    }).fail(function() {
+        console.error('Could not fetch l10n changesets', arguments);
+    });
+}
+
 function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement, partialInfo) {
 
     versions.sort(function(a, b) {
@@ -278,7 +310,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
                 populatePartialInfo(version);
             }
             dashboardCheck(version);
-
+            populateL10nChangesets(name, version);
         }
     }).focus(function() {
         $(this).autocomplete('search');
@@ -287,6 +319,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         populateBranch(this.name, this.value);
         populatePartial(this.name, this.value, previousBuilds, partialElement);
         dashboardCheck(this.value);
+        populateL10nChangesets(this.name, this.value);
     });
 }
 
