@@ -140,12 +140,20 @@ Release.prototype = {
         }
         var string = semvers.join('.');
 
-        if (this.isEsr) {
-            string += 'esr';
+        if (this.isNightly) {
+            string += 'a1';
+        }
+
+        if (this.isDevEdition) {
+            string += 'a2';
         }
 
         if (this.isBeta) {
             string += 'b' + this.betaNumber;
+        }
+
+        if (this.isEsr) {
+            string += 'esr';
         }
 
         if (this.buildNumber !== undefined) {

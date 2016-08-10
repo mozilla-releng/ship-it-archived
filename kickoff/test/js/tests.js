@@ -248,7 +248,14 @@ QUnit.test('is*()', function(assert) {
     });
 });
 
-QUnit.test('isStrictlyPreviousTo()', function(assert) {
+function assertIsNotStrictlyPreviousTo(assert, candidateA, candidateB) {
+    assert.ok(
+        !candidateA.isStrictlyPreviousTo(candidateB),
+        candidateA + ' IS declared as previous to ' + candidateB
+    );
+}
+
+QUnit.test('isStrictlyPreviousTo() must compare different version numbers', function(assert) {
     var data = [
         { previous: '32.0', next: '33.0' },
         { previous: '32.0', next: '32.1' },
@@ -288,11 +295,53 @@ QUnit.test('isStrictlyPreviousTo()', function(assert) {
             couple.previous.isStrictlyPreviousTo(couple.next),
             couple.previous + ' is NOT declared as previous to ' + couple.next
         );
-        assert.ok(
-            !couple.next.isStrictlyPreviousTo(couple.previous),
-            couple.next + ' IS declared as previous to ' + couple.previous
-        );
+        assertIsNotStrictlyPreviousTo(assert, couple.next, couple.previous);
+    });
+});
+
+QUnit.test('isStrictlyPreviousTo() must compare identical version numbers', function(assert) {
+    var baseCandidate = new Release('32.0');
+    var equalCandidates = ['32.0', '32.0.0', '32.0build1'];
+    equalCandidates = equalCandidates.map(function(candidate) {
+        return new Release(candidate);
     });
 
+    equalCandidates.forEach(function(candidate) {
+        assertIsNotStrictlyPreviousTo(assert, baseCandidate, candidate);
+    });
+});
 
+QUnit.test('isStrictlyPreviousTo() must throw errors when not comparable', function(assert) {
+    var data = [
+        { a: '32.0', b: '32.0a1' },
+        { a: '32.0', b: '32.0a2' },
+        { a: '32.0', b: '32.0b1' },
+        { a: '32.0', b: '32.0esr' },
+
+        { a: '32.0a1', b: '32.0a2' },
+        { a: '32.0a1', b: '32.0b1' },
+        { a: '32.0a1', b: '32.0esr' },
+
+        { a: '32.0a2', b: '32.0b1' },
+        { a: '32.0a2', b: '32.0esr' },
+
+        { a: '32.0b1', b: '32.0esr' },
+    ];
+
+    data = data.map(function(couple) {
+        return {
+            a: new Release(couple.a),
+            b: new Release(couple.b),
+        };
+    });
+
+    data.forEach(function(couple) {
+        assert.throws(
+            function() {
+                couple.a.isStrictlyPreviousTo(couple.b);
+            },
+            NotComparableError,
+            couple.a + ' can be compared to ' + couple.b
+        );
+    });
 });
