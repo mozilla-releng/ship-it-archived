@@ -1,5 +1,6 @@
 import sys
-sys.path.append("../kickoff/")  # NOQA
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "../kickoff/"))  # NOQA
 import json
 import ConfigParser
 import StringIO
