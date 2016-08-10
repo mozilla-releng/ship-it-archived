@@ -238,6 +238,12 @@ function _getElmoUrl(productName, version) {
 
 function populateL10nChangesets(productName, version) {
     var changesetsElement = $('#' + productName + '-l10nChangesets');
+
+    if (!version) {
+        changesetsElement.val('');
+        return;
+    }
+
     changesetsElement.val('Trying to download from Elmo...');
     changesetsElement.prop('disabled', true);
 
