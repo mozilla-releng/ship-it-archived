@@ -244,9 +244,11 @@ function populateL10nChangesets(name, value) {
         url: url
     }).done(function(changesets) {
         changesetsElement.val(changesets);
-    }).fail(function(error) {
+    }).fail(function() {
         changesetsElement.val('');
-        console.error('Could not fetch l10n changesets', error);
+        // Sadly, jQuery.ajax() doesn't return the reason of the error :(
+        // http://api.jquery.com/jQuery.ajax/
+        console.error('Could not fetch l10n changesets');
     }).always(function() {
         changesetsElement.prop('disabled', false);
     });
