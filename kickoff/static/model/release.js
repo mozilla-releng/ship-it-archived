@@ -51,7 +51,7 @@ Release.prototype = {
         if (matchResults === null) {
             throw new MissingFieldError(string, field);
         }
-        this[field] = parseInt(matchResults[1]);
+        this[field] = parseInt(matchResults[1], 10);
     },
 
     _assignFieldIfItExists: function(field, string) {

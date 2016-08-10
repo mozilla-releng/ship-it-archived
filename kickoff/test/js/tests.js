@@ -345,3 +345,27 @@ QUnit.test('isStrictlyPreviousTo() must throw errors when not comparable', funct
         );
     });
 });
+
+QUnit.test('toString()', function(assert) {
+    var data = {
+        '32.0': ['32.0', '032.0', '32.00'],
+        '32.0.1': ['32.0.1', '32.0.01'],
+        '32.0build1': ['32.0build1', '32.0build01'],
+        '32.0a1': ['32.0a1'],
+        '32.0a2': ['32.0a2'],
+        '32.0b1': ['32.0b1', '32.0b01'],
+        '32.0esr': ['32.0esr'],
+        '32.0.1esr': ['32.0.1esr'],
+    }
+
+    for (var expectedString in data) {
+        var candidates = data[expectedString];
+        candidates = candidates.map(function(candidate) {
+            return new Release(candidate).toString();
+        })
+
+        candidates.forEach(function(candidate) {
+            assert.equal(candidate, expectedString);
+        })
+    }
+});
