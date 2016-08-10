@@ -1,4 +1,4 @@
-var VERSIONS = [
+var VALID_VERSIONS = [
     { string: '32.0a1', type: 'nightly' },
     { string: '32.0a2', type: 'devedition' },
     { string: '32.0b2', type: 'beta' },
@@ -10,7 +10,6 @@ var VERSIONS = [
     { string: '32.2', type: 'release' },
     { string: '32.0esr', type: 'esr' },
     { string: '32.0.1esr', type: 'esr' },
-    { string: '32.b2', type: 'erroneousValue' }, // Missing subversion
 ];
 
 function assertVersionHasType(assert, version, hasType, expectedType) {
@@ -28,7 +27,7 @@ function assertVersionHasType(assert, version, hasType, expectedType) {
 
 [isBeta, isESR, isRelease].forEach(function(functionToTest) {
   QUnit.test(functionToTest.name, function(assert) {
-      VERSIONS.forEach(function(version) {
+      VALID_VERSIONS.forEach(function(version) {
           var expectedType = functionToTest.name.substring('is'.length).toLowerCase();
           var hasType = functionToTest(version.string);
           assertVersionHasType(assert, version, hasType, expectedType)
@@ -228,23 +227,40 @@ assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 
 
 QUnit.module('model/Release');
+
+QUnit.test('constructor must throw errors when release has more than one type', function(assert) {
+    var invalidReleases = [
+        { string: '32', error: MissingFieldError },
+        { string: '32.b2', error: MissingFieldError },
+        { string: '.1', error: MissingFieldError },
+
+        { string: '32.0a1a2', error: TooManyTypesError },
+        { string: '32.0a1b2', error: TooManyTypesError },
+        { string: '32.0b2esr', error: TooManyTypesError },
+        { string: '32.0esrb2', error: TooManyTypesError },
+    ];
+
+    invalidReleases.forEach(function(invalidRelease) {
+        assert.throws(
+            function() {
+                new Release(invalidRelease.string);
+            },
+            invalidRelease.error,
+            invalidRelease.string + ' did not throw ' + invalidRelease.error.name
+        );
+    });
+});
+
 QUnit.test('is*()', function(assert) {
-    VERSIONS.forEach(function(versionData) {
-        var release;
-        try {
-            release = new Release(versionData.string);
+    VALID_VERSIONS.forEach(function(versionData) {
+        var release = new Release(versionData.string);
 
-            Release.POSSIBLE_TYPES.forEach(function(field) {
-                var expectedType = field.substring('is'.length).toLowerCase();
-                var hasType = release[field];
+        Release.POSSIBLE_TYPES.forEach(function(field) {
+            var expectedType = field.substring('is'.length).toLowerCase();
+            var hasType = release[field];
 
-                assertVersionHasType(assert, versionData, hasType, expectedType)
-            });
-        } catch (err) {
-            if (!(err instanceof MissingFieldError && versionData.type === 'erroneousValue')) {
-                throw err;
-            }
-        }
+            assertVersionHasType(assert, versionData, hasType, expectedType)
+        });
     });
 });
 

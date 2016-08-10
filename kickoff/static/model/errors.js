@@ -16,3 +16,12 @@ function NotComparableError(first, second, field) {
 
 NotComparableError.prototype = Object.create(Error.prototype);
 NotComparableError.prototype.constructor = NotComparableError;
+
+function TooManyTypesError(firstType, secondType) {
+    this.name = 'TooManyTypesError';
+    this.message = 'Release cannot match "' + firstType + '" and "' + secondType + '"';
+    this.stack = (new Error()).stack;
+}
+
+TooManyTypesError.prototype = Object.create(Error.prototype);
+TooManyTypesError.prototype.constructor = TooManyTypesError;

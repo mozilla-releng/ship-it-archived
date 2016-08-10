@@ -1,15 +1,15 @@
 var REGEXES = {
     beta: /^\d+\.[\d.]+b\d+(build\d+)?$/, // Examples: 32.0b2, 38.0.5b2, 32.0b10 or 32.0b10build1
-    release: /^(\d+\.)+\d+$/,        // Examples: 31.0 or 32.0.1
-    nightly: /^.*\da1.*/,
-    devEdition: /^.*\da2.*/,
-    esr: /^.*\desr.*$/,    // Examples: 31.0esr or 31.1.0esr
+    release: /^(\d+\.)+\d+$/,        // Examples: 32.0 or 32.0.1
+    nightly: /^.*\da1.*/,   // Example: 32.0a1
+    devEdition: /^.*\da2.*/,    // Example: 32.0a2
+    esr: /^.*\desr.*$/,    // Examples: 32.0esr or 32.2.0esr
     thunderbird: /^(\d+)\.[\d.]*\d$/,
     majorNumber: /^(\d+)\..+/,
     minorNumber: /^\d+\.(\d+).*/,
     patchNumber: /^\d+\.\d+\.(\d+).*/,
-    betaNumber: /^.*\db(\d+).*/,
-    buildNumber: /^.*build(\d+)$/,
+    betaNumber: /^.+b(\d+).*/,
+    buildNumber: /^.+build(\d+)$/,
 };
 
 function doesRegexMatch(string, regex) {
@@ -65,20 +65,19 @@ Release.prototype = {
     },
 
     _performSanityCheck: function() {
+        var self = this;
         var firstFieldToMatch = '';
 
         Release.POSSIBLE_TYPES.reduce(function(previousValue, currentField) {
-            var currentValue = this[currentField];
+            var currentValue = self[currentField];
             if (currentValue === true) {
                 if (previousValue === true) {
-                    throw new Error('Release cannot match "' + firstFieldToMatch +
-                        '" and "' + currentField + '"'
-                    );
+                    throw new TooManyTypesError(firstFieldToMatch, currentField);
                 }
 
                 firstFieldToMatch = currentField;
             }
-            return currentValue;
+            return previousValue || currentValue;
         }, false);
     },
 
