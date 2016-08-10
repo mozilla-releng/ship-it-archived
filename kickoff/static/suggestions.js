@@ -203,45 +203,49 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     return true;
 }
 
-function populateL10nChangesets(name, value) {
-    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
-    var VERSION_SUFFIX = '-version';
-
-    var productName = name.slice(0, -VERSION_SUFFIX.length);
-
-    var shortName;
-    // TODO: Extract the logic in a separate class
-    if (productName === 'firefox') {
-        shortName = 'fx';
-    } else if (productName === 'thunderbird') {
-        shortName = 'tb';
-    } else if (productName === 'fennec') {
-        shortName = 'fennec';
-    } else {
-        throw new Error('unsupported product ' + productName);
+function _getElmoShortName(productName) {
+    switch (productName) {
+        case 'firefox':
+            return 'fx';
+        case 'thunderbird':
+            return 'tb';
+        case 'fennec':
+            return 'fennec';
+        default:
+            throw new Error('unsupported product ' + productName);
     }
+}
 
+function _getElmoUrl(productName, version) {
+    var branch = guessBranchFromVersion(productName, version);
+
+    var shortName = _getElmoShortName(productName);
     // TODO: Replace with release.majorVersion once bug 1289627 lands
-    var majorVersion = value.match(/(\d+)\..+/)[1];
+    var majorVersion = version.match(/(\d+)\..+/)[1];
 
+    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
     var url = BASE_ELMO_URL;
     url += productName === 'fennec' ?
         '/json-changesets?av=' + shortName + majorVersion +
         '&platforms=android' +
-        // TODO support mozilla-release
-        '&multi_android-multilocale_repo=releases/mozilla-beta' +
+        '&multi_android-multilocale_repo=' + branch +
         '&multi_android-multilocale_rev=default' +
         '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
         :
         '/l10n-changesets?av=' + shortName + majorVersion;
+    return url;
+}
 
+function populateL10nChangesets(fieldName, version) {
+    var VERSION_SUFFIX = '-version';
+    var productName = fieldName.slice(0, -VERSION_SUFFIX.length);
 
     var changesetsElement = $('#' + productName + '-l10nChangesets');
     changesetsElement.val('Trying to download from Elmo...');
     changesetsElement.prop('disabled', true);
 
     $.ajax({
-        url: url
+        url: _getElmoUrl(productName, version)
     }).done(function(changesets) {
         changesetsElement.val(changesets);
     }).fail(function() {
