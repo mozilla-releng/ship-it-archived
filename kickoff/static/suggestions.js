@@ -1,14 +1,3 @@
-var REGEXES = {
-    beta: /^\d+\.[\d.]+b\d+$/,      // Examples: 32.0b2, 38.0.5b2 or 32.0b10
-    release: /^(\d+\.)+\d$/,        // Examples: 31.0 or 32.0.1
-    esr: /^(\d+)\.[\d.]*\desr$/,    // Examples: 31.0esr or 31.1.0esr
-    thunderbird: /^(\d+)\.[\d.]*\d$/,
-};
-
-function doesRegexMatch(string, regex) {
-    return string.match(regex) !== null;
-}
-
 function isBeta(version) {
     return doesRegexMatch(version, REGEXES.beta);
 }
@@ -56,15 +45,11 @@ function guessBranchFromVersion(name, version) {
         return base + 'beta';
     }
 
-    if (isESR(version)) {
-        var esrVersion = version.match(REGEXES.esr)[1];
-        return base + 'esr' + esrVersion;
-    }
-
-    // Manage Thunderbird case (Stable release but using an ESR branch)
-    if (isTB(name) && isTBRelease(version)) {
-        var tbVersion = version.match(REGEXES.thunderbird)[1];
-        return base + 'esr' + tbVersion;
+    if (isESR(version) ||
+        // Manage Thunderbird case (Stable release but using an ESR branch)
+        isTB(name) && isTBRelease(version)) {
+        var majorNumber = version.match(REGEXES.majorNumber)[1];
+        return base + 'esr' + majorNumber;
     }
 
     if (isRelease(version)) {
@@ -73,31 +58,29 @@ function guessBranchFromVersion(name, version) {
     return '';
 }
 
-function addLastVersionAsPartial(version, previousReleases, nb) {
-    partialList = [];
-    nbAdded = 0;
-    // We always add the last released version to the list
-    for (k = 0; k < previousReleases.length; k++) {
+function addLastVersionAsPartial(versionString, allPreviousReleasesStrings, nbExpected) {
+    var version = new Release(versionString);
+    var allPreviousReleases = allPreviousReleasesStrings.map(function(string) {
+        return new Release(string);
+    });
 
-        previousRelease = stripBuildNumber(previousReleases[k]);
-
-        // In the 38 cycle, we built the 38 beta version from the
-        // mozilla-release branch. We don't want beta partials for a release
-        // This is confusing ship-it (and us)
-        if (isRelease(version) && isBeta(previousRelease)) {
-            continue;
-        }
-
-        if (previousRelease < version) {
-            partialList.push(previousReleases[k]);
-            nbAdded++;
-            if (nb == nbAdded) {
-                return partialList;
+    var validPreviousReleases = allPreviousReleases.filter(function(release) {
+        try {
+            return release.isStrictlyPreviousTo(version);
+        } catch (err) {
+            if (err instanceof NotComparableError) {
+                return false;
             }
+            throw err;
         }
-    }
-    // In case, we don't have enough partial to feed the partial
-    return partialList;
+    });
+
+    validPreviousReleases.splice(nbExpected);
+    var validPreviousReleasesStrings = validPreviousReleases.map(function(release) {
+        return release.toString();
+    });
+
+    return validPreviousReleasesStrings;
 }
 
 function getVersionWithBuildNumber(version, previousReleases) {

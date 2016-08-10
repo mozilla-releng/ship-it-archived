@@ -1,41 +1,39 @@
-var VERSIONS = [
-    { number: '32.0b2', type: 'beta' },
-    { number: '32.0b10', type: 'beta' },
-    { number: '32.0.3b2', type: 'beta' },
-    { number: '32.02', type: 'erroneousValue' }, // Missing b for beta
-    { number: '32.b2', type: 'erroneousValue' }, // Missing subversion
-    { number: '32.0a2', type: 'devEdition' },
-    { number: '32.0', type: 'release' },
-    { number: '32.0.1', type: 'release' },
-    { number: '32.2', type: 'release' },
-    { number: '32.0esr', type: 'esr' },
-    { number: '32.0.1esr', type: 'esr' }
+var VALID_VERSIONS = [
+    { string: '32.0a1', type: 'nightly' },
+    { string: '32.0a2', type: 'devedition' },
+    { string: '32.0b2', type: 'beta' },
+    { string: '32.0b10', type: 'beta' },
+    { string: '32.0.3b2', type: 'beta' },
+    { string: '32.02', type: 'release' }, // Is parsed as 32.2
+    { string: '32.0', type: 'release' },
+    { string: '32.0.1', type: 'release' },
+    { string: '32.2', type: 'release' },
+    { string: '32.0esr', type: 'esr' },
+    { string: '32.0.1esr', type: 'esr' },
 ];
 
-function assertAgainstAllVersions(assert, functionToTest) {
-    VERSIONS.forEach(function(version) {
-        var type = functionToTest.name.substring('is'.length).toLowerCase();
-        var expectedCondition = version.type === type;
+function assertVersionHasType(assert, version, hasType, expectedType) {
+    var expectedCondition = version.type === expectedType;
 
-        var message = version.number + ' is ';
-        if (!expectedCondition) {
-            message += 'NOT ';
-        }
-        message += 'detected as ' + type;
+    var message = version.string + ' is ';
+    if (expectedCondition) {
+        message += 'NOT ';
+    }
+    message += 'detected as ' + expectedType;
 
-        assert.ok(
-          functionToTest(version.number) === expectedCondition,
-          message
-        );
-    });
+    assert.equal(hasType, expectedCondition, message);
 }
+
 
 [isBeta, isESR, isRelease].forEach(function(functionToTest) {
   QUnit.test(functionToTest.name, function(assert) {
-      assertAgainstAllVersions(assert, functionToTest)
+      VALID_VERSIONS.forEach(function(version) {
+          var expectedType = functionToTest.name.substring('is'.length).toLowerCase();
+          var hasType = functionToTest(version.string);
+          assertVersionHasType(assert, version, hasType, expectedType)
+      });
   });
 });
-
 
 ///////////////////////////////////////////////////
 
@@ -90,15 +88,22 @@ assert.strictEqual( guessBranchFromVersion("firefox", "31.0.1esr"), "releases/mo
 QUnit.test( "addLastVersionAsPartial", function( assert ) {
     name="firefox";
     base = getBaseRepository(name);
-    previousBuilds = {"releases/mozilla-beta": ["31.0b2build2", "30.0b9build2", "29.0b10build2", "25.0b5build2", ],
-                      "releases/mozilla-release": ["33.0.1build2", "32.0.1build2",  "28.0build2", "27.0build2"],
-                      "releases/mozilla-esr31": ["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1" ]};
+    previousBuilds = {
+        "releases/mozilla-beta": [
+            "31.0b2build2", "30.0b9build2", "29.0b10build2", "25.0b5build2",
+            // Test data for human sort. See bug 1289627.
+            "48.0b1build2","47.0b9build1","47.0b8build1", "48.0b9build1", "48.0b7build1", "48.0b6build1"
+        ],
+        "releases/mozilla-release": ["33.0.1build2", "32.0.1build2",  "28.0build2", "27.0build2"],
+        "releases/mozilla-esr31": ["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1" ]
+    };
 
     previousReleases = previousBuilds[base + 'release'].sort().reverse();
     assert.deepEqual( addLastVersionAsPartial("35.0", previousReleases, 1), ["33.0.1build2"]);
 
     previousReleases = previousBuilds[base + 'beta'].sort().reverse();
     assert.deepEqual( addLastVersionAsPartial("35.0b2", previousReleases, 1), ["31.0b2build2"]);
+    assert.deepEqual( addLastVersionAsPartial("48.0b10", previousReleases, 3), ["48.0b9build1", "48.0b7build1", "48.0b6build1"]);
 
     previousReleases = previousBuilds[base + 'esr31'].sort().reverse();
     assert.deepEqual( addLastVersionAsPartial("38.0esr", previousReleases, 1), ["31.1.0esrbuild1"]);
@@ -218,4 +223,165 @@ var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 
+});
+
+
+QUnit.module('model/Release');
+
+QUnit.test('constructor must throw errors when release has more than one type', function(assert) {
+    var invalidReleases = [
+        { string: '32', error: MissingFieldError },
+        { string: '32.b2', error: MissingFieldError },
+        { string: '.1', error: MissingFieldError },
+
+        { string: '32.0a1a2', error: TooManyTypesError },
+        { string: '32.0a1b2', error: TooManyTypesError },
+        { string: '32.0b2esr', error: TooManyTypesError },
+        { string: '32.0esrb2', error: TooManyTypesError },
+    ];
+
+    invalidReleases.forEach(function(invalidRelease) {
+        assert.throws(
+            function() {
+                new Release(invalidRelease.string);
+            },
+            invalidRelease.error,
+            invalidRelease.string + ' did not throw ' + invalidRelease.error.name
+        );
+    });
+});
+
+QUnit.test('is*()', function(assert) {
+    VALID_VERSIONS.forEach(function(versionData) {
+        var release = new Release(versionData.string);
+
+        Release.POSSIBLE_TYPES.forEach(function(field) {
+            var expectedType = field.substring('is'.length).toLowerCase();
+            var hasType = release[field];
+
+            assertVersionHasType(assert, versionData, hasType, expectedType)
+        });
+    });
+});
+
+function assertIsNotStrictlyPreviousTo(assert, candidateA, candidateB) {
+    assert.ok(
+        !candidateA.isStrictlyPreviousTo(candidateB),
+        candidateA + ' IS declared as previous to ' + candidateB
+    );
+}
+
+QUnit.test('isStrictlyPreviousTo() must compare different version numbers', function(assert) {
+    var data = [
+        { previous: '32.0', next: '33.0' },
+        { previous: '32.0', next: '32.1' },
+        { previous: '32.0', next: '32.0.1' },
+        { previous: '32.0build1', next: '32.0build2' },
+
+        { previous: '32.1', next: '33.0' },
+        { previous: '32.1', next: '32.2' },
+        { previous: '32.1', next: '32.1.1' },
+        { previous: '32.1build1', next: '32.1build2' },
+
+        { previous: '32.0.1', next: '33.0' },
+        { previous: '32.0.1', next: '32.1' },
+        { previous: '32.0.1', next: '32.0.2' },
+        { previous: '32.0.1build1', next: '32.0.1build2' },
+
+        { previous: '32.0b1', next: '33.0b1' },
+        { previous: '32.0b1', next: '32.0b2' },
+        { previous: '32.0b1build1', next: '32.0b1build2' },
+
+        { previous: '2.0', next: '10.0' },
+        { previous: '10.2', next: '10.10' },
+        { previous: '10.0.2', next: '10.0.10' },
+        { previous: '10.0build2', next: '10.0build10' },
+        { previous: '10.0b2', next: '10.0b10' },
+    ];
+
+    data = data.map(function(couple) {
+        return {
+            previous: new Release(couple.previous),
+            next: new Release(couple.next),
+        };
+    });
+
+    data.forEach(function(couple) {
+        assert.ok(
+            couple.previous.isStrictlyPreviousTo(couple.next),
+            couple.previous + ' is NOT declared as previous to ' + couple.next
+        );
+        assertIsNotStrictlyPreviousTo(assert, couple.next, couple.previous);
+    });
+});
+
+QUnit.test('isStrictlyPreviousTo() must compare identical version numbers', function(assert) {
+    var baseCandidate = new Release('32.0');
+    var equalCandidates = ['32.0', '32.0.0', '32.0build1'];
+    equalCandidates = equalCandidates.map(function(candidate) {
+        return new Release(candidate);
+    });
+
+    equalCandidates.forEach(function(candidate) {
+        assertIsNotStrictlyPreviousTo(assert, baseCandidate, candidate);
+    });
+});
+
+QUnit.test('isStrictlyPreviousTo() must throw errors when not comparable', function(assert) {
+    var data = [
+        { a: '32.0', b: '32.0a1' },
+        { a: '32.0', b: '32.0a2' },
+        { a: '32.0', b: '32.0b1' },
+        { a: '32.0', b: '32.0esr' },
+
+        { a: '32.0a1', b: '32.0a2' },
+        { a: '32.0a1', b: '32.0b1' },
+        { a: '32.0a1', b: '32.0esr' },
+
+        { a: '32.0a2', b: '32.0b1' },
+        { a: '32.0a2', b: '32.0esr' },
+
+        { a: '32.0b1', b: '32.0esr' },
+    ];
+
+    data = data.map(function(couple) {
+        return {
+            a: new Release(couple.a),
+            b: new Release(couple.b),
+        };
+    });
+
+    data.forEach(function(couple) {
+        assert.throws(
+            function() {
+                couple.a.isStrictlyPreviousTo(couple.b);
+            },
+            NotComparableError,
+            couple.a + ' can be compared to ' + couple.b
+        );
+    });
+});
+
+QUnit.test('toString()', function(assert) {
+    var data = {
+        '32.0': ['32.0', '032.0', '32.00'],
+        '32.0.1': ['32.0.1', '32.0.01'],
+        '32.0build1': ['32.0build1', '32.0build01'],
+        '32.0a1': ['32.0a1'],
+        '32.0a2': ['32.0a2'],
+        '32.0b1': ['32.0b1', '32.0b01'],
+        '32.0esr': ['32.0esr'],
+        '32.0.1esr': ['32.0.1esr'],
+    }
+
+    for (var expectedString in data) {
+        var candidates = data[expectedString];
+        candidates = candidates.map(function(candidate) {
+            return new Release(candidate).toString();
+        })
+
+        candidates.forEach(function(candidate) {
+            assert.equal(candidate, expectedString);
+        })
+    }
 });
