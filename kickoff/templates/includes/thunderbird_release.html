@@ -73,7 +73,7 @@ $(document).ready(function() {
     {{ thunderbirdForm.l10nChangesets.label()|safe }}
   {{ thunderbirdForm.l10nChangesets(placeholder='ru abcdef123456')|safe }}
     <div class="help">The l10n changesets for this release (first column: locale, second: revision). Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a></div>
-    <!-- TODO Temporary hack. Must be fixed before landing -->
+    <!-- TODO Temporary hack. Alignment should be fixed once bug 1290485 lands. -->
     <br/>
 </div>
 <div class="submit_release">
