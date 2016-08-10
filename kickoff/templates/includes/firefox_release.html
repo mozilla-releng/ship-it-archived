@@ -19,7 +19,6 @@ $(document).ready(function() {
         $('#{{ firefoxForm.branch.id }}'),
         $('#{{ firefoxForm.partials.id }}'),
         {{ firefoxForm.partials.suggestions|safe }},
-        $('#{{ firefoxForm.dashboardCheck.id }}'),
         $('#partialInfo')
     );
     setupBranchSuggestions(
@@ -72,11 +71,6 @@ $(document).ready(function() {
 </div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
-<div class="submit_release">
-    {{ firefoxForm.dashboardCheck.label()|safe }}
-    {{ firefoxForm.dashboardCheck()|safe }}
-    <div class="help">Whether or not to ensure that the changesets given match the ones on the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. This should be turned on for all betas and turned off for all other releases.</div>
-</div>
 <div class="submit_release">
     {{ firefoxForm.mozillaRelbranch.label()|safe }}
     {% if firefoxForm.mozillaRevision.data %}

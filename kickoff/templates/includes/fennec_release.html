@@ -7,8 +7,7 @@ $(document).ready(function() {
         {{ fennecForm.buildNumber.suggestions|safe }},
         $('#{{ fennecForm.branch.id }}'),
         [], // Partial. Meaningless for fennec
-        [], // Ditto
-        $('#{{ fennecForm.dashboardCheck.id }}')
+        [] // Ditto
     );
     setupBranchSuggestions(
         $('#{{ fennecForm.branch.id }}'),
@@ -52,11 +51,6 @@ $(document).ready(function() {
 </div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
-  <div class="submit_release">
-    {{ fennecForm.dashboardCheck.label()|safe }}
-    {{ fennecForm.dashboardCheck()|safe }}
-    <div class="help">Whether or not to ensure that the changesets given match the ones on the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. This should be turned on for all betas and turned off for all other releases.</div>
-</div>
 <div class="submit_release">
     {{ fennecForm.mozillaRelbranch.label()|safe }}
     {% if fennecForm.mozillaRevision.data %}

@@ -220,7 +220,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     return true;
 }
 
-function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement, partialInfo) {
+function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, partialInfo) {
 
     versions.sort(function(a, b) {
         return a > b;
@@ -244,16 +244,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     function populateBranch(name, version) {
         branch = guessBranchFromVersion(name, version);
         branchElement.val(branch);
-    }
-
-    function dashboardCheck(version) {
-        // Building a beta, tick the checkbox
-        // Due to limitation, we cannot do that for the release
-        if (isBeta(version)) {
-            dashboardElement.prop('checked', true);
-        } else {
-            dashboardElement.prop('checked', false);
-        }
     }
 
     function populatePartialInfo(version) {
@@ -294,7 +284,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
                 populatePartial(name, version, previousBuilds, partialElement);
                 populatePartialInfo(version);
             }
-            dashboardCheck(version);
 
         }
     }).focus(function() {
@@ -303,7 +292,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         populateBuildNumber(this.value);
         populateBranch(this.name, this.value);
         populatePartial(this.name, this.value, previousBuilds, partialElement);
-        dashboardCheck(this.value);
     });
 }
 
