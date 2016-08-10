@@ -34,7 +34,7 @@ def getListLocalesFromURL(URL):
         response = urllib2.urlopen(URL)
         return response.read().splitlines()
 
-enUSURL = "https://hg.mozilla.org/mozilla-central/raw-file/tip/toolkit/locales/en-US/chrome/global/regionNames.properties"
+enUSURL = "https://hg.mozilla.org/releases/mozilla-aurora/raw-file/tip/toolkit/locales/en-US/chrome/global/regionNames.properties"
 saveJSON(enUSURL, "en-US")
 
 
