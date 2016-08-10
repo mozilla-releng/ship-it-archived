@@ -46,7 +46,7 @@ for loc in getListLocalesFromURL(listLocaleURL):
         if loc not in SUPPORTED_AURORA_LOCALES:
                 nbLocaleMissing = nbLocaleMissing + 1
                 print("Warning: '%s' NOT found in SUPPORTED_AURORA_LOCALES" % loc)
-print("%d locales not in SUPPORTED_AURORA_LOCALES (my, lo, tsz and wo are expected)" % nbLocaleMissing)
+print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES (my, lo, tsz and wo are expected)" % nbLocaleMissing)
 
 nbLocaleMissing = 0
 listLocaleNightlyURL = "https://raw.githubusercontent.com/mozilla-l10n/mozilla-l10n-query/master/app/sources/central.txt"
@@ -54,4 +54,7 @@ for loc in getListLocalesFromURL(listLocaleNightlyURL):
         if loc not in SUPPORTED_NIGHTLY_LOCALES:
                 nbLocaleMissing = nbLocaleMissing + 1
                 print("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % loc)
-print("%d locales not in SUPPORTED_NIGHTLY_LOCALES" % nbLocaleMissing)
+print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES" % nbLocaleMissing)
+
+print("Note that ship-it IS the source of truth for supported locales")
+print("Please report a bug to have a locale added/remove: https://bugzilla.mozilla.org/enter_bug.cgi?product=www.mozilla.org&component=Product%20Details")
