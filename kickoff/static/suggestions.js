@@ -226,7 +226,7 @@ function populateL10nChangesets(name, value) {
 
     var url = BASE_ELMO_URL;
     url += productName === 'fennec' ?
-        '/json-changesets?av=fennec' + majorVersion +
+        '/json-changesets?av=' + shortName + majorVersion +
         '&platforms=android' +
         // TODO support mozilla-release
         '&multi_android-multilocale_repo=releases/mozilla-beta' +
