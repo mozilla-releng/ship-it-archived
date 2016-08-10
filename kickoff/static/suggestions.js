@@ -235,13 +235,20 @@ function populateL10nChangesets(name, value) {
         :
         '/l10n-changesets?av=' + shortName + majorVersion;
 
-    // TODO: Make the UI show that the request is processing
+
+    var changesetsElement = $('#' + productName + '-l10nChangesets');
+    changesetsElement.val('Trying to download from Elmo...');
+    changesetsElement.prop('disabled', true);
+
     $.ajax({
         url: url
     }).done(function(changesets) {
-        $('#' + productName + '-l10nChangesets').val(changesets);
-    }).fail(function() {
-        console.error('Could not fetch l10n changesets', arguments);
+        changesetsElement.val(changesets);
+    }).fail(function(error) {
+        changesetsElement.val('');
+        console.error('Could not fetch l10n changesets', error);
+    }).always(function() {
+        changesetsElement.prop('disabled', false);
     });
 }
 
