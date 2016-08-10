@@ -204,9 +204,10 @@ function populatePartial(name, version, previousBuilds, partialElement) {
 }
 
 function populateL10nChangesets(name, value) {
+    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
     var VERSION_SUFFIX = '-version';
 
-    var productName = name.substring(0, VERSION_SUFFIX.length - 1);
+    var productName = name.slice(0, -VERSION_SUFFIX.length);
 
     var shortName;
     // TODO: Extract the logic in a separate class
@@ -217,13 +218,22 @@ function populateL10nChangesets(name, value) {
     } else if (productName === 'fennec') {
         shortName = 'fennec';
     } else {
-        throw new Error('unsupported product');
+        throw new Error('unsupported product ' + productName);
     }
 
     // TODO: Replace with release.majorVersion once bug 1289627 lands
     var majorVersion = value.match(/(\d+)\..+/)[1];
-    // TODO: Support fennect URL
-    var url = 'https://l10n.mozilla.org/shipping/l10n-changesets?av=' + shortName + majorVersion;
+
+    var url = BASE_ELMO_URL;
+    url += productName === 'fennec' ?
+        '/json-changesets?av=fennec' + majorVersion +
+        '&platforms=android' +
+        // TODO support mozilla-release
+        '&multi_android-multilocale_repo=releases/mozilla-beta' +
+        '&multi_android-multilocale_rev=default' +
+        '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
+        :
+        '/l10n-changesets?av=' + shortName + majorVersion;
 
     // TODO: Make the UI show that the request is processing
     $.ajax({
