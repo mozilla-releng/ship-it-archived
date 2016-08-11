@@ -220,8 +220,7 @@ function getElmoUrl(productName, version) {
     var branch = guessBranchFromVersion(productName, version);
 
     var shortName = _getElmoShortName(productName);
-    // TODO: Replace with release.majorVersion once bug 1289627 lands
-    var majorVersion = version.match(/(\d+)\..+/)[1];
+    var majorVersion = version.match(REGEXES.majorNumber)[1];
 
     var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
     var url = BASE_ELMO_URL;
