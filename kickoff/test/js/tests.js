@@ -230,8 +230,8 @@ QUnit.test('getElmoUrl()', function(assert) {
         product: 'firefox', version: '32.0',
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
     }, {
-        product: 'thunderbird', version: '32.0',
-        expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=tb32',
+        product: 'thunderbird', version: '33.0',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=tb33',
     }, {
         product: 'fennec', version: '32.0',
         expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
@@ -247,6 +247,27 @@ QUnit.test('getElmoUrl()', function(assert) {
     data.forEach(function(piece) {
         assert.equal(
             getElmoUrl(piece.product, piece.version),
+            piece.expectedUrl
+        );
+    });
+});
+
+QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
+    var data = [{
+        product: 'firefox', version: '32.0', previousBuildNumber: 1,
+        // We get file:/// because tests run under grunt-qunit
+        expectedUrl: 'file:///releases/firefox-32.0-build1/l10n',
+    }, {
+        product: 'thunderbird', version: '33.0', previousBuildNumber: 2,
+        expectedUrl: 'file:///releases/thunderbird-33.0-build2/l10n',
+    }, {
+        product: 'fennec', version: '32.0b1', previousBuildNumber: 3,
+        expectedUrl: 'file:///releases/fennec-32.0b1-build3/l10n'
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            getPreviousBuildL10nUrl(piece.product, piece.version, piece.previousBuildNumber),
             piece.expectedUrl
         );
     });
