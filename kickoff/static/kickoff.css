@@ -36,6 +36,10 @@ body {
     margin-left: 45.5em;
 }
 
+.warning {
+    color: orange;
+}
+
 .errorText {
     color: red;
     font-weight: bold;

@@ -235,7 +235,35 @@ function getElmoUrl(productName, version) {
     return url;
 }
 
-function populateL10nChangesets(productName, version) {
+function getPreviousBuildL10nUrl(productName, version, previousBuildNumber) {
+    var baseUrl = window.location.origin;
+    var releaseFullName = [productName, version, 'build' + previousBuildNumber].join('-');
+    return baseUrl + '/releases/' + releaseFullName + '/l10n';
+}
+
+function getUrlAndMessages(productName, version, buildNumber) {
+    var opts = {
+        url: '',
+        downloadMessage: 'Trying to download from ',
+        previousBuildWarning: '',
+    };
+
+    if (buildNumber > 1) {
+        var previousBuildNumber = buildNumber - 1;
+        var buildString = 'build' + previousBuildNumber;
+        opts.url = getPreviousBuildL10nUrl(productName, version, previousBuildNumber);
+        opts.downloadMessage += buildString;
+        opts.previousBuildWarning = 'Changesets gotten from ' + buildString +
+            '. If you want to not use them, please edit this field.';
+    } else {
+        opts.url = getElmoUrl(productName, version);
+        opts.downloadMessage += 'Elmo';
+    }
+
+    return opts;
+}
+
+function populateL10nChangesets(productName, version, buildNumber) {
     var changesetsElement = $('#' + productName + '-l10nChangesets');
 
     if (!version) {
@@ -243,11 +271,15 @@ function populateL10nChangesets(productName, version) {
         return;
     }
 
-    changesetsElement.val('Trying to download from Elmo...');
+    var warningElement = changesetsElement.next().find('.warning');
+    var opts = getUrlAndMessages(productName, version, buildNumber);
+
+    changesetsElement.val(opts.downloadMessage);
     changesetsElement.prop('disabled', true);
+    warningElement.text('');
 
     $.ajax({
-        url: getElmoUrl(productName, version)
+        url: opts.url,
     }).done(function(changesets) {
         changesetsElement.val(changesets);
     }).fail(function() {
@@ -257,6 +289,7 @@ function populateL10nChangesets(productName, version) {
         console.error('Could not fetch l10n changesets');
     }).always(function() {
         changesetsElement.prop('disabled', false);
+        warningElement.text(opts.previousBuildWarning);
     });
 }
 
@@ -331,6 +364,8 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             var productName = fieldName.slice(0, -VERSION_SUFFIX.length);
 
             populateBuildNumber(version);
+            var buildNumber = buildNumberElement.val();
+
             populateBranch(productName, version);
             if (!isFennec(productName)) {
                 // There is no notion of partial on fennec
@@ -338,7 +373,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
                 populatePartialInfo(version);
             }
             dashboardCheck(version);
-            populateL10nChangesets(productName, version);
+            populateL10nChangesets(productName, version, buildNumber);
         }
     }).focus(function() {
         $(this).autocomplete('search');
@@ -347,10 +382,12 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         var version = this.value;
 
         populateBuildNumber(version);
+        var buildNumber = buildNumberElement.val();
+
         populateBranch(productName, version);
         populatePartial(productName, version, previousBuilds, partialElement);
         dashboardCheck(version);
-        populateL10nChangesets(productName, version);
+        populateL10nChangesets(productName, version, buildNumber);
     });
 }
 
