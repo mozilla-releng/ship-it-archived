@@ -113,11 +113,11 @@ function stripBuildNumber(release) {
     return release.replace(/build.*/g, '');
 }
 
-function populatePartial(name, version, previousBuilds, partialElement) {
+function populatePartial(productName, version, previousBuilds, partialElement) {
 
     partialElement.val('');
 
-    base = getBaseRepository(name);
+    base = getBaseRepository(productName);
 
     nbPartial = 0;
     previousReleases =  [];
@@ -139,9 +139,9 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     var isCurrentVersionRelease = isRelease(version);
 
     if (isCurrentVersionRelease || isCurrentVersionESR) {
-        if (isTB(name) || isCurrentVersionESR) {
+        if (isTB(productName) || isCurrentVersionESR) {
             // Thunderbird and Fx ESR are using mozilla-esr as branch
-            base = guessBranchFromVersion(name, version);
+            base = guessBranchFromVersion(productName, version);
             if (typeof previousBuilds[base] !== 'undefined') {
                 // If the branch is not supported, do not try to access it
                 previousReleases = previousBuilds[base].sort().reverse();
@@ -173,7 +173,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
 
     // When we have the ADI for Firefox Beta or Thunderbird, we can remove
     // this special case
-    if (isTB(name) || isFxBeta) {
+    if (isTB(productName) || isFxBeta) {
         // No ADI, select the three first
         partial = addLastVersionAsPartial(version, previousReleases, 3);
         partialAdded = 3;
@@ -203,6 +203,63 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     return true;
 }
 
+function _getElmoShortName(productName) {
+    switch (productName) {
+        case 'firefox':
+            return 'fx';
+        case 'thunderbird':
+            return 'tb';
+        case 'fennec':
+            return 'fennec';
+        default:
+            throw new Error('unsupported product ' + productName);
+    }
+}
+
+function getElmoUrl(productName, version) {
+    var branch = guessBranchFromVersion(productName, version);
+
+    var shortName = _getElmoShortName(productName);
+    var majorVersion = version.match(REGEXES.majorNumber)[1];
+
+    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
+    var url = BASE_ELMO_URL;
+    url += isFennec(productName) ?
+        '/json-changesets?av=' + shortName + majorVersion +
+        '&platforms=android' +
+        '&multi_android-multilocale_repo=' + branch +
+        '&multi_android-multilocale_rev=default' +
+        '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
+        :
+        '/l10n-changesets?av=' + shortName + majorVersion;
+    return url;
+}
+
+function populateL10nChangesets(productName, version) {
+    var changesetsElement = $('#' + productName + '-l10nChangesets');
+
+    if (!version) {
+        changesetsElement.val('');
+        return;
+    }
+
+    changesetsElement.val('Trying to download from Elmo...');
+    changesetsElement.prop('disabled', true);
+
+    $.ajax({
+        url: getElmoUrl(productName, version)
+    }).done(function(changesets) {
+        changesetsElement.val(changesets);
+    }).fail(function() {
+        changesetsElement.val('');
+        // Sadly, jQuery.ajax() doesn't return the reason of the error :(
+        // http://api.jquery.com/jQuery.ajax/
+        console.error('Could not fetch l10n changesets');
+    }).always(function() {
+        changesetsElement.prop('disabled', false);
+    });
+}
+
 function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement, partialInfo) {
 
     versions.sort(function(a, b) {
@@ -224,8 +281,8 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     }
 
     // From the version, try to guess the branch
-    function populateBranch(name, version) {
-        branch = guessBranchFromVersion(name, version);
+    function populateBranch(productName, version) {
+        var branch = guessBranchFromVersion(productName, version);
         branchElement.val(branch);
     }
 
@@ -255,6 +312,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         partialInfo.html(partialString);
     }
 
+    var VERSION_SUFFIX = '-version';
     versionElement.autocomplete({
         source: versions,
         minLength: 0,
@@ -268,25 +326,31 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             collision: 'flipfit',
         },
         select: function(event, ui) {
-            name = event.target.name;
-            version = ui.item.value;
+            var fieldName = event.target.name;
+            var version = ui.item.value;
+            var productName = fieldName.slice(0, -VERSION_SUFFIX.length);
+
             populateBuildNumber(version);
-            populateBranch(name, version);
-            if (!isFennec(name)) {
+            populateBranch(productName, version);
+            if (!isFennec(productName)) {
                 // There is no notion of partial on fennec
-                populatePartial(name, version, previousBuilds, partialElement);
+                populatePartial(productName, version, previousBuilds, partialElement);
                 populatePartialInfo(version);
             }
             dashboardCheck(version);
-
+            populateL10nChangesets(productName, version);
         }
     }).focus(function() {
         $(this).autocomplete('search');
     }).change(function() {
-        populateBuildNumber(this.value);
-        populateBranch(this.name, this.value);
-        populatePartial(this.name, this.value, previousBuilds, partialElement);
-        dashboardCheck(this.value);
+        var productName = this.name.slice(0, -VERSION_SUFFIX.length);
+        var version = this.value;
+
+        populateBuildNumber(version);
+        populateBranch(productName, version);
+        populatePartial(productName, version, previousBuilds, partialElement);
+        dashboardCheck(version);
+        populateL10nChangesets(productName, version);
     });
 }
 
