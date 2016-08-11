@@ -28,6 +28,11 @@
      <li>Comm Revision: {{ rel.commRevision }}</li>
      <li>Comm Relbranch: {{ rel.commRelbranch }}</li>
      {% endif %}
+     {% if rel.dashboardCheck %}
+     <li>Check dashboard? Yes</li>
+     {% else %}
+     <li>Check dashboard? No</li>
+     {% endif %}
      <li><a href="/releases/{{ rel.name }}/l10n">L10n Changeset</a></li>
      {% if not 'Fennec' in rel.name %}
      <li>Partial versions: {{ rel.partials }}</li>

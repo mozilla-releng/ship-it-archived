@@ -190,6 +190,7 @@ class ReleaseForm(Form):
     buildNumber = IntegerField('Build Number:', validators=[DataRequired('Build number is required.')])
     branch = StringField('Branch:', validators=[DataRequired('Branch is required')])
     mozillaRevision = StringField('Mozilla Revision:')
+    dashboardCheck = BooleanField('Dashboard check?', default=False)
     mozillaRelbranch = StringField('Mozilla Relbranch:', filters=[noneFilter])
     comment = TextAreaField('Extra information to release-drivers:')
     description = TextAreaField('Description:')
@@ -287,6 +288,7 @@ class FennecReleaseForm(ReleaseForm):
         # put any data in it.
         if not row.mozillaRelbranch:
             self.mozillaRevision.data = row.mozillaRevision
+        self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.mh_changeset.data = row.mh_changeset
@@ -331,6 +333,7 @@ class FirefoxReleaseForm(DesktopReleaseForm):
             self.mozillaRevision.data = row.mozillaRevision
         self.partials.data = row.partials
         self.promptWaitTime.data = row.promptWaitTime
+        self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.comment.data = row.comment
@@ -373,6 +376,7 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
             self.commRevision.data = row.commRevision
         self.partials.data = row.partials
         self.promptWaitTime.data = row.promptWaitTime
+        self.dashboardCheck.data = row.dashboardCheck
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.commRelbranch.data = row.commRelbranch
