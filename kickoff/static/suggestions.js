@@ -1,14 +1,3 @@
-var REGEXES = {
-    beta: /^\d+\.[\d.]+b\d+$/,      // Examples: 32.0b2, 38.0.5b2 or 32.0b10
-    release: /^(\d+\.)+\d$/,        // Examples: 31.0 or 32.0.1
-    esr: /^(\d+)\.[\d.]*\desr$/,    // Examples: 31.0esr or 31.1.0esr
-    thunderbird: /^(\d+)\.[\d.]*\d$/,
-};
-
-function doesRegexMatch(string, regex) {
-    return string.match(regex) !== null;
-}
-
 function isBeta(version) {
     return doesRegexMatch(version, REGEXES.beta);
 }
@@ -56,15 +45,11 @@ function guessBranchFromVersion(name, version) {
         return base + 'beta';
     }
 
-    if (isESR(version)) {
-        var esrVersion = version.match(REGEXES.esr)[1];
-        return base + 'esr' + esrVersion;
-    }
-
-    // Manage Thunderbird case (Stable release but using an ESR branch)
-    if (isTB(name) && isTBRelease(version)) {
-        var tbVersion = version.match(REGEXES.thunderbird)[1];
-        return base + 'esr' + tbVersion;
+    if (isESR(version) ||
+        // Manage Thunderbird case (Stable release but using an ESR branch)
+        isTB(name) && isTBRelease(version)) {
+        var majorNumber = version.match(REGEXES.majorNumber)[1];
+        return base + 'esr' + majorNumber;
     }
 
     if (isRelease(version)) {
@@ -73,31 +58,29 @@ function guessBranchFromVersion(name, version) {
     return '';
 }
 
-function addLastVersionAsPartial(version, previousReleases, nb) {
-    partialList = [];
-    nbAdded = 0;
-    // We always add the last released version to the list
-    for (k = 0; k < previousReleases.length; k++) {
+function addLastVersionAsPartial(versionString, allPreviousReleasesStrings, nbExpected) {
+    var version = new Release(versionString);
+    var allPreviousReleases = allPreviousReleasesStrings.map(function(string) {
+        return new Release(string);
+    });
 
-        previousRelease = stripBuildNumber(previousReleases[k]);
-
-        // In the 38 cycle, we built the 38 beta version from the
-        // mozilla-release branch. We don't want beta partials for a release
-        // This is confusing ship-it (and us)
-        if (isRelease(version) && isBeta(previousRelease)) {
-            continue;
-        }
-
-        if (previousRelease < version) {
-            partialList.push(previousReleases[k]);
-            nbAdded++;
-            if (nb == nbAdded) {
-                return partialList;
+    var validPreviousReleases = allPreviousReleases.filter(function(release) {
+        try {
+            return release.isStrictlyPreviousTo(version);
+        } catch (err) {
+            if (err instanceof NotComparableError) {
+                return false;
             }
+            throw err;
         }
-    }
-    // In case, we don't have enough partial to feed the partial
-    return partialList;
+    });
+
+    validPreviousReleases.splice(nbExpected);
+    var validPreviousReleasesStrings = validPreviousReleases.map(function(release) {
+        return release.toString();
+    });
+
+    return validPreviousReleasesStrings;
 }
 
 function getVersionWithBuildNumber(version, previousReleases) {
@@ -130,11 +113,11 @@ function stripBuildNumber(release) {
     return release.replace(/build.*/g, '');
 }
 
-function populatePartial(name, version, previousBuilds, partialElement) {
+function populatePartial(productName, version, previousBuilds, partialElement) {
 
     partialElement.val('');
 
-    base = getBaseRepository(name);
+    base = getBaseRepository(productName);
 
     nbPartial = 0;
     previousReleases =  [];
@@ -156,9 +139,9 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     var isCurrentVersionRelease = isRelease(version);
 
     if (isCurrentVersionRelease || isCurrentVersionESR) {
-        if (isTB(name) || isCurrentVersionESR) {
+        if (isTB(productName) || isCurrentVersionESR) {
             // Thunderbird and Fx ESR are using mozilla-esr as branch
-            base = guessBranchFromVersion(name, version);
+            base = guessBranchFromVersion(productName, version);
             if (typeof previousBuilds[base] !== 'undefined') {
                 // If the branch is not supported, do not try to access it
                 previousReleases = previousBuilds[base].sort().reverse();
@@ -190,7 +173,7 @@ function populatePartial(name, version, previousBuilds, partialElement) {
 
     // When we have the ADI for Firefox Beta or Thunderbird, we can remove
     // this special case
-    if (isTB(name) || isFxBeta) {
+    if (isTB(productName) || isFxBeta) {
         // No ADI, select the three first
         partial = addLastVersionAsPartial(version, previousReleases, 3);
         partialAdded = 3;
@@ -220,6 +203,96 @@ function populatePartial(name, version, previousBuilds, partialElement) {
     return true;
 }
 
+function _getElmoShortName(productName) {
+    switch (productName) {
+        case 'firefox':
+            return 'fx';
+        case 'thunderbird':
+            return 'tb';
+        case 'fennec':
+            return 'fennec';
+        default:
+            throw new Error('unsupported product ' + productName);
+    }
+}
+
+function getElmoUrl(productName, version) {
+    var branch = guessBranchFromVersion(productName, version);
+
+    var shortName = _getElmoShortName(productName);
+    var majorVersion = version.match(REGEXES.majorNumber)[1];
+
+    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
+    var url = BASE_ELMO_URL;
+    url += isFennec(productName) ?
+        '/json-changesets?av=' + shortName + majorVersion +
+        '&platforms=android' +
+        '&multi_android-multilocale_repo=' + branch +
+        '&multi_android-multilocale_rev=default' +
+        '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
+        :
+        '/l10n-changesets?av=' + shortName + majorVersion;
+    return url;
+}
+
+function getPreviousBuildL10nUrl(productName, version, previousBuildNumber) {
+    var baseUrl = window.location.origin;
+    var releaseFullName = [productName, version, 'build' + previousBuildNumber].join('-');
+    return baseUrl + '/releases/' + releaseFullName + '/l10n';
+}
+
+function getUrlAndMessages(productName, version, buildNumber) {
+    var opts = {
+        url: '',
+        downloadMessage: 'Trying to download from ',
+        previousBuildWarning: '',
+    };
+
+    if (buildNumber > 1) {
+        var previousBuildNumber = buildNumber - 1;
+        var buildString = 'build' + previousBuildNumber;
+        opts.url = getPreviousBuildL10nUrl(productName, version, previousBuildNumber);
+        opts.downloadMessage += buildString;
+        opts.previousBuildWarning = 'Changesets gotten from ' + buildString +
+            '. If you want to not use them, please edit this field.';
+    } else {
+        opts.url = getElmoUrl(productName, version);
+        opts.downloadMessage += 'Elmo';
+    }
+
+    return opts;
+}
+
+function populateL10nChangesets(productName, version, buildNumber) {
+    var changesetsElement = $('#' + productName + '-l10nChangesets');
+
+    if (!version) {
+        changesetsElement.val('');
+        return;
+    }
+
+    var warningElement = changesetsElement.next().find('.warning');
+    var opts = getUrlAndMessages(productName, version, buildNumber);
+
+    changesetsElement.val(opts.downloadMessage);
+    changesetsElement.prop('disabled', true);
+    warningElement.text('');
+
+    $.ajax({
+        url: opts.url,
+    }).done(function(changesets) {
+        changesetsElement.val(changesets);
+    }).fail(function() {
+        changesetsElement.val('');
+        // Sadly, jQuery.ajax() doesn't return the reason of the error :(
+        // http://api.jquery.com/jQuery.ajax/
+        console.error('Could not fetch l10n changesets');
+    }).always(function() {
+        changesetsElement.prop('disabled', false);
+        warningElement.text(opts.previousBuildWarning);
+    });
+}
+
 function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, partialInfo) {
 
     versions.sort(function(a, b) {
@@ -241,8 +314,8 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     }
 
     // From the version, try to guess the branch
-    function populateBranch(name, version) {
-        branch = guessBranchFromVersion(name, version);
+    function populateBranch(productName, version) {
+        var branch = guessBranchFromVersion(productName, version);
         branchElement.val(branch);
     }
 
@@ -262,6 +335,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         partialInfo.html(partialString);
     }
 
+    var VERSION_SUFFIX = '-version';
     versionElement.autocomplete({
         source: versions,
         minLength: 0,
@@ -275,23 +349,33 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             collision: 'flipfit',
         },
         select: function(event, ui) {
-            name = event.target.name;
-            version = ui.item.value;
+            var fieldName = event.target.name;
+            var version = ui.item.value;
+            var productName = fieldName.slice(0, -VERSION_SUFFIX.length);
+
             populateBuildNumber(version);
-            populateBranch(name, version);
-            if (!isFennec(name)) {
+            var buildNumber = buildNumberElement.val();
+
+            populateBranch(productName, version);
+            if (!isFennec(productName)) {
                 // There is no notion of partial on fennec
-                populatePartial(name, version, previousBuilds, partialElement);
+                populatePartial(productName, version, previousBuilds, partialElement);
                 populatePartialInfo(version);
             }
-
+            populateL10nChangesets(productName, version, buildNumber);
         }
     }).focus(function() {
         $(this).autocomplete('search');
     }).change(function() {
-        populateBuildNumber(this.value);
-        populateBranch(this.name, this.value);
-        populatePartial(this.name, this.value, previousBuilds, partialElement);
+        var productName = this.name.slice(0, -VERSION_SUFFIX.length);
+        var version = this.value;
+
+        populateBuildNumber(version);
+        var buildNumber = buildNumberElement.val();
+
+        populateBranch(productName, version);
+        populatePartial(productName, version, previousBuilds, partialElement);
+        populateL10nChangesets(productName, version, buildNumber);
     });
 }
 
