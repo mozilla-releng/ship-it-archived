@@ -224,7 +224,7 @@ function getElmoUrl(productName, version) {
 
     var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
     var url = BASE_ELMO_URL;
-    url += productName === 'fennec' ?
+    url += isFennec(productName) ?
         '/json-changesets?av=' + shortName + majorVersion +
         '&platforms=android' +
         '&multi_android-multilocale_repo=' + branch +
