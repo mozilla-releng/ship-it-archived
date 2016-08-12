@@ -5,7 +5,7 @@ from kickoff import app
 from kickoff.test.views.base import ViewTest
 
 
-class TestSubmitRelease(ViewTest):
+class TestDockerflow(ViewTest):
 
     def setUp(self):
         ViewTest.setUp(self)
