@@ -25,6 +25,7 @@ with open(path.join(here, '../version.txt')) as f:
 
 create_dockerflow_endpoints(app)
 
+
 # Ensure X-Frame-Options is set to protect against clickjacking attacks:
 # https://wiki.mozilla.org/WebAppSec/Secure_Coding_QA_Checklist#Test:_X-Frame-Options
 @app.after_request

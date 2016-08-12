@@ -1,8 +1,6 @@
 from os import path
 
 from flask import Response, jsonify
-# Can't concatenate the next line with the following one. exc is not defined
-from flask.ext import sqlalchemy
 from sqlalchemy.exc import OperationalError
 from kickoff import db
 
