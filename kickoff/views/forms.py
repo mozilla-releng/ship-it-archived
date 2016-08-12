@@ -1,6 +1,7 @@
 import logging
 
 import simplejson as json
+import re
 
 from datetime import datetime
 from ast import literal_eval
@@ -344,6 +345,8 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
     commRevision = StringField('Comm Revision:')
     commRelbranch = StringField('Comm Relbranch:', filters=[noneFilter])
+    # Example: 45.0 or 45.2.0, but not 45.2
+    VALID_VERSION_PATTERN = re.compile(r'(\d\.0|\d+\.\d+\.\d+)')
 
     def __init__(self, *args, **kwargs):
         ReleaseForm.__init__(self, prefix='thunderbird', product='thunderbird', *args, **kwargs)
@@ -356,6 +359,10 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
             if not self.commRevision.data:
                 valid = False
                 self.errors['commRevision'] = ['Comm revision is required']
+
+        if self.VALID_VERSION_PATTERN.match(self.version.data) is None:
+            valid = False
+            self.errors['version'] = ['Version must match either X.0 or X.Y.Z']
 
         return valid
 

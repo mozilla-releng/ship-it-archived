@@ -65,13 +65,16 @@ $(document).ready(function() {
     <div class="helpPartial" id="partialInfo"></div>
     <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 4, for Betas it's 3, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
 </div>
+<h4>Advanced Options:</h4>
+<div class="advanced">
 <div class="submit_release">
     {{ firefoxForm.l10nChangesets.label()|safe }}
     {{ firefoxForm.l10nChangesets(placeholder='de abcdef123456', title='The l10n changesets, in release automation format.')|safe }}
-    <div class="help">The l10n changesets for this release (first column: locale, second: revision). Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. ESR releases re-use the same changesets as the previous release on the same branch. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a></div>
+    <div class="help">
+        <div class="warning"></div>
+        The l10n changesets for this release (first column: locale, second: revision). Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. ESR releases re-use the same changesets as the previous release on the same branch. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a>
+    </div>
 </div>
-<h4>Advanced Options:</h4>
-<div class="advanced">
 <div class="submit_release">
     {{ firefoxForm.dashboardCheck.label()|safe }}
     {{ firefoxForm.dashboardCheck()|safe }}
@@ -97,4 +100,3 @@ $(document).ready(function() {
     <div class="help">Mozharness changeset. If unset defaults to using the mozilla revision of the build. Not used in non release promotion scenario.</div>
 </div>
 </div> <!-- advanced -->
-

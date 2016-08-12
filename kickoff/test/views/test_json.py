@@ -84,8 +84,8 @@ class TestJSONRequestsAPI(ViewTest):
 
     def testPrimaryBuilds(self):
         ret = self.get(BASE_JSON_PATH + '/firefox_primary_builds.json')
-        primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
+        primary = json.loads(ret.data)
         # I guess we will always have more than 20 locales
         self.assertTrue(len(primary) > 20)
         # i guess we will always have french or german
@@ -117,6 +117,15 @@ class TestJSONRequestsAPI(ViewTest):
         # That assertion also tests that we have well-formed ESR numbers
         self.assertTrue('2.0.2esr' in primary['en-US'])
         self.assertEquals(len(primary['en-US']), 5)
+        # ja-JP-mac is not a locale we want to expose into product-details
+        self.assertFalse('ja-JP-mac' in primary)
+
+    def testPrimaryBuildsAreSorted(self):
+        ret = self.get(BASE_JSON_PATH + '/firefox_primary_builds.json')
+        self.assertEquals(ret.status_code, 200)
+        givenString = ret.data
+        sortedJsonString = json.dumps(json.loads(givenString), sort_keys=True, indent=4)
+        self.assertEqual(givenString, sortedJsonString)
 
     def testTBPrimaryBuilds(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird_primary_builds.json')
@@ -181,6 +190,27 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['ios_version'], "1.1")
         self.assertEquals(versions['ios_beta_version'], "1.2")
 
+    def testMobileDetails(self):
+        config.CURRENT_ESR = "2"
+        config.ESR_NEXT = "38"
+        config.NIGHTLY_VERSION = "24.0a1"
+        config.AURORA_VERSION = "23.0a2"
+        config.IOS_VERSION = "1.1"
+        config.IOS_BETA_VERSION = "1.2"
+        ret = self.get(BASE_JSON_PATH + '/mobile_details.json')
+        details = json.loads(ret.data)
+
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(details['nightly_version'], "24.0a1")
+        self.assertEquals(details['alpha_version'], "23.0a2")
+        self.assertEquals(details['beta_version'], "23.0b2")
+        self.assertEquals(details['version'], "24.0")
+        self.assertEquals(details['ios_version'], "1.1")
+        self.assertEquals(details['ios_beta_version'], "1.2")
+        self.assertTrue("builds" in details)
+        self.assertTrue("alpha_builds" in details)
+        self.assertTrue("beta_builds" in details)
+
     def testThunderbirdVersions(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird_versions.json')
         versions = json.loads(ret.data)
@@ -190,6 +220,9 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['LATEST_THUNDERBIRD_VERSION'], "23.0.1")
         self.assertTrue("LATEST_THUNDERBIRD_DEVEL_VERSION" in versions)
         self.assertEquals(versions['LATEST_THUNDERBIRD_DEVEL_VERSION'], "24.0b2")
+        self.assertTrue("LATEST_THUNDERBIRD_ALPHA_VERSION" in versions)
+        self.assertTrue(config.LATEST_THUNDERBIRD_ALPHA_VERSION.endswith('a2'))
+        self.assertEquals(len(versions), 3)
         self.assertTrue("FIREFOX_ESR" not in versions)
         self.assertTrue("FIREFOX_ESR_NEXT" not in versions)
         self.assertTrue("LATEST_FIREFOX_DEVEL_VERSION" not in versions)

@@ -1,4 +1,10 @@
-sources = ["kickoff/static/kickoff.js", "kickoff/static/suggestions.js"];
+sources = [
+    "kickoff/static/kickoff.js",
+    "kickoff/static/model/release.js",
+    "kickoff/static/model/errors.js",
+    "kickoff/static/suggestions.js"
+];
+
 module.exports = function(grunt) {
     grunt.initConfig({
         qunit: {

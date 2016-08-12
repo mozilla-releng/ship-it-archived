@@ -13,7 +13,7 @@ from mozilla.release.l10n import parsePlainL10nChangesets
 
 from kickoff.model import getReleases
 from kickoff.model import getReleaseTable
-from jsonexportcommon import myjsonify
+from jsonexportcommon import jsonify_by_sorting_values
 
 JSON_VER = config.JSON_FORMAT_L10N_VERSION
 BASE_JSON_PATH_L10N = '/json/' + JSON_VER + '/l10n/'
@@ -30,7 +30,7 @@ def l10nExport(releaseName):
     else:
         l10n_list = _getLocalesByReleaseName(releaseTable, releaseName)
 
-    return myjsonify(l10n_list)
+    return jsonify_by_sorting_values(l10n_list)
 
 
 def _aggregateBetaLocales(releaseTable, releaseName):
@@ -51,7 +51,7 @@ def _getLocalesByReleaseName(releaseTable, releaseName):
 
 def _getReleaseLocales(release):
     if release is None or release.l10nChangesets == config.LEGACY_KEYWORD:
-        return myjsonify({})
+        return jsonify_by_sorting_values({})
 
     locale_list = defaultdict()
     if "Firefox" in release.name or "Thunderbird" in release.name:
