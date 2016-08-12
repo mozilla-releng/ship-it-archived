@@ -4,11 +4,11 @@ set -e
 
 commit=$(git rev-parse HEAD)
 version=$(cat version.txt)
+source=$(cat contribute.json | python -c 'import json, sys; a = json.load(sys.stdin); print a["repository"]["url"]')
 
 # TODO: Add link to CI job that produced the docker image
-# TODO: Fetch source repo from contribute.json
 echo "{
     \"commit\": \"${commit}\",
     \"version\": \"${version}\",
-    \"source\": \"https://github.com/mozilla-releng/ship-it\"
+    \"source\": \"${source}\"
 }" > version.json
