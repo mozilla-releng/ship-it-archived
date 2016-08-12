@@ -14,11 +14,14 @@ from kickoff.log import cef_event, CEF_WARN
 from kickoff.views.csrf import CSRFView
 from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release, ReleaseCommentAPI, ReleasesListAPI, EditRelease
 from kickoff.views.submit import SubmitRelease
+from kickoff.dockerflow import create_dockerflow_endpoints
 
 log = logging.getLogger(__name__)
 
+# TODO: export this value
 version = '1.1'
 
+create_dockerflow_endpoints(app)
 
 # Ensure X-Frame-Options is set to protect against clickjacking attacks:
 # https://wiki.mozilla.org/WebAppSec/Secure_Coding_QA_Checklist#Test:_X-Frame-Options

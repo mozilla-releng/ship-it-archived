@@ -33,6 +33,7 @@ if __name__ == '__main__':
     app.config['SQLALCHEMY_DATABASE_URI'] = options.db
     app.config['DEBUG'] = True
     app.config['SECRET_KEY'] = 'NOT A SECRET'
+    app.config['VERSION_FILE'] = '/app/version.json'
     app.config.update(cef_config(options.cef_log))
 
     with app.test_request_context():

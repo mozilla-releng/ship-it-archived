@@ -1,4 +1,7 @@
 set -xe
+
+/app/scripts/generate_version_file.sh
+
 if [ ! -e /app/.cache/mysql/db.done ]; then
     sleep 30
     echo "Initializing DB..."
