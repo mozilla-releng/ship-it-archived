@@ -35,3 +35,7 @@ class TestDockerflow(ViewTest):
   "commit":"abcdef123456"
 }
 """)
+
+    def testLbHeartbeat(self):
+        ret = self.get("/__lbheartbeat__")
+        self.assertEqual(ret.status_code, 200)
