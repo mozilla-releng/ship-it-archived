@@ -1,4 +1,5 @@
 import logging
+from os import path
 
 from flask import Flask, render_template, Response, request
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -18,8 +19,9 @@ from kickoff.dockerflow import create_dockerflow_endpoints
 
 log = logging.getLogger(__name__)
 
-# TODO: export this value
-version = '1.1'
+here = path.abspath(path.dirname(__file__))
+with open(path.join(here, '../version.txt')) as f:
+    version = f.read()
 
 create_dockerflow_endpoints(app)
 

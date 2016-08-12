@@ -3,7 +3,7 @@
 set -e
 
 commit=$(git rev-parse HEAD)
-version='latest'
+version=$(cat version.txt)
 
 # TODO: Add link to CI job that produced the docker image
 # TODO: Fetch source repo from contribute.json
