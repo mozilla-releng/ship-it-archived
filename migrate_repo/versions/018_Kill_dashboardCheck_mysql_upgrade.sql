@@ -75,3 +75,7 @@ ALTER VIEW product_releases AS
         NULL AS commRelbranch,
         fennec_release.mh_changeset AS mh_changeset
         FROM fennec_release;
+
+ALTER TABLE fennec_release DROP COLUMN dashboardCheck;
+ALTER TABLE firefox_release DROP COLUMN dashboardCheck;
+ALTER TABLE thunderbird_release DROP COLUMN dashboardCheck;

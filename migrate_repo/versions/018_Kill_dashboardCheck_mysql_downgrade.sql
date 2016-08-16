@@ -78,3 +78,7 @@ ALTER VIEW product_releases AS
         NULL AS commRelbranch,
         fennec_release.mh_changeset AS mh_changeset
         FROM fennec_release;
+
+ALTER TABLE fennec_release ADD dashboardCheck BOOLEAN NOT NULL DEFAULT 0;
+ALTER TABLE firefox_release ADD dashboardCheck BOOLEAN NOT NULL DEFAULT 0;
+ALTER TABLE thunderbird_release ADD dashboardCheck BOOLEAN NOT NULL DEFAULT 0;
