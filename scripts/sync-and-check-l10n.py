@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), "../kickoff/"))  # NOQA
+pathToLib = os.path.join(os.path.dirname(__file__), "../kickoff/")  # NOQA
+sys.path.append(pathToLib)  # NOQA
 import json
 import ConfigParser
 import StringIO
@@ -27,7 +28,7 @@ def saveJSON(url, country):
         dump = json.dumps(valuesOrdered, indent=4, separators=(',', ': '))
 
         # Save
-        with open("../kickoff/static/regions/%s.json" % country, "w") as text_file:
+        with open(pathToLib + "/static/regions/%s.json" % country, "w") as text_file:
                 text_file.write(dump)
 
 
