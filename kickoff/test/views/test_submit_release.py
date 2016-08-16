@@ -94,10 +94,10 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.status, '')
             self.assertEquals(got.mozillaRelbranch, 'FOO')
 
-    def testSubmitInvalidThunderbirdVersionNumber(self):
+    def testSubmitInvalidVersionNumber(self):
         data = [
             'thunderbird-product=thunderbird',
-            'thunderbird-version=46.2', # Invalid version number
+            'thunderbird-version=46.2',     # Invalid version number
             'thunderbird-buildNumber=1',
             'thunderbird-branch=z',
             'thunderbird-partials=1.0build1, 1.1build2',
@@ -106,7 +106,7 @@ class TestSubmitRelease(ViewTest):
             'thunderbird-product=firefox',
             'thunderbird-mozillaRelbranch=FOO',
         ]
-        ret = self.post('/submit_release.html', data='&'.join(data),        content_type='application/x-www-form-urlencoded')
+        ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 400, ret.data)
         with app.test_request_context():
             got = FirefoxRelease.query.filter_by(name='Thunderbird-46.2-build1').first()
