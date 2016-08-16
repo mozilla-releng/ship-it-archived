@@ -12,7 +12,8 @@ body {
 
 /* submit release form */
 .submit_release {
-   padding-bottom: 1em;
+    padding-bottom: 1em;
+    clear: both;
 }
 
 /* submit release form labels*/
@@ -25,11 +26,17 @@ body {
 .submit_release input {
     float: left;
     width: 25em;
+    margin-bottom: 1em;
+}
+
+.submit_release input[type="submit"] {
+    width: 15em;
+    clear: both;
 }
 
 .help {
     margin-left: 45.5em;
-    color: red;
+    color: grey;
 }
 
 .helpPartial {

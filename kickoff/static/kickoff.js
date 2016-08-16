@@ -96,7 +96,6 @@ function viewReleases() {
             {'mData': 'mozillaRelbranch'},
             {'mData': 'commRevision', 'sDefaultContent': 'N/A', 'mRender': returnDataIfIsThunderbird},
             {'mData': 'commRelbranch', 'sDefaultContent': 'N/A', 'mRender': returnDataIfIsThunderbird},
-            {'mData': 'dashboardCheck', 'mRender': yesIfDataIsNotNull},
             {'mData': 'name', 'mRender': buildl10nLink},
             {'mData': 'partials',
              'sDefaultContent': 'N/A',
@@ -172,7 +171,6 @@ function viewReleases() {
             {'mData': 'mozillaRelbranch'},
             {'mData': 'commRevision', 'sDefaultContent': 'N/A'},
             {'mData': 'commRelbranch', 'sDefaultContent': 'N/A'},
-            {'mData': 'dashboardCheck', 'sDefaultContent': 'N/A'},
             {'mData': 'name', 'mRender': buildl10nLink},
             {'mData': 'partials',
              'mRender': function(data, type, full) {
