@@ -98,7 +98,7 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.mozillaRelbranch, 'FOO')
 
     def testSubmitInvalidVersionNumbers(self):
-        invalid_versions = ('4', '46', '46.2')
+        invalid_versions = ('4', '46', '46.2.0.0')
         BASE_FIELDS = {
             'buildNumber': 1,
             'branch': 'z',
