@@ -1,4 +1,5 @@
 import os
+import json
 from tempfile import mkstemp
 
 from kickoff import app
@@ -28,14 +29,24 @@ class TestDockerflow(ViewTest):
 
     def testVersion(self):
         ret = self.get("/__version__")
-        self.assertEqual(ret.data, """
-{
-  "source":"https://github.com/mozilla-releng/ship-it",
-  "version":"1.0",
-  "commit":"abcdef123456"
-}
-""")
+        received_json = json.loads(ret.data)
+        self.assertEqual(received_json, {
+            "source": "https://github.com/mozilla-releng/ship-it",
+            "version": "1.0",
+            "commit": "abcdef123456"
+        })
 
     def testLbHeartbeat(self):
         ret = self.get("/__lbheartbeat__")
         self.assertEqual(ret.status_code, 200)
+
+
+class TestDockerflowNoFile(ViewTest):
+    def testVersion(self):
+        ret = self.get("/__version__")
+        received_json = json.loads(ret.data)
+        self.assertEqual(received_json, {
+            "source": "https://github.com/mozilla-releng/ship-it",
+            "version": "unknown",
+            "commit": "unknown"
+        })
