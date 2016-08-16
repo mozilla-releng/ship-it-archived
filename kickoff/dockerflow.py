@@ -16,10 +16,10 @@ def create_dockerflow_endpoints(app):
         if version_file and path.exists(version_file):
             with open(version_file) as f:
                 version_json = f.read()
-            return Response(version_json, mimetype="application/json", headers={"Cache-Control": "no-cache"})
+            return Response(version_json, mimetype="application/json", headers=HEADERS)
         else:
             return jsonify({
-                "source": "https://github.com/mozilla/balrog",
+                "source": "https://github.com/mozilla-releng/ship-it",
                 "version": "unknown",
                 "commit": "unknown",
             })

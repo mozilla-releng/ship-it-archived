@@ -15,7 +15,7 @@ class TestDockerflow(ViewTest):
         with open(self.version_file, "w+") as f:
             f.write("""
 {
-  "source":"https://github.com/mozilla/balrog",
+  "source":"https://github.com/mozilla-releng/ship-it",
   "version":"1.0",
   "commit":"abcdef123456"
 }
@@ -30,7 +30,7 @@ class TestDockerflow(ViewTest):
         ret = self.get("/__version__")
         self.assertEqual(ret.data, """
 {
-  "source":"https://github.com/mozilla/balrog",
+  "source":"https://github.com/mozilla-releng/ship-it",
   "version":"1.0",
   "commit":"abcdef123456"
 }
