@@ -32,5 +32,8 @@ node_modules/
 *.db
 *.log
 
+# Dockerflow
+version.json
+
 # IDEs
 .idea/

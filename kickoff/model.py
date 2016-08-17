@@ -24,7 +24,6 @@ class Release(object):
     branch = db.Column(db.String(50), nullable=False)
     mozillaRevision = db.Column(db.String(100), nullable=False)
     l10nChangesets = db.Column(db.Text(), nullable=False)
-    dashboardCheck = db.Column(db.Boolean(), nullable=False, default=False)
     ready = db.Column(db.Boolean(), nullable=False, default=False)
     complete = db.Column(db.Boolean(), nullable=False, default=False)
     status = db.Column(db.String(250), default="")
@@ -60,7 +59,7 @@ class Release(object):
         self._shippedAt = shippedAt
 
     def __init__(self, submitter, version, buildNumber, branch,
-                 mozillaRevision, l10nChangesets, dashboardCheck,
+                 mozillaRevision, l10nChangesets,
                  mozillaRelbranch, submittedAt=None,
                  shippedAt=None, comment=None, description=None,
                  isSecurityDriven=False, mh_changeset=None):
@@ -71,7 +70,6 @@ class Release(object):
         self.branch = branch.strip()
         self.mozillaRevision = mozillaRevision.strip()
         self.l10nChangesets = l10nChangesets
-        self.dashboardCheck = dashboardCheck
         self.mozillaRelbranch = mozillaRelbranch
         if submittedAt:
             self.submittedAt = submittedAt
@@ -106,7 +104,6 @@ class Release(object):
         self.branch = form.branch.data
         self.mozillaRevision = form.mozillaRevision.data
         self.l10nChangesets = form.l10nChangesets.data
-        self.dashboardCheck = form.dashboardCheck.data
         self.mozillaRelbranch = form.mozillaRelbranch.data
         self.name = getReleaseName(self.product, self.version,
                                    self.buildNumber)
@@ -154,7 +151,6 @@ class FennecRelease(Release, db.Model):
             branch=form.branch.data,
             mozillaRevision=form.mozillaRevision.data,
             l10nChangesets=form.l10nChangesets.data,
-            dashboardCheck=form.dashboardCheck.data,
             mozillaRelbranch=form.mozillaRelbranch.data,
             comment=form.comment.data,
             description=form.description.data,
@@ -192,7 +188,6 @@ class FirefoxRelease(DesktopRelease, db.Model):
             branch=form.branch.data,
             mozillaRevision=form.mozillaRevision.data,
             l10nChangesets=form.l10nChangesets.data,
-            dashboardCheck=form.dashboardCheck.data,
             mozillaRelbranch=form.mozillaRelbranch.data,
             comment=form.comment.data,
             description=form.description.data,
@@ -224,7 +219,6 @@ class ThunderbirdRelease(DesktopRelease, db.Model):
             branch=form.branch.data,
             mozillaRevision=form.mozillaRevision.data,
             l10nChangesets=form.l10nChangesets.data,
-            dashboardCheck=form.dashboardCheck.data,
             mozillaRelbranch=form.mozillaRelbranch.data,
             comment=form.comment.data,
             description=form.description.data,

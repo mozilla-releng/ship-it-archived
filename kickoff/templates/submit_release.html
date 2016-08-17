@@ -25,7 +25,7 @@
     <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
     {% set product_template = 'includes/' + prod + '_release.html' %}
     {% include product_template %}
-    <div>
+    <div class='submit_release'>
         <input type='submit' value="Gimme a {{ prod|capitalize }}"/>
     </div>
     </form>

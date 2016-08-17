@@ -293,7 +293,7 @@ function populateL10nChangesets(productName, version, buildNumber) {
     });
 }
 
-function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, dashboardElement, partialInfo) {
+function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, partialInfo) {
 
     versions.sort(function(a, b) {
         return a > b;
@@ -317,16 +317,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     function populateBranch(productName, version) {
         var branch = guessBranchFromVersion(productName, version);
         branchElement.val(branch);
-    }
-
-    function dashboardCheck(version) {
-        // Building a beta, tick the checkbox
-        // Due to limitation, we cannot do that for the release
-        if (isBeta(version)) {
-            dashboardElement.prop('checked', true);
-        } else {
-            dashboardElement.prop('checked', false);
-        }
     }
 
     function populatePartialInfo(version) {
@@ -372,7 +362,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
                 populatePartial(productName, version, previousBuilds, partialElement);
                 populatePartialInfo(version);
             }
-            dashboardCheck(version);
             populateL10nChangesets(productName, version, buildNumber);
         }
     }).focus(function() {
@@ -386,7 +375,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
 
         populateBranch(productName, version);
         populatePartial(productName, version, previousBuilds, partialElement);
-        dashboardCheck(version);
         populateL10nChangesets(productName, version, buildNumber);
     });
 }

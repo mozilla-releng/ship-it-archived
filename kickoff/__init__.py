@@ -1,4 +1,5 @@
 import logging
+from os import path
 
 from flask import Flask, render_template, Response, request
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -14,10 +15,15 @@ from kickoff.log import cef_event, CEF_WARN
 from kickoff.views.csrf import CSRFView
 from kickoff.views.releases import ReleasesAPI, Releases, ReleaseAPI, ReleaseL10nAPI, Release, ReleaseCommentAPI, ReleasesListAPI, EditRelease
 from kickoff.views.submit import SubmitRelease
+from kickoff.dockerflow import create_dockerflow_endpoints
 
 log = logging.getLogger(__name__)
 
-version = '1.1'
+here = path.abspath(path.dirname(__file__))
+with open(path.join(here, '../version.txt')) as f:
+    version = f.read()
+
+create_dockerflow_endpoints(app)
 
 
 # Ensure X-Frame-Options is set to protect against clickjacking attacks:
