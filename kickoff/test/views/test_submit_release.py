@@ -94,8 +94,19 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.status, '')
             self.assertEquals(got.mozillaRelbranch, 'FOO')
 
+    def testSubmitValidVersionNumbers(self):
+        valid_versions = (
+            '46.0', '46.0.1', '46.2.0',
+            '46.0b1', '46.0b10',
+            '46.0esr', '46.0.1esr'
+        )
+        self._submitAndCheckVersions(valid_versions, 302)
+
     def testSubmitInvalidVersionNumbers(self):
         invalid_versions = ('4', '46', '46.2.0.0')
+        self._submitAndCheckVersions(invalid_versions, 400)
+
+    def _submitAndCheckVersions(self, versions, expected_status_code):
         BASE_FIELDS = {
             'buildNumber': 1,
             'branch': 'z',
@@ -118,7 +129,7 @@ class TestSubmitRelease(ViewTest):
         for product_name in data.keys():
             data[product_name]['product'] = product_name
 
-            for version in invalid_versions:
+            for version in versions:
                 data[product_name]['version'] = version
                 query_tuple = map(
                     lambda values: '%s-%s=%s' % (product_name, values[0], values[1]), data[product_name].items()
@@ -126,10 +137,11 @@ class TestSubmitRelease(ViewTest):
 
                 ret = self.post('/submit_release.html', data='&'.join(query_tuple),
                                 content_type='application/x-www-form-urlencoded')
-                self.assertEquals(ret.status_code, 400)
+                self.assertEquals(ret.status_code, expected_status_code)
 
-                # Only the version error must pop up, otherwise we may get a false positive test.
-                self.assertTrue(textwrap.dedent("""
+                if expected_status_code != 302:
+                    # Only the version error must pop up, otherwise we may get a false positive test.
+                    self.assertTrue(textwrap.dedent("""
    <div id='errors'>
    <ul>
 
