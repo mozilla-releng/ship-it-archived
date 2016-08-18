@@ -98,7 +98,7 @@ class TestSubmitRelease(ViewTest):
         valid_versions = (
             '46.0', '46.0.1', '46.2.0',
             '46.0b1', '46.0b10',
-            '46.0esr', '46.0.1esr'
+            '46.0esr', '46.0.1esr', '46.1.0esr', '46.1.1esr',
         )
         self._submitAndCheckVersions(valid_versions, 302)
 
