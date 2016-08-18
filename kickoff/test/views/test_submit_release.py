@@ -104,7 +104,7 @@ class TestSubmitRelease(ViewTest):
 
     def testSubmitInvalidVersionNumbers(self):
         invalid_versions = (
-            '4', '46', '46.2', '46.2.0.0',
+            '4', '46', '46.0.0', '46.2', '46.2.0.0',
             '4b1', '46b1', '46.2b1', '46.2.0.0b1',
             '4esr', '46esr', '46.2esr', '46.2.0.0esr',
         )

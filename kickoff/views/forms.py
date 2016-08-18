@@ -197,7 +197,7 @@ class ReleaseForm(Form):
     mh_changeset = StringField('Mozharness Revision:')
 
     # Example: 45.0 or 45.2.0, but not 45.2
-    VALID_VERSION_PATTERN = re.compile(r'^(\d+\.0|\d+\.\d+\.\d+)(b\d+|esr)?$')
+    VALID_VERSION_PATTERN = re.compile(r'^(\d+\.0|(\d+\.[1-9]+\.\d+)|(\d+\.\d+\.[1-9]+))(b\d+|esr)?$')
 
     def __init__(self, suggest=True, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
