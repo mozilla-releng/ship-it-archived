@@ -103,7 +103,7 @@ class TestSubmitRelease(ViewTest):
         self._submitAndCheckVersions(valid_versions, 302)
 
     def testSubmitInvalidVersionNumbers(self):
-        invalid_versions = ('4', '46', '46.2.0.0')
+        invalid_versions = ('4', '46', '46.2' '46.2.0.0')
         self._submitAndCheckVersions(invalid_versions, 400)
 
     def _submitAndCheckVersions(self, versions, expected_status_code):
