@@ -196,7 +196,7 @@ class ReleaseForm(Form):
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
     mh_changeset = StringField('Mozharness Revision:')
 
-    # Example: 45.0 or 45.2.0, but not 45.2
+    # See tests for examples of valid and non-valid versions
     VALID_VERSION_PATTERN = re.compile(r'^(\d+\.0(b\d+)?|(\d+\.[1-9]+\.\d+)|(\d+\.\d+\.[1-9]+))(esr)?$')
 
     def __init__(self, suggest=True, *args, **kwargs):
