@@ -96,14 +96,18 @@ class TestSubmitRelease(ViewTest):
 
     def testSubmitValidVersionNumbers(self):
         valid_versions = (
-            '46.0', '46.0.1', '46.2.0',
+            '46.0', '46.0.1', '46.2.0', '46.2.1',
             '46.0b1', '46.0b10',
             '46.0esr', '46.0.1esr', '46.1.0esr', '46.1.1esr',
         )
         self._submitAndCheckVersions(valid_versions, 302)
 
     def testSubmitInvalidVersionNumbers(self):
-        invalid_versions = ('4', '46', '46.2' '46.2.0.0')
+        invalid_versions = (
+            '4', '46', '46.2', '46.2.0.0',
+            '4b1', '46b1', '46.2b1', '46.2.0.0b1',
+            '4esr', '46esr', '46.2esr', '46.2.0.0esr',
+        )
         self._submitAndCheckVersions(invalid_versions, 400)
 
     def _submitAndCheckVersions(self, versions, expected_status_code):
