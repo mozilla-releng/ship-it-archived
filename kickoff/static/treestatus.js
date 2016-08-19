@@ -1,0 +1,41 @@
+function getTreeStatusUrl(branchName) {
+    var treeName = branchName.split('/')[1];
+    return 'https://treestatus.mozilla.org/' + treeName + '?format=json';
+}
+
+function fetchTreeStatus(branchElement, newerBranchName) {
+    var branchName = newerBranchName ? newerBranchName : branchElement.val();
+
+    var warningElement = branchElement.siblings('.help').find('.warning');
+    warningElement.text('');
+
+    $.ajax({
+        url: getTreeStatusUrl(branchName),
+    }).done(function(results) {
+        var status = results.status;
+        if (status !== 'open' && status !== 'approval required') {
+            var message = 'Warning: ' + branchName + ' has status "' + status + '". Reason: ' + results.reason;
+            warningElement.text(message);
+        }
+    }).fail(function() {
+        console.error('Could not fetch status of tree "' + branchName + '"');
+    });
+}
+
+$(document).ready(function() {
+    ['fennec', 'firefox', 'thunderbird'].forEach(function(productName) {
+        var branchElement = $('#' + productName + '-branch');
+        if (branchElement.autocomplete) {
+            branchElement.autocomplete({
+                select: function(_, ui) {
+                    var newerBranchName = ui.item.value;
+                    if (newerBranchName) {
+                        fetchTreeStatus(branchElement, newerBranchName);
+                    }
+                }
+            }).change(function() {
+                fetchTreeStatus(branchElement);
+            });
+        }
+    });
+});

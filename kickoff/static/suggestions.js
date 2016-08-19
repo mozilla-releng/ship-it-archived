@@ -317,6 +317,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     function populateBranch(productName, version) {
         var branch = guessBranchFromVersion(productName, version);
         branchElement.val(branch);
+        branchElement.trigger('change');
     }
 
     function populatePartialInfo(version) {
