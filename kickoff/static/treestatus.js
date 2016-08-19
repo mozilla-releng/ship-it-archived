@@ -1,5 +1,13 @@
+function _isTreeForThunderbird(treeName) {
+    return treeName.indexOf('comm') > -1;
+}
+
 function getTreeStatusUrl(branchName) {
     var treeName = branchName.split('/')[1];
+    if (_isTreeForThunderbird(treeName)) {
+        treeName += '-thunderbird';
+    }
+
     return 'https://treestatus.mozilla.org/' + treeName + '?format=json';
 }
 

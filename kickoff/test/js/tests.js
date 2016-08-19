@@ -280,6 +280,12 @@ QUnit.test('getTreeStatusUrl()', function(assert) {
     }, {
         branch: 'releases/mozilla-beta',
         expectedUrl: 'https://treestatus.mozilla.org/mozilla-beta?format=json',
+    }, {
+        branch: 'releases/comm-beta',
+        expectedUrl: 'https://treestatus.mozilla.org/comm-beta-thunderbird?format=json',
+    }, {
+        branch: 'releases/comm-esr45',
+        expectedUrl: 'https://treestatus.mozilla.org/comm-esr45-thunderbird?format=json',
     }];
 
     data.forEach(function(piece) {
