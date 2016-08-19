@@ -271,7 +271,7 @@ function populateL10nChangesets(productName, version, buildNumber) {
         return;
     }
 
-    var warningElement = changesetsElement.next().find('.warning');
+    var warningElement = changesetsElement.siblings('.help').find('.warning');
     var opts = getUrlAndMessages(productName, version, buildNumber);
 
     changesetsElement.val(opts.downloadMessage);
