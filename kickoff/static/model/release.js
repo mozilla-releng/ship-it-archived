@@ -1,4 +1,5 @@
 // Please also update VALID_VERSION_PATTERN in forms.py
+// Changing the bracket orders may require to update INDEXES and TYPE_INDEXES
 // TODO: Read the pattern from a centralized file
 var VALID_VERSION_PATTERN_STRING  = '^(\\d+)\\.(' + // Major version number
     '(0)(a1|a2|b(\\d+)|esr)?' +   // 2-digit-versions (like 46.0, 46.0b1, 46.0esr)
