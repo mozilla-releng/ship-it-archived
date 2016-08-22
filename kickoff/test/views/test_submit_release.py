@@ -96,7 +96,7 @@ class TestSubmitRelease(ViewTest):
 
     def testSubmitValidVersionNumbers(self):
         valid_versions = (
-            '46.0', '46.0.1', '46.2.0', '46.2.1',
+            '46.0', '46.0.1', '46.0.10', '46.2.0', '46.2.1', '46.10.0', '46.10.10',
             '46.0b1', '46.0b10',
             '46.0esr', '46.0.1esr', '46.2.0esr', '46.2.1esr',
         )
