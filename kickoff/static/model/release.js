@@ -1,3 +1,25 @@
+// Please also update VALID_VERSION_PATTERN in forms.py
+// TODO: Read the pattern from a centralized file
+var VALID_VERSION_PATTERN_STRING  = '^(\\d+)\\.(' + // Major version number
+    '(0)(a1|a2|b(\\d+)|esr)?' +   // 2-digit-versions (like 46.0, 46.0b1, 46.0esr)
+    '|(' +    // Here begins the 3-digit-versions.
+        '([1-9]\\d*)\\.(\\d+)|(\\d+)\\.([1-9]\\d*)' +  // 46.0.0 is not correct
+    ')(esr)?' + // Neither is 46.2.0b1
+')(build(\\d+))?$';  // See more examples of (in)valid versions in the tests
+
+var VALID_VERSION_PATTERN = new RegExp(VALID_VERSION_PATTERN_STRING);
+
+var INDEXES = {
+    majorNumber: [1],
+    minorNumber: [3, 7, 9],
+    patchNumber: [8, 10],
+    betaNumber: [5],
+    buildNumber: [13],
+    nightly: [4],
+    devEdition: [4],
+    esr: [4, 11],
+};
+
 var REGEXES = {
     beta: /^\d+\.[\d.]+b\d+(build\d+)?$/, // Examples: 32.0b2, 38.0.5b2, 32.0b10 or 32.0b10build1
     release: /^(\d+\.)+\d+$/,        // Examples: 32.0 or 32.0.1
@@ -6,10 +28,6 @@ var REGEXES = {
     esr: /^.*\desr.*$/,    // Examples: 32.0esr or 32.2.0esr
     thunderbird: /^(\d+)\.[\d.]*\d$/,
     majorNumber: /^(\d+)\..+/,
-    minorNumber: /^\d+\.(\d+).*/,
-    patchNumber: /^\d+\.\d+\.(\d+).*/,
-    betaNumber: /^.+b(\d+).*/,
-    buildNumber: /^.+build(\d+)$/,
 };
 
 function doesRegexMatch(string, regex) {
@@ -17,12 +35,17 @@ function doesRegexMatch(string, regex) {
 }
 
 function Release(string) {
+    var matches = string.match(VALID_VERSION_PATTERN);
+    if (matches === null) {
+        throw new InvalidVersionError(string);
+    }
+
     ['majorNumber', 'minorNumber'].forEach(function(field) {
-        this._assignMandatoryField(field, string);
+        this._assignMandatoryField(field, matches);
     }, this);
 
     ['patchNumber', 'betaNumber', 'buildNumber'].forEach(function(field) {
-        this._assignFieldIfItExists(field, string);
+        this._assignFieldIfItExists(field, matches);
     }, this);
 
     this.isDevEdition = doesRegexMatch(string, REGEXES.devEdition);
@@ -46,12 +69,23 @@ Release.POSSIBLE_TYPES = [
 
 Release.prototype = {
 
-    _assignMandatoryField: function(field, string) {
-        var matchResults = string.match(REGEXES[field]);
-        if (matchResults === null) {
+    _assignMandatoryField: function(field, matches, string) {
+        var matchPotentialIndexes = INDEXES[field];
+
+        var matchValue;
+        for (var i = 0; i < matchPotentialIndexes.length; i++) {
+            var matchIndex = matchPotentialIndexes[i];
+            var matchValue = matches[matchIndex];
+            if (matchValue !== undefined) {
+                break;
+            }
+        }
+
+        if (matchValue === undefined) {
             throw new MissingFieldError(string, field);
         }
-        this[field] = parseInt(matchResults[1], 10);
+
+        this[field] = parseInt(matchValue, 10);
     },
 
     _assignFieldIfItExists: function(field, string) {
