@@ -1,7 +1,6 @@
 import logging
 
 import simplejson as json
-import re
 
 from datetime import datetime
 from ast import literal_eval
@@ -18,6 +17,7 @@ from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
 
 from kickoff.model import Release, getReleaseTable, getReleases
+from kickoff.version_pattern import ValidVersionPattern
 
 log = logging.getLogger(__name__)
 
@@ -196,13 +196,6 @@ class ReleaseForm(Form):
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
     mh_changeset = StringField('Mozharness Revision:')
 
-    VALID_VERSION_PATTERN = re.compile(r"""^(
-        \d+\.0(b\d+|esr)?   # 2-digit-versions (like 46.0, 46.0b1, 46.0esr)
-        |\d+\.(    # Here begins the 3-digit-versions.
-            [1-9]+\.\d+|\d+\.[1-9]+ # 46.0.0 is not correct
-        )(esr)? # Neither is 46.2.0b1
-    )$""", re.VERBOSE)  # See more examples of (in)valid versions in the tests
-
     def __init__(self, suggest=True, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
         if suggest:
@@ -219,7 +212,7 @@ class ReleaseForm(Form):
                 valid = False
                 self.errors['mozillaRevision'] = ['Mozilla revision is required']
 
-        if self.VALID_VERSION_PATTERN.match(self.version.data) is None:
+        if ValidVersionPattern.get_compiled_regex().match(self.version.data) is None:
             valid = False
             self.errors['version'] = ['Version must match either X.0 or X.Y.Z']
 

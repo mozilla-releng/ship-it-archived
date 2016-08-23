@@ -1,15 +1,25 @@
+var VALID_VERSION_PATTERN = new RegExp(VALID_VERSION_PATTERN_STRING);
+
+var INDEXES = {
+    majorNumber: [1],
+    minorNumber: [3, 7, 9],
+    patchNumber: [8, 10],
+    betaNumber: [5],
+    buildNumber: [13],
+};
+
+var TYPE_INDEXES = {
+    nightly: {keyword: 'a1', indexes: [4]},
+    devEdition: {keyword: 'a2', indexes: [4]},
+    esr: {keyword: 'esr', indexes: [4, 11]},
+};
+
 var REGEXES = {
     beta: /^\d+\.[\d.]+b\d+(build\d+)?$/, // Examples: 32.0b2, 38.0.5b2, 32.0b10 or 32.0b10build1
     release: /^(\d+\.)+\d+$/,        // Examples: 32.0 or 32.0.1
-    nightly: /^.*\da1.*/,   // Example: 32.0a1
-    devEdition: /^.*\da2.*/,    // Example: 32.0a2
     esr: /^.*\desr.*$/,    // Examples: 32.0esr or 32.2.0esr
     thunderbird: /^(\d+)\.[\d.]*\d$/,
     majorNumber: /^(\d+)\..+/,
-    minorNumber: /^\d+\.(\d+).*/,
-    patchNumber: /^\d+\.\d+\.(\d+).*/,
-    betaNumber: /^.+b(\d+).*/,
-    buildNumber: /^.+build(\d+)$/,
 };
 
 function doesRegexMatch(string, regex) {
@@ -17,19 +27,41 @@ function doesRegexMatch(string, regex) {
 }
 
 function Release(string) {
+    var matches = string.match(VALID_VERSION_PATTERN);
+    if (matches === null) {
+        throw new InvalidVersionError(string);
+    }
+
     ['majorNumber', 'minorNumber'].forEach(function(field) {
-        this._assignMandatoryField(field, string);
+        this._assignMandatoryField(field, matches, string);
     }, this);
 
     ['patchNumber', 'betaNumber', 'buildNumber'].forEach(function(field) {
-        this._assignFieldIfItExists(field, string);
+        this._assignFieldIfItExists(field, matches, string);
     }, this);
 
-    this.isDevEdition = doesRegexMatch(string, REGEXES.devEdition);
-    this.isNightly = doesRegexMatch(string, REGEXES.nightly);
-    this.isEsr = doesRegexMatch(string, REGEXES.esr);
+    ['nightly', 'devEdition', 'esr'].forEach(function(type) {
+        this._assignIsType(type, matches, string);
+    }, this);
 
     this._performSanityCheck();
+}
+
+function _getMatchValue(matchPotentialIndexes, field, matches, string) {
+    var matchValue;
+    for (var i = 0; i < matchPotentialIndexes.length; i++) {
+        var matchIndex = matchPotentialIndexes[i];
+        var matchValue = matches[matchIndex];
+        if (matchValue !== undefined) {
+            break;
+        }
+    }
+
+    if (matchValue === undefined) {
+        throw new MissingFieldError(string, field);
+    }
+
+    return matchValue;
 }
 
 function _compareNumbers(first, second) {
@@ -40,18 +72,20 @@ function _compareNumbers(first, second) {
     return first - second;
 }
 
+function _capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 Release.POSSIBLE_TYPES = [
     'isNightly', 'isDevEdition', 'isBeta', 'isEsr', 'isRelease'
 ];
 
 Release.prototype = {
 
-    _assignMandatoryField: function(field, string) {
-        var matchResults = string.match(REGEXES[field]);
-        if (matchResults === null) {
-            throw new MissingFieldError(string, field);
-        }
-        this[field] = parseInt(matchResults[1], 10);
+    _assignMandatoryField: function(field, matches, string) {
+        var matchPotentialIndexes = INDEXES[field];
+        var matchValue = _getMatchValue(matchPotentialIndexes, field, matches, string);
+        this[field] = parseInt(matchValue, 10);
     },
 
     _assignFieldIfItExists: function(field, string) {
@@ -62,6 +96,20 @@ Release.prototype = {
                 throw err;
             }
         }
+    },
+
+    _assignIsType: function(type, matches, string) {
+        var field = 'is' + _capitalizeFirstLetter(type);
+        var matchPotentialIndexes = TYPE_INDEXES[type].indexes;
+        var matchValue;
+        try {
+            matchValue = _getMatchValue(matchPotentialIndexes, type, matches, string);
+        } catch (err) {
+            if (!(err instanceof MissingFieldError)) {
+                throw err;
+            }
+        }
+        this[field] = matchValue === TYPE_INDEXES[type].keyword;
     },
 
     _performSanityCheck: function() {

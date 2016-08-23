@@ -1,4 +1,5 @@
 sources = [
+    "kickoff/static/version_pattern.js",
     "kickoff/static/kickoff.js",
     "kickoff/static/model/release.js",
     "kickoff/static/model/errors.js",
