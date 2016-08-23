@@ -31,7 +31,7 @@ function fetchTreeStatus(branchElement, newerBranchName) {
 }
 
 $(document).ready(function() {
-    ['fennec', 'firefox', 'thunderbird'].forEach(function(productName) {
+    SUPPORTED_PRODUCTS.forEach(function(productName) {
         var branchElement = $('#' + productName + '-branch');
         if (branchElement.autocomplete) {
             branchElement.autocomplete({

@@ -4,3 +4,5 @@ var CONFIG = {
         treestatus: 'https://treestatus.mozilla.org/',
     },
 };
+
+var SUPPORTED_PRODUCTS = ['fennec', 'firefox', 'thunderbird'];
