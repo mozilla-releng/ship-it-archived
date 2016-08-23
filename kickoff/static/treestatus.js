@@ -8,7 +8,7 @@ function getTreeStatusUrl(branchName) {
         treeName += '-thunderbird';
     }
 
-    return 'https://treestatus.mozilla.org/' + treeName + '?format=json';
+    return CONFIG.baseUrls.treestatus + treeName + '?format=json';
 }
 
 function fetchTreeStatus(branchElement, newerBranchName) {

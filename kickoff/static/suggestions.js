@@ -222,16 +222,15 @@ function getElmoUrl(productName, version) {
     var shortName = _getElmoShortName(productName);
     var majorVersion = version.match(REGEXES.majorNumber)[1];
 
-    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
-    var url = BASE_ELMO_URL;
+    var url = CONFIG.baseUrls.elmo;
     url += isFennec(productName) ?
-        '/json-changesets?av=' + shortName + majorVersion +
+        'json-changesets?av=' + shortName + majorVersion +
         '&platforms=android' +
         '&multi_android-multilocale_repo=' + branch +
         '&multi_android-multilocale_rev=default' +
         '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
         :
-        '/l10n-changesets?av=' + shortName + majorVersion;
+        'l10n-changesets?av=' + shortName + majorVersion;
     return url;
 }
 
