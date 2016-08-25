@@ -22,6 +22,19 @@ function isTB(name) {
     return name.indexOf('thunderbird') > -1;
 }
 
+function getSanitizedVersionString(candidateString) {
+    try {
+        // TODO: Rename Release into Version
+        var version = new Release(candidateString);
+        return version.toString();
+    } catch (err) {
+        if (!(err instanceof InvalidVersionError)) {
+            throw err;
+        }
+        return '';
+    }
+}
+
 function getBaseRepository(name) {
 
     if (isTB(name)) {
@@ -350,7 +363,8 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         },
         select: function(event, ui) {
             var fieldName = event.target.name;
-            var version = ui.item.value;
+            // TODO show a warning if version is not correct
+            var version = getSanitizedVersionString(ui.item.value);
             var productName = fieldName.slice(0, -VERSION_SUFFIX.length);
 
             populateBuildNumber(version);
@@ -368,7 +382,8 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         $(this).autocomplete('search');
     }).change(function() {
         var productName = this.name.slice(0, -VERSION_SUFFIX.length);
-        var version = this.value;
+        // TODO show a warning if version is not correct
+        var version = getSanitizedVersionString(this.value);
 
         populateBuildNumber(version);
         var buildNumber = buildNumberElement.val();
