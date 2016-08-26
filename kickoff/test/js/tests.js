@@ -3,11 +3,8 @@ var VALID_VERSIONS = [
     { string: '32.0a2', type: 'devedition' },
     { string: '32.0b2', type: 'beta' },
     { string: '32.0b10', type: 'beta' },
-    { string: '32.0.3b2', type: 'beta' },
-    { string: '32.02', type: 'release' }, // Is parsed as 32.2
     { string: '32.0', type: 'release' },
     { string: '32.0.1', type: 'release' },
-    { string: '32.2', type: 'release' },
     { string: '32.0esr', type: 'esr' },
     { string: '32.0.1esr', type: 'esr' },
 ];
@@ -157,7 +154,7 @@ previousBuilds = {"releases/mozilla-beta": ["31.0b3build4", "31.0b2build2", "30.
 partialElement = $('#partials');
 partialElement.hide();
 // Stable (will use partialFXRelease)
-var result = populatePartial("firefox", "33.2", previousBuilds, partialElement);
+var result = populatePartial("firefox", "33.0.2", previousBuilds, partialElement);
 assert.ok( result );
 // 33.0.1 has 0 as ADI but this is ok
 // Take the two next partials with the most ADI
@@ -165,7 +162,7 @@ assert.strictEqual($('#partials').val(), "33.0.1build2,32.0.1build2,31.0build2")
 
 // Beta (will use partialFXBeta)
 partialElement = $('#partials');
-var result = populatePartial("firefox", "33.2b2", previousBuilds, partialElement);
+var result = populatePartial("firefox", "33.0b2", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "31.0b3build4,31.0b2build2,30.0b9build2");
 
@@ -216,7 +213,7 @@ assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 allPartialJ='{"release": [{"version": "38.0.3", "ADI": 5000}, {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}]}';
 allPartial=JSON.parse(allPartialJ);
 
-previousBuilds = {"releases/mozilla-release": ["38.0.5b3build2", "38.0.3build2", "38.0b6build2",  "36.0build2", "35.0build2"]}
+previousBuilds = {"releases/mozilla-release": ["38.0b3build2", "38.0.3build2", "38.0b6build2",  "36.0build2", "35.0build2"]}
 
 partialElement = $('#partials');
 var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
@@ -277,14 +274,16 @@ QUnit.module('model/Release');
 
 QUnit.test('constructor must throw errors when release has more than one type', function(assert) {
     var invalidReleases = [
-        { string: '32', error: MissingFieldError },
-        { string: '32.b2', error: MissingFieldError },
-        { string: '.1', error: MissingFieldError },
+        { string: '32', error: InvalidVersionError },
+        { string: '32.b2', error: InvalidVersionError },
+        { string: '.1', error: InvalidVersionError  },
+        { string: '32.2', error: InvalidVersionError },
+        { string: '32.02', error: InvalidVersionError },
 
-        { string: '32.0a1a2', error: TooManyTypesError },
-        { string: '32.0a1b2', error: TooManyTypesError },
-        { string: '32.0b2esr', error: TooManyTypesError },
-        { string: '32.0esrb2', error: TooManyTypesError },
+        { string: '32.0a1a2', error: InvalidVersionError },
+        { string: '32.0a1b2', error: InvalidVersionError },
+        { string: '32.0b2esr', error: InvalidVersionError },
+        { string: '32.0esrb2', error: InvalidVersionError },
     ];
 
     invalidReleases.forEach(function(invalidRelease) {
@@ -321,27 +320,28 @@ function assertIsNotStrictlyPreviousTo(assert, candidateA, candidateB) {
 QUnit.test('isStrictlyPreviousTo() must compare different version numbers', function(assert) {
     var data = [
         { previous: '32.0', next: '33.0' },
-        { previous: '32.0', next: '32.1' },
+        { previous: '32.0', next: '32.1.0' },
         { previous: '32.0', next: '32.0.1' },
         { previous: '32.0build1', next: '32.0build2' },
 
-        { previous: '32.1', next: '33.0' },
-        { previous: '32.1', next: '32.2' },
-        { previous: '32.1', next: '32.1.1' },
-        { previous: '32.1build1', next: '32.1build2' },
-
         { previous: '32.0.1', next: '33.0' },
-        { previous: '32.0.1', next: '32.1' },
+        { previous: '32.0.1', next: '32.1.0' },
         { previous: '32.0.1', next: '32.0.2' },
         { previous: '32.0.1build1', next: '32.0.1build2' },
+
+        { previous: '32.1.0', next: '33.0' },
+        { previous: '32.1.0', next: '32.2.0' },
+        { previous: '32.1.0', next: '32.1.1' },
+        { previous: '32.1.0build1', next: '32.1.0build2' },
 
         { previous: '32.0b1', next: '33.0b1' },
         { previous: '32.0b1', next: '32.0b2' },
         { previous: '32.0b1build1', next: '32.0b1build2' },
 
         { previous: '2.0', next: '10.0' },
-        { previous: '10.2', next: '10.10' },
+        { previous: '10.2.0', next: '10.10.0' },
         { previous: '10.0.2', next: '10.0.10' },
+        { previous: '10.10.1', next: '10.10.10' },
         { previous: '10.0build2', next: '10.0build10' },
         { previous: '10.0b2', next: '10.0b10' },
     ];
@@ -364,7 +364,7 @@ QUnit.test('isStrictlyPreviousTo() must compare different version numbers', func
 
 QUnit.test('isStrictlyPreviousTo() must compare identical version numbers', function(assert) {
     var baseCandidate = new Release('32.0');
-    var equalCandidates = ['32.0', '32.0.0', '32.0build1'];
+    var equalCandidates = ['32.0', '32.0build1'];
     equalCandidates = equalCandidates.map(function(candidate) {
         return new Release(candidate);
     });
@@ -411,8 +411,8 @@ QUnit.test('isStrictlyPreviousTo() must throw errors when not comparable', funct
 
 QUnit.test('toString()', function(assert) {
     var data = {
-        '32.0': ['32.0', '032.0', '32.00'],
-        '32.0.1': ['32.0.1', '32.0.01'],
+        '32.0': ['32.0', '032.0'],
+        '32.0.1': ['32.0.1'],
         '32.0build1': ['32.0build1', '32.0build01'],
         '32.0a1': ['32.0a1'],
         '32.0a2': ['32.0a2'],

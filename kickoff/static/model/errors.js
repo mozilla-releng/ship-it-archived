@@ -1,3 +1,12 @@
+function InvalidVersionError(string) {
+    this.name = 'InvalidVersionError';
+    this.message = 'Version "' + string + '" does not match the pattern of a valid version';
+    this.stack = (new Error()).stack;
+}
+
+InvalidVersionError.prototype = Object.create(Error.prototype);
+InvalidVersionError.prototype.constructor = InvalidVersionError;
+
 function MissingFieldError(string, field) {
     this.name = 'MissingFieldError';
     this.message = 'Release "' + string + '" does not contain a valid ' + field;

@@ -96,7 +96,7 @@ class TestSubmitRelease(ViewTest):
 
     def testSubmitValidVersionNumbers(self):
         valid_versions = (
-            '46.0', '46.0.1', '46.2.0', '46.2.1',
+            '46.0', '46.0.1', '46.0.10', '46.2.0', '46.2.1', '46.10.0', '46.10.10',
             '46.0b1', '46.0b10',
             '46.0esr', '46.0.1esr', '46.2.0esr', '46.2.1esr',
         )
@@ -142,7 +142,8 @@ class TestSubmitRelease(ViewTest):
 
                 ret = self.post('/submit_release.html', data='&'.join(query_tuple),
                                 content_type='application/x-www-form-urlencoded')
-                self.assertEquals(ret.status_code, expected_status_code)
+                self.assertEquals(ret.status_code, expected_status_code,
+                                  'Version "%s" failed' % version)
 
                 if expected_status_code != 302:
                     # Only the version error must pop up, otherwise we may get a false positive test.
