@@ -14,6 +14,10 @@ function isTBRelease(version) {
     return doesRegexMatch(version, REGEXES.thunderbird);
 }
 
+function isFirefox(name) {
+    return name.indexOf('firefox') > -1;
+}
+
 function isFennec(name) {
     return name.indexOf('fennec') > -1;
 }
@@ -196,6 +200,19 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
         // The first partial will always be the previous published release
         partial = addLastVersionAsPartial(version, previousReleases, 1);
         partialAdded++;
+    }
+
+    // Firefox X.0 releases are published to the beta channel, so generate a partial
+    // from the most recent beta build to speed that up
+    if (isFirefox(productName) && version.match(/^\d+\.0$/)) {
+        betaBuilds = previousBuilds[base + 'beta'];
+        if (betaBuilds) {
+            // this relies on the order of releases reported by the DB, newest first
+            partial.unshift(betaBuilds[0]);
+            partialAdded++;
+        } else {
+            console.warn('Expected to add a beta release but none were found');
+        }
     }
 
     for (i = 0; i < partialsADIVersion.length; i++) {
