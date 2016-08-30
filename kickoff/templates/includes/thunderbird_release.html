@@ -40,7 +40,10 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ thunderbirdForm.branch.label()|safe }}
     {{ thunderbirdForm.branch(placeholder='releases/comm-beta')|safe }}
-    <div class="help">The branch to build the release from, relative to the root of the VCS.</div>
+    <div class="help">
+        <div class="warning"></div>
+        The branch to build the release from, relative to the root of the VCS.
+    </div>
 </div>
 <div class="submit_release">
     {{ thunderbirdForm.mozillaRevision.label()|safe }}

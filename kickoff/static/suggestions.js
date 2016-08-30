@@ -252,16 +252,15 @@ function getElmoUrl(productName, version) {
     var shortName = _getElmoShortName(productName);
     var majorVersion = version.match(REGEXES.majorNumber)[1];
 
-    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
-    var url = BASE_ELMO_URL;
+    var url = CONFIG.baseUrls.elmo;
     url += isFennec(productName) ?
-        '/json-changesets?av=' + shortName + majorVersion +
+        'json-changesets?av=' + shortName + majorVersion +
         '&platforms=android' +
         '&multi_android-multilocale_repo=' + branch +
         '&multi_android-multilocale_rev=default' +
         '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
         :
-        '/l10n-changesets?av=' + shortName + majorVersion;
+        'l10n-changesets?av=' + shortName + majorVersion;
     return url;
 }
 
@@ -301,7 +300,7 @@ function populateL10nChangesets(productName, version, buildNumber) {
         return;
     }
 
-    var warningElement = changesetsElement.next().find('.warning');
+    var warningElement = changesetsElement.siblings('.help').find('.warning');
     var opts = getUrlAndMessages(productName, version, buildNumber);
 
     changesetsElement.val(opts.downloadMessage);
@@ -347,6 +346,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     function populateBranch(productName, version) {
         var branch = guessBranchFromVersion(productName, version);
         branchElement.val(branch);
+        branchElement.trigger('change');
     }
 
     function populatePartialInfo(version) {

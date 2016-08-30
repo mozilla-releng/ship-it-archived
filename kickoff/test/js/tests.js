@@ -282,6 +282,30 @@ QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
     });
 });
 
+QUnit.test('getTreeStatusUrl()', function(assert) {
+    var data = [{
+        branch: 'releases/mozilla-release',
+        expectedUrl: 'https://treestatus.mozilla.org/mozilla-release?format=json',
+    }, {
+        branch: 'releases/mozilla-beta',
+        expectedUrl: 'https://treestatus.mozilla.org/mozilla-beta?format=json',
+    }, {
+        branch: 'releases/comm-beta',
+        expectedUrl: 'https://treestatus.mozilla.org/comm-beta-thunderbird?format=json',
+    }, {
+        branch: 'releases/comm-esr45',
+        expectedUrl: 'https://treestatus.mozilla.org/comm-esr45-thunderbird?format=json',
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            getTreeStatusUrl(piece.branch, piece.version),
+            piece.expectedUrl
+        );
+    });
+});
+
+
 QUnit.module('model/Release');
 
 QUnit.test('constructor must throw errors when release has more than one type', function(assert) {

@@ -1,8 +1,10 @@
 sources = [
+    "kickoff/static/global_config.js",
     "kickoff/static/kickoff.js",
     "kickoff/static/model/release.js",
     "kickoff/static/model/errors.js",
-    "kickoff/static/suggestions.js"
+    "kickoff/static/suggestions.js",
+    "kickoff/static/treestatus.js",
 ];
 
 module.exports = function(grunt) {
