@@ -244,7 +244,7 @@ QUnit.test('getElmoUrl()', function(assert) {
     }, {
         product: 'fennec', version: '32.0',
         expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
-            '&multi_android-multilocale_repo=releases/mozilla-release&multi_android-multilocale_rev=default' +
+            '&multi_android-multilocale_repo=releases/mozilla-beta&multi_android-multilocale_rev=default' +
             '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
     }, {
         product: 'fennec', version: '32.0b1',
