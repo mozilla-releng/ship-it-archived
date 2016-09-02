@@ -14,6 +14,10 @@ function isTBRelease(version) {
     return doesRegexMatch(version, REGEXES.thunderbird);
 }
 
+function isFirefox(name) {
+    return name.indexOf('firefox') > -1;
+}
+
 function isFennec(name) {
     return name.indexOf('fennec') > -1;
 }
@@ -198,6 +202,19 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
         partialAdded++;
     }
 
+    // Firefox X.0 releases are published to the beta channel, so generate a partial
+    // from the most recent beta build to speed that up
+    if (isFirefox(productName) && version.match(/^\d+\.0$/)) {
+        betaBuilds = previousBuilds[base + 'beta'];
+        if (betaBuilds) {
+            // this relies on the order of releases reported by the DB, newest first
+            partial.unshift(betaBuilds[0]);
+            partialAdded++;
+        } else {
+            console.warn('Expected to add a beta release but none were found');
+        }
+    }
+
     for (i = 0; i < partialsADIVersion.length; i++) {
         newPartial = getVersionWithBuildNumber(partialsADIVersion[i], previousReleases);
         if (newPartial != undefined &&
@@ -235,16 +252,15 @@ function getElmoUrl(productName, version) {
     var shortName = _getElmoShortName(productName);
     var majorVersion = version.match(REGEXES.majorNumber)[1];
 
-    var BASE_ELMO_URL = 'https://l10n.mozilla.org/shipping';
-    var url = BASE_ELMO_URL;
+    var url = CONFIG.baseUrls.elmo;
     url += isFennec(productName) ?
-        '/json-changesets?av=' + shortName + majorVersion +
+        'json-changesets?av=' + shortName + majorVersion +
         '&platforms=android' +
         '&multi_android-multilocale_repo=' + branch +
         '&multi_android-multilocale_rev=default' +
         '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
         :
-        '/l10n-changesets?av=' + shortName + majorVersion;
+        'l10n-changesets?av=' + shortName + majorVersion;
     return url;
 }
 
@@ -284,7 +300,7 @@ function populateL10nChangesets(productName, version, buildNumber) {
         return;
     }
 
-    var warningElement = changesetsElement.next().find('.warning');
+    var warningElement = changesetsElement.siblings('.help').find('.warning');
     var opts = getUrlAndMessages(productName, version, buildNumber);
 
     changesetsElement.val(opts.downloadMessage);
@@ -330,6 +346,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     function populateBranch(productName, version) {
         var branch = guessBranchFromVersion(productName, version);
         branchElement.val(branch);
+        branchElement.trigger('change');
     }
 
     function populatePartialInfo(version) {

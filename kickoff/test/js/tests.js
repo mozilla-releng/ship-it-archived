@@ -220,6 +220,18 @@ var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 
+// Test case for release RC builds, where we include the last beta in the list of partials
+allPartialJ='{"release": [{"version": "48.0.1", "ADI": 5000}, {"version": "48.0", "ADI": 1000}, {"version": "47.0.1", "ADI": 750}, {"version": "47.0", "ADI": 500}]}';
+allPartial=JSON.parse(allPartialJ);
+
+previousBuilds = {"releases/mozilla-release": ["48.0.1build1", "48.0build2", "47.0.1build2",  "47.0build3"],
+                  "releases/mozilla-beta":    ["49.0b10build1", "49.0b9build1", "49.0b8build2", "49.0b7build1"]}
+
+partialElement = $('#partials');
+var result = populatePartial("firefox", "49.0", previousBuilds, partialElement);
+assert.ok( result );
+assert.strictEqual($('#partials').val(), "49.0b10build1,48.0.1build1,48.0build2");
+
 });
 
 QUnit.test('getElmoUrl()', function(assert) {
@@ -269,6 +281,30 @@ QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
         );
     });
 });
+
+QUnit.test('getTreeStatusUrl()', function(assert) {
+    var data = [{
+        branch: 'releases/mozilla-release',
+        expectedUrl: 'https://treestatus.mozilla.org/mozilla-release?format=json',
+    }, {
+        branch: 'releases/mozilla-beta',
+        expectedUrl: 'https://treestatus.mozilla.org/mozilla-beta?format=json',
+    }, {
+        branch: 'releases/comm-beta',
+        expectedUrl: 'https://treestatus.mozilla.org/comm-beta-thunderbird?format=json',
+    }, {
+        branch: 'releases/comm-esr45',
+        expectedUrl: 'https://treestatus.mozilla.org/comm-esr45-thunderbird?format=json',
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            getTreeStatusUrl(piece.branch, piece.version),
+            piece.expectedUrl
+        );
+    });
+});
+
 
 QUnit.module('model/Release');
 
