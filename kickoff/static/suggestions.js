@@ -247,8 +247,6 @@ function _getElmoShortName(productName) {
 }
 
 function getElmoUrl(productName, version) {
-    var branch = guessBranchFromVersion(productName, version);
-
     var shortName = _getElmoShortName(productName);
     var majorVersion = version.match(REGEXES.majorNumber)[1];
 
@@ -256,7 +254,8 @@ function getElmoUrl(productName, version) {
     url += isFennec(productName) ?
         'json-changesets?av=' + shortName + majorVersion +
         '&platforms=android' +
-        '&multi_android-multilocale_repo=' + branch +
+        // TODO Use actual branch instead of mozilla-beta once bug 1280730 lands
+        '&multi_android-multilocale_repo=releases/mozilla-beta' +
         '&multi_android-multilocale_rev=default' +
         '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
         :
