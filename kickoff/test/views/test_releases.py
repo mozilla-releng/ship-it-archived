@@ -130,6 +130,20 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(ret.content_type, 'text/plain')
         self.assertEquals(ret.data, 'ja zu')
 
+    def testGetL10n404(self):
+        ret = self.get('/releases/Firefox-2.0-build99/l10n')
+        self.assertEquals(ret.status_code, 404)
+
+    def testGetComment(self):
+        ret = self.get('/releases/Firefox-2.0-build1/comment')
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(ret.content_type, 'text/plain')
+        self.assertEquals(ret.data, 'yet an other amazying comment')
+
+    def testGetComment404(self):
+        ret = self.get('/releases/Firefox-2.0-build99/comment')
+        self.assertEquals(ret.status_code, 404)
+
     def testResetReady(self):
         data = {'status': 'error!', 'ready': False}
         ret = self.post('/releases/Fennec-1-build1', data=data)
