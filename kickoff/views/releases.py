@@ -206,15 +206,21 @@ class ReleasesListAPI(MethodView):
 class ReleaseL10nAPI(MethodView):
     def get(self, releaseName):
         table = getReleaseTable(releaseName)
-        l10n = table.query.filter_by(name=releaseName).first().l10nChangesets
-        return Response(status=200, response=l10n, content_type='text/plain')
+        release = table.query.filter_by(name=releaseName).first()
+        if not release:
+            abort(404)
+        return Response(status=200, response=release.l10nChangesets,
+                        content_type='text/plain')
 
 
 class ReleaseCommentAPI(MethodView):
     def get(self, releaseName):
         table = getReleaseTable(releaseName)
-        comment = table.query.filter_by(name=releaseName).first().comment
-        return Response(status=200, response=comment, content_type='text/plain')
+        release = table.query.filter_by(name=releaseName).first()
+        if not release:
+            abort(404)
+        return Response(status=200, response=release.comment,
+                        content_type='text/plain')
 
 
 class Releases(MethodView):
