@@ -48,7 +48,7 @@ for loc in getListLocalesFromURL(listLocaleURL):
         if loc not in SUPPORTED_AURORA_LOCALES:
                 nbLocaleMissing = nbLocaleMissing + 1
                 print("Warning: '%s' NOT found in SUPPORTED_AURORA_LOCALES" % loc)
-print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES (my, lo, tsz and wo are expected)" % nbLocaleMissing)
+print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES (lo, tsz and wo are expected)" % nbLocaleMissing)
 
 nbLocaleMissing = 0
 listLocaleNightlyURL = "https://raw.githubusercontent.com/mozilla-l10n/mozilla-l10n-query/master/app/sources/central.txt"
