@@ -143,7 +143,7 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
 
     betaVersion = version.match(REGEXES.beta);
     if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
-        previousReleases = previousBuilds[base + 'beta'].sort().reverse();
+        previousReleases = previousBuilds[base + 'beta'];
         nbPartial = 3;
         // Copy the global variable
         // For now, this is pretty much useless as we don't have metrics for specific beta
@@ -161,7 +161,7 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
             base = guessBranchFromVersion(productName, version);
             if (typeof previousBuilds[base] !== 'undefined') {
                 // If the branch is not supported, do not try to access it
-                previousReleases = previousBuilds[base].sort().reverse();
+                previousReleases = previousBuilds[base];
             }
         } else {
             previousReleases = previousBuilds[base + 'release'];
