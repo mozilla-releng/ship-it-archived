@@ -123,7 +123,7 @@ class Release(object):
         """Returns all shipped releases of 'age' or newer."""
         since = datetime.now() - age
         return [
-            r for r in cls.query.filter(cls._submittedAt > since).filter(cls._shippedAt != None).all()
+            r for r in cls.query.filter(cls._shippedAt > since).filter(cls._shippedAt != None).order_by(cls._shippedAt).all()
         ]
 
     @classmethod

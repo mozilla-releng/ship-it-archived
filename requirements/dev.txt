@@ -3,4 +3,5 @@ Paste==1.7.5.1
 coverage
 rednose
 ordereddict
+mock
 

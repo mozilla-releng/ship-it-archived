@@ -147,9 +147,9 @@ allPartialJ='{"release": [{"version": "32.0.1", "ADI": 949}, {"version": "31.0",
             ' "esr": [{"version": "31.1.0esr", "ADI": 833}, {"version": "29.4.0esr", "ADI": 763}, {"version": "24.3.0esr", "ADI": 624}, {"version": "29.0esr", "ADI": 558}, {"version": "31.3.0esr", "ADI": 368}]}';
 allPartial=JSON.parse(allPartialJ);
 
-previousBuilds = {"releases/mozilla-beta": ["31.0b3build4", "31.0b2build2", "30.0b9build2", "29.0b10build2", "25.0b5build2", "30.0b2build1" ],
-                  "releases/mozilla-release": ["33.0.1build2", "31.1.0build2", "32.0.1build2", "31.0build2", "28.0build2", "27.0build2", "29.0build2", "30.0.5build7"],
-                  "releases/mozilla-esr31": ["31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "24.3.0esrbuild1", "29.0esrbuild1", "31.3.0esrbuild1" ]};
+previousBuilds = {"releases/mozilla-beta": ["31.0b3build4", "31.0b2build2", "30.0b9build2", "30.0b2build1", "29.0b10build2", "25.0b5build2"],
+                  "releases/mozilla-release": ["33.0.1build2", "32.0.1build2",  "31.1.0build2", "31.0build2", "30.0.5build7", "29.0build2", "28.0build2", "27.0build2"],
+                  "releases/mozilla-esr31": ["31.3.0esrbuild1", "31.1.0esrbuild1", "29.4.0esrbuild1", "29.2.0esrbuild1", "29.0esrbuild1", "24.3.0esrbuild1"]};
 
 partialElement = $('#partials');
 partialElement.hide();
@@ -178,7 +178,7 @@ assert.ok( result );
 assert.strictEqual($('#partials').val(), "31.1.0esrbuild1");
 
 // Thunderbird
-previousBuilds = {"releases/comm-esr31": ["31.0build1", "24.1.0build1", "24.3.0build1", "24.4.0build1"]},
+previousBuilds = {"releases/comm-esr31": ["31.0build1", "24.4.0build1", "24.3.0build1", "24.1.0build1"]},
 
 partialElement = $('#partials');
 var result = populatePartial("thunderbird", "31.2.0", previousBuilds, partialElement);
