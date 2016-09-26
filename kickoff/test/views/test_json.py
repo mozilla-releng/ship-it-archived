@@ -1,3 +1,4 @@
+import re
 import simplejson as json
 
 from kickoff import config
@@ -148,8 +149,6 @@ class TestJSONRequestsAPI(ViewTest):
     def testFirefoxVersions(self):
         config.CURRENT_ESR = "2"
         config.ESR_NEXT = "38"
-        config.AURORA_VERSION = "23.0a2"
-        config.NIGHTLY_VERSION = "24.0a1"
         ret = self.get(BASE_JSON_PATH + '/firefox_versions.json')
         versions = json.loads(ret.data)
 
@@ -157,11 +156,26 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['FIREFOX_ESR_NEXT'], "38.1.0esr")
         self.assertEquals(versions['FIREFOX_ESR'], "2.0.2esr")
         self.assertEquals(versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'], "3.0b3")
-        self.assertEquals(versions['FIREFOX_AURORA'], "23.0a2")
-        self.assertEquals(versions['FIREFOX_NIGHTLY'], "24.0a1")
         self.assertEquals(versions['LATEST_FIREFOX_VERSION'], '2.0')
         self.assertEquals(versions['LATEST_FIREFOX_OLDER_VERSION'], "3.6.28")
         self.assertEquals(versions['LATEST_FIREFOX_DEVEL_VERSION'], "3.0b3")
+
+        # We don't use assertRegex because it needs Python 2.7.
+        # We limit the check on the version number to 2 digits intentionally.
+        # Failing on a typo such as 530.a1 is more of a worry than having to
+        # update this test when we reach Firefox 100.
+        self.assertNotEquals(
+            re.match(r'\d\d\.0a1', versions['FIREFOX_NIGHTLY']),
+            None,
+            'Nightly Version number in config.py is malformed'
+        )
+
+        self.assertNotEquals(
+            re.match(r'\d\d\.0a2', versions['FIREFOX_AURORA']),
+            None,
+            'Aurora Version number in config.py is malformed'
+        )
+
         self.assertTrue("FIREFOX_NIGHTLY" in versions)
         self.assertTrue("FIREFOX_AURORA" in versions)
         self.assertTrue("FIREFOX_ESR" in versions)
