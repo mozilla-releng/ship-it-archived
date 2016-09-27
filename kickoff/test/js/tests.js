@@ -232,6 +232,19 @@ var result = populatePartial("firefox", "49.0", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "49.0b10build1,48.0.1build1,48.0build2");
 
+// Test case for early beta builds for Firefox, where we include the last RC in the list of partials
+allPartialJ='{"release": [{"version": "48.0.1", "ADI": 5000}, {"version": "48.0", "ADI": 1000}, {"version": "47.0.1", "ADI": 750}, {"version": "47.0", "ADI": 500}],' +
+            ' "beta": [{"version": "48.0.0b10", "ADI": 951}, {"version": "48.0b9", "ADI": 879}, {"version": "48.0b8", "ADI": 776}, {"version": "48.0b7"}]}';
+allPartial=JSON.parse(allPartialJ);
+
+previousBuilds = {"releases/mozilla-release": ["48.0.1build1", "48.0build2", "47.0.1build2",  "47.0build3"],
+                  "releases/mozilla-beta":    ["48.0build2", "48.0b10build1", "48.0b9build1", "48.0b8build2", "48.0b7build1"]}
+
+partialElement = $('#partials');
+var result = populatePartial("firefox", "49.0b1", previousBuilds, partialElement);
+assert.ok( result );
+assert.strictEqual($('#partials').val(), "48.0build2,48.0b10build1,48.0b9build1");
+
 });
 
 QUnit.test('getElmoUrl()', function(assert) {

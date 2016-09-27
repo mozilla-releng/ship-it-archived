@@ -316,15 +316,20 @@ class DesktopReleaseForm(ReleaseForm):
         table = getReleaseTable(self.product.data)
         recentReleases = table.getRecentShipped()
         seenVersions = []
-        partials = {}
+        partials = defaultdict(list)
         # The UI will suggest any versions which are on the same branch as
         # the one given, but only the highest build number for that version.
+        # One exception is Firefox RC builds (version X.0), which should be added
+        # to the list of betas
         for release in reversed(recentReleases):
-            if release.branch not in partials:
-                partials[release.branch] = []
             if release.version not in seenVersions:
                 partials[release.branch].append('%sbuild%d' % (release.version, release.buildNumber))
                 seenVersions.append(release.version)
+                # here's the exception
+                if release.product == 'firefox' and \
+                   release.branch == 'releases/mozilla-release' and \
+                   re.match('^\d+\.0$', release.version):
+                    partials['releases/mozilla-beta'].append('%sbuild%d' % (release.version, release.buildNumber))
         self.partials.suggestions = json.dumps(partials)
 
 
