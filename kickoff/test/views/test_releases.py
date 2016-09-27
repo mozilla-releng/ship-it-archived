@@ -83,7 +83,7 @@ class TestReleaseAPI(ViewTest):
             'submittedAt': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat(),
             'version': '2.0',
             'buildNumber': 1,
-            'comment': 'yet an other amazying comment',
+            'comment': 'yet an other amazing comment',
             'branch': 'a',
             'mozillaRevision': 'def',
             'description': None,
@@ -138,7 +138,7 @@ class TestReleaseAPI(ViewTest):
         ret = self.get('/releases/Firefox-2.0-build1/comment')
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(ret.content_type, 'text/plain')
-        self.assertEquals(ret.data, 'yet an other amazying comment')
+        self.assertEquals(ret.data, 'yet an other amazing comment')
 
     def testGetComment404(self):
         ret = self.get('/releases/Firefox-2.0-build99/comment')
