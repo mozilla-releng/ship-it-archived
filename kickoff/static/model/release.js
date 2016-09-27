@@ -90,6 +90,10 @@ Release.POSSIBLE_TYPES = [
     'isNightly', 'isDevEdition', 'isBeta', 'isEsr', 'isRelease'
 ];
 
+Release.COMPARISON_TYPES = [
+    'isNightly', 'isDevEdition', 'isBetaOrRelease', 'isEsr'
+];
+
 Release.prototype = {
 
     _assignMandatoryField: function(field, matches, string) {
@@ -147,6 +151,10 @@ Release.prototype = {
         return !(this.isNightly || this.isDevEdition || this.isBeta || this.isEsr);
     },
 
+    get isBetaOrRelease() {
+        return !(this.isNightly || this.isDevEdition || this.isEsr);
+    },
+
     isStrictlyPreviousTo: function(otherRelease) {
         return this._compare(otherRelease) < 0;
     },
@@ -157,7 +165,7 @@ Release.prototype = {
         @throws Error if they're not from the same channel
     */
     _compare: function(otherRelease) {
-        this._checkOtherIsOfSameType(otherRelease);
+        this._checkOtherIsOfCompatibleType(otherRelease);
 
         var orderedFields = ['majorNumber', 'minorNumber', 'patchNumber', 'betaNumber'];
         for (var i = 0; i < orderedFields.length; i++) {
@@ -166,6 +174,17 @@ Release.prototype = {
 
             if (comparisonResult !== 0) {
                 return comparisonResult;
+            }
+
+            // Beta vs Release is a special case handled when majorNumber is
+            // the same. The release will have 'undefined' betaNumber, so isn't
+            // compariable to beta with a genuine digit
+            if (field == 'majorNumber') {
+                if (this.isBeta && otherRelease.isRelease) {
+                    return -1;
+                } else if (this.isRelease && otherRelease.isBeta) {
+                    return 1;
+                }
             }
         }
 
@@ -179,11 +198,18 @@ Release.prototype = {
         return 0;
     },
 
-    _checkOtherIsOfSameType: function(otherRelease) {
-        Release.POSSIBLE_TYPES.forEach(function(field) {
-            // In the 38 cycle, we built the 38 beta version from the
-            // mozilla-release branch. We don't want beta partials for a release
-            // This is confusing ship-it (and us)
+    _checkOtherIsOfCompatibleType: function(otherRelease) {
+        // In the 38 cycle, we built betas from the mozilla-release branch.
+        // We don't want beta partials for a 38 release though.
+        // This is confusing ship-it (and us)
+        // For more recent versions allow beta vs release comparisons,
+        // to support release candidates on the beta channel
+        if (this.majorNumber == '38' || otherRelease.majorNumber == '38') {
+            types = Release.POSSIBLE_TYPES;
+        } else {
+            types = Release.COMPARISON_TYPES;
+        }
+        types.forEach(function(field) {
             if (this[field] !== otherRelease[field]) {
                 throw new NotComparableError(this, otherRelease, field);
             }

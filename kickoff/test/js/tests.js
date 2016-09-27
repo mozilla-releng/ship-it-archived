@@ -209,7 +209,7 @@ var result = populatePartial("firefox", "39.0", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "38.0.3build2,35.0build2,36.0build2");
 
-// Test the case we had during the 38 cycle (ship-it didn't understood that 38.0.5b3 was a beta)
+// Test the case we had during the 38 cycle (ship-it didn't understand that 38.0.5b3 was a beta)
 allPartialJ='{"release": [{"version": "38.0.3", "ADI": 5000}, {"version": "35.0", "ADI": 3000}, {"version": "36.0", "ADI": 500}]}';
 allPartial=JSON.parse(allPartialJ);
 
@@ -370,6 +370,9 @@ QUnit.test('isStrictlyPreviousTo() must compare different version numbers', func
         { previous: '32.1.0', next: '32.1.1' },
         { previous: '32.1.0build1', next: '32.1.0build2' },
 
+        { previous: '32.0b10', next: '32.0'},
+        { previous: '32.0', next: '33.0b1'},
+
         { previous: '32.0b1', next: '33.0b1' },
         { previous: '32.0b1', next: '32.0b2' },
         { previous: '32.0b1build1', next: '32.0b1build2' },
@@ -414,7 +417,7 @@ QUnit.test('isStrictlyPreviousTo() must throw errors when not comparable', funct
     var data = [
         { a: '32.0', b: '32.0a1' },
         { a: '32.0', b: '32.0a2' },
-        { a: '32.0', b: '32.0b1' },
+        // comparing '32.0' to '32.0b1' is permitted
         { a: '32.0', b: '32.0esr' },
 
         { a: '32.0a1', b: '32.0a2' },
