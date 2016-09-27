@@ -45,7 +45,7 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
+                               comment="yet an other amazing comment",
                                mh_changeset='xyz')
             r.complete = True
             r.ready = True
@@ -59,7 +59,7 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazying comment")
+                               comment="yet an other amazing comment")
             r.complete = True
             r.ready = True
             r.status = "shipped"
@@ -72,7 +72,7 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2015, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazying comment")
+                               comment="yet an other amazing comment")
             r.complete = True
             r.ready = True
             r.status = "shipped"
@@ -118,7 +118,7 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
+                               comment="yet an other amazing comment",
                                isSecurityDriven=True,
                                description="We did this because of an issue in NSS")
             r.complete = True
@@ -132,7 +132,7 @@ class TestBase(unittest.TestCase):
                                l10nChangesets='ja zu',
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               comment="yet an other amazying comment")
+                               comment="yet an other amazing comment")
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
@@ -142,7 +142,7 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 2, 3, 4, 5, 6, 7),
                                shippedAt=datetime(2005, 2, 3, 4, 5, 6, 7),
-                               comment="yet an other amazying comment",
+                               comment="yet an other amazing comment",
                                isSecurityDriven=True,
                                description="Another beta release for Firefox 3")
             r.complete = True
@@ -157,7 +157,7 @@ class TestBase(unittest.TestCase):
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               comment="yet an other amazying comment",
+                               comment="yet an other amazing comment",
                                description="we did this release because of foo")
             r.complete = True
             r.ready = True
@@ -190,7 +190,6 @@ class TestBase(unittest.TestCase):
                                    submittedAt=datetime(2005, 1, 1, 1, 1, 1, 1),
                                    description="foo reason")
             db.session.add(r)
-            db.session.commit()
 
             r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
                                    partials='1.0build1', promptWaitTime=None,
@@ -205,7 +204,6 @@ class TestBase(unittest.TestCase):
             r.ready = True
             r.status = "shipped"
             db.session.add(r)
-            db.session.commit()
 
             r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
                                    partials='1.0build1', promptWaitTime=None,
@@ -220,7 +218,6 @@ class TestBase(unittest.TestCase):
             r.ready = True
             r.status = "shipped"
             db.session.add(r)
-            db.session.commit()
 
             r = ThunderbirdRelease(commRevision='zzz', commRelbranch=None,
                                    partials='1.0build1', promptWaitTime=None,
@@ -235,6 +232,7 @@ class TestBase(unittest.TestCase):
             r.ready = True
             r.status = "shipped"
             db.session.add(r)
+
             db.session.commit()
 
     def tearDown(self):
