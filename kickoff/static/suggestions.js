@@ -207,8 +207,9 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
     if (isFirefox(productName) && version.match(/^\d+\.0$/)) {
         betaBuilds = previousBuilds[base + 'beta'];
         if (betaBuilds) {
-            // this relies on the order of releases reported by the DB, newest first
-            partial.unshift(betaBuilds[0]);
+            // we use addLastVersionAsPartial() to avoid duplicates
+            lastBeta = addLastVersionAsPartial(version, betaBuilds, 1);
+            partial.unshift(lastBeta);
             partialAdded++;
         } else {
             console.warn('Expected to add a beta release but none were found');
