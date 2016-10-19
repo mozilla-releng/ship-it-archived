@@ -292,6 +292,7 @@ def thunderbirdVersionsJson():
         "LATEST_THUNDERBIRD_VERSION": getFilteredReleases("thunderbird", ["major", "stability"], lastRelease=True)[0][0],
         "LATEST_THUNDERBIRD_DEVEL_VERSION": getFilteredReleases("thunderbird", ["dev"], lastRelease=True)[0][0],
         "LATEST_THUNDERBIRD_ALPHA_VERSION": config.LATEST_THUNDERBIRD_ALPHA_VERSION,
+        "LATEST_THUNDERBIRD_NIGHTLY_VERSION": config.LATEST_THUNDERBIRD_NIGHTLY_VERSION,
     }
     return jsonify_by_sorting_values(versions)
 
