@@ -146,6 +146,17 @@ class TestJSONRequestsAPI(ViewTest):
         primary = json.loads(ret.data)
         self.assertEquals(ret.status_code, 200)
 
+    def assertDigitsAndSuffix(self, val, suffix):
+        # We don't use assertRegex because it needs Python 2.7.
+        # We limit the check on the version number to 2 digits intentionally.
+        # Failing on a typo such as 530.a1 is more of a worry than having to
+        # update this test when we reach Firefox 100.
+        self.assertNotEquals(
+            re.match(r'\d\d\.0' + suffix, val),
+            None,
+            'Version number in config.py is malformed'
+        )
+
     def testFirefoxVersions(self):
         config.CURRENT_ESR = "2"
         config.ESR_NEXT = "38"
@@ -153,37 +164,24 @@ class TestJSONRequestsAPI(ViewTest):
         versions = json.loads(ret.data)
 
         self.assertEquals(ret.status_code, 200)
-        self.assertEquals(versions['FIREFOX_ESR_NEXT'], "38.1.0esr")
-        self.assertEquals(versions['FIREFOX_ESR'], "2.0.2esr")
-        self.assertEquals(versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'], "3.0b3")
-        self.assertEquals(versions['LATEST_FIREFOX_VERSION'], '2.0')
-        self.assertEquals(versions['LATEST_FIREFOX_OLDER_VERSION'], "3.6.28")
-        self.assertEquals(versions['LATEST_FIREFOX_DEVEL_VERSION'], "3.0b3")
 
-        # We don't use assertRegex because it needs Python 2.7.
-        # We limit the check on the version number to 2 digits intentionally.
-        # Failing on a typo such as 530.a1 is more of a worry than having to
-        # update this test when we reach Firefox 100.
-        self.assertNotEquals(
-            re.match(r'\d\d\.0a1', versions['FIREFOX_NIGHTLY']),
-            None,
-            'Nightly Version number in config.py is malformed'
-        )
-
-        self.assertNotEquals(
-            re.match(r'\d\d\.0a2', versions['FIREFOX_AURORA']),
-            None,
-            'Aurora Version number in config.py is malformed'
-        )
-
-        self.assertTrue("FIREFOX_NIGHTLY" in versions)
-        self.assertTrue("FIREFOX_AURORA" in versions)
-        self.assertTrue("FIREFOX_ESR" in versions)
         self.assertTrue("FIREFOX_ESR_NEXT" in versions)
-        self.assertTrue("LATEST_FIREFOX_DEVEL_VERSION" in versions)
-        self.assertTrue("LATEST_FIREFOX_OLDER_VERSION" in versions)
+        self.assertEquals(versions['FIREFOX_ESR_NEXT'], "38.1.0esr")
+        self.assertTrue("FIREFOX_ESR" in versions)
+        self.assertEquals(versions['FIREFOX_ESR'], "2.0.2esr")
         self.assertTrue("LATEST_FIREFOX_RELEASED_DEVEL_VERSION" in versions)
+        self.assertEquals(versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'], "3.0b3")
         self.assertTrue("LATEST_FIREFOX_VERSION" in versions)
+        self.assertEquals(versions['LATEST_FIREFOX_VERSION'], '2.0')
+        self.assertTrue("LATEST_FIREFOX_OLDER_VERSION" in versions)
+        self.assertEquals(versions['LATEST_FIREFOX_OLDER_VERSION'], "3.6.28")
+        self.assertTrue("LATEST_FIREFOX_DEVEL_VERSION" in versions)
+        self.assertEquals(versions['LATEST_FIREFOX_DEVEL_VERSION'], "3.0b3")
+        self.assertTrue("FIREFOX_NIGHTLY" in versions)
+        self.assertDigitsAndSuffix(versions['FIREFOX_NIGHTLY'], 'a1')
+        self.assertTrue("FIREFOX_AURORA" in versions)
+        self.assertDigitsAndSuffix(versions['FIREFOX_AURORA'], 'a2')
+
         self.assertTrue("LATEST_THUNDERBIRD_VERSION" not in versions)
 
     def testMobileVersions(self):
@@ -235,8 +233,11 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("LATEST_THUNDERBIRD_DEVEL_VERSION" in versions)
         self.assertEquals(versions['LATEST_THUNDERBIRD_DEVEL_VERSION'], "24.0b2")
         self.assertTrue("LATEST_THUNDERBIRD_ALPHA_VERSION" in versions)
-        self.assertTrue(config.LATEST_THUNDERBIRD_ALPHA_VERSION.endswith('a2'))
-        self.assertEquals(len(versions), 3)
+        self.assertDigitsAndSuffix(versions['LATEST_THUNDERBIRD_ALPHA_VERSION'], 'a2')
+        self.assertTrue("LATEST_THUNDERBIRD_NIGHTLY_VERSION" in versions)
+        self.assertDigitsAndSuffix(versions['LATEST_THUNDERBIRD_NIGHTLY_VERSION'], 'a1')
+        self.assertEquals(len(versions), 4)
+
         self.assertTrue("FIREFOX_ESR" not in versions)
         self.assertTrue("FIREFOX_ESR_NEXT" not in versions)
         self.assertTrue("LATEST_FIREFOX_DEVEL_VERSION" not in versions)
