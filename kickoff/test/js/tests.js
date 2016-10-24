@@ -346,6 +346,52 @@ QUnit.test('getTreeStatusUrl()', function(assert) {
 });
 
 
+QUnit.test('getJsonPushesUrl()', function(assert) {
+    var data = [{
+        branch: 'releases/mozilla-release',
+        expectedUrl: 'https://hg.mozilla.org/releases/mozilla-release/json-pushes',
+    }, {
+        branch: 'releases/mozilla-beta',
+        expectedUrl: 'https://hg.mozilla.org/releases/mozilla-beta/json-pushes',
+    }, {
+        branch: 'releases/comm-beta',
+        expectedUrl: 'https://hg.mozilla.org/releases/comm-beta/json-pushes',
+    }, {
+        branch: 'releases/comm-esr45',
+        expectedUrl: 'https://hg.mozilla.org/releases/comm-esr45/json-pushes',
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            getJsonPushesUrl(piece.branch),
+            piece.expectedUrl
+        );
+    });
+});
+
+QUnit.test('pluckLatestRevision()', function(assert) {
+    jsonPush = {
+        "6527": {
+            "changesets": ["00f11e7650b184162dbedf9c82a7917b5c07d216", "1ad4ab26875c6512b577f8f6974260fcd76d35b6", "79247eb8ce1f6c5e4444c196983cf7630fa62e9c", "d69e6eb5d19f81e22ddd026857e2b5b7b57d37b5"],
+            "date": 1477014593,
+            "user": "r@g.c"
+        },
+        "6528": {
+            "changesets": ["328aacd63a389e49956cc34b3be052ffd5f5b519", "0f6ce21169761fde4d0d9058984b1ba3c651e6b5"],
+            "date": 1477082000,
+            "user": "ffxbld"
+        },
+        "6529": {
+            "changesets": ["41f4ad2acadfef63851abed019bad9b91923b8fc", "f8422ce3d9c6743ef467c1e3394fb83762298a8c", "29a171c7f26dcff9326ffd950e5446ee1f9d0d7b", "fac7c4b729ccd735faa0c4434ae7eede3be95dd6"],
+            "date": 1477246215,
+            "user": "r@g.c"
+        }
+    };
+
+    assert.equal(pluckLatestRevision(jsonPush), 'fac7c4b729ccd735faa0c4434ae7eede3be95dd6');
+});
+
+
 QUnit.module('model/Release');
 
 QUnit.test('constructor must throw errors when release has more than one type', function(assert) {

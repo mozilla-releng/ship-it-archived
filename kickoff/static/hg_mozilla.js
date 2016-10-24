@@ -1,10 +1,10 @@
-function _getJsonPushesUrl(branchName) {
+function getJsonPushesUrl(branchName) {
     return CONFIG.baseUrls.hg_mozilla + branchName + '/json-pushes';
 }
 
-function _pluckLatestRevision(jsonPushes) {
+function pluckLatestRevision(jsonPushes) {
     var pushIds = Object.keys(jsonPushes);
-    pushIds = pushIds.map(function(pushId) { return Number.parseInt(pushId)})
+    pushIds = pushIds.map(function(pushId) { return parseInt(pushId)})
     latestPushId = pushIds.reduce(function(latest, challenger) { return challenger > latest ? challenger : latest })
     latestRevisions = jsonPushes[latestPushId]['changesets']
     return latestRevisions[latestRevisions.length - 1]
@@ -18,9 +18,9 @@ function populateRevisionWithLatest(productName, branchName) {
     revisionElement.prop('disabled', true);
 
     $.ajax({
-        url: _getJsonPushesUrl(branchName),
+        url: getJsonPushesUrl(branchName),
     }).done(function(results) {
-        var latestRevision = _pluckLatestRevision(results);
+        var latestRevision = pluckLatestRevision(results);
         revisionElement.val(latestRevision);
     }).fail(function() {
         revisionElement.val('');
