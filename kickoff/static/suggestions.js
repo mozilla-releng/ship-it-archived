@@ -273,7 +273,7 @@ function getPreviousBuildL10nUrl(productName, version, previousBuildNumber) {
 function getUrlAndMessages(productName, version, buildNumber) {
     var opts = {
         url: '',
-        downloadMessage: 'Trying to download from ',
+        downloadPlaceholder: 'Trying to download from ',
         previousBuildWarning: '',
     };
     var minor = version.match(/(\d+)\.\d+\.\d+/);
@@ -283,19 +283,19 @@ function getUrlAndMessages(productName, version, buildNumber) {
         var previousVersion = minor[1] + '.0';
         var buildString = previousVersion + ' build' + previousBuildNumber;
         opts.url = getPreviousBuildL10nUrl(productName, previousVersion, previousBuildNumber);
-        opts.downloadMessage += buildString;
+        opts.downloadPlaceholder += buildString;
         opts.previousBuildWarning = 'Changesets copied from ' + buildString +
             '. If you want to not use them, please edit this field.';
     } else if (buildNumber > 1) {
         var previousBuildNumber = buildNumber - 1;
         var buildString = 'build' + previousBuildNumber;
         opts.url = getPreviousBuildL10nUrl(productName, version, previousBuildNumber);
-        opts.downloadMessage += buildString;
+        opts.downloadPlaceholder += buildString;
         opts.previousBuildWarning = 'Changesets copied from ' + buildString +
             '. If you want to not use them, please edit this field.';
     } else {
         opts.url = getElmoUrl(productName, version);
-        opts.downloadMessage += 'Elmo';
+        opts.downloadPlaceholder += 'Elmo';
         opts.previousBuildWarning = '';
     }
 
@@ -310,10 +310,12 @@ function populateL10nChangesets(productName, version, buildNumber) {
         return;
     }
 
+    var oldPlaceholder = changesetsElement.attr('placeholder');
     var warningElement = changesetsElement.siblings('.help').find('.warning');
     var opts = getUrlAndMessages(productName, version, buildNumber);
 
-    changesetsElement.val(opts.downloadMessage);
+    changesetsElement.val('');
+    changesetsElement.attr('placeholder', opts.downloadPlaceholder);
     changesetsElement.prop('disabled', true);
     warningElement.text('');
 
@@ -328,6 +330,7 @@ function populateL10nChangesets(productName, version, buildNumber) {
         console.error('Could not fetch l10n changesets');
     }).always(function() {
         changesetsElement.prop('disabled', false);
+        changesetsElement.attr('placeholder', oldPlaceholder);
         warningElement.text(opts.previousBuildWarning);
     });
 }
