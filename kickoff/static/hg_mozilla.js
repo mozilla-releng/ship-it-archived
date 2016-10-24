@@ -1,0 +1,32 @@
+function _getJsonPushesUrl(branchName) {
+    return CONFIG.baseUrls.hg_mozilla + branchName + '/json-pushes';
+}
+
+function _pluckLatestRevision(jsonPushes) {
+    var pushIds = Object.keys(jsonPushes);
+    pushIds = pushIds.map(function(pushId) { return Number.parseInt(pushId)})
+    latestPushId = pushIds.reduce(function(latest, challenger) { return challenger > latest ? challenger : latest })
+    latestRevisions = jsonPushes[latestPushId]['changesets']
+    return latestRevisions[latestRevisions.length - 1]
+}
+
+function populateRevisionWithLatest(productName, branchName) {
+    var revisionElement = $('#' + productName + '-mozillaRevision');
+    var oldPlaceholder = revisionElement.attr('placeholder');
+
+    revisionElement.attr('placeholder', 'Fetching latest revision');
+    revisionElement.prop('disabled', true);
+
+    $.ajax({
+        url: _getJsonPushesUrl(branchName),
+    }).done(function(results) {
+        var latestRevision = _pluckLatestRevision(results);
+        revisionElement.val(latestRevision);
+    }).fail(function() {
+        revisionElement.val('');
+        console.error('Could not fetch latest revision for branch "' + branchName + '"');
+    }).always(function() {
+        revisionElement.prop('disabled', false);
+        revisionElement.attr('placeholder', oldPlaceholder);
+    });
+}

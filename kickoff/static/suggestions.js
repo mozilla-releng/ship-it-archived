@@ -357,6 +357,7 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         var branch = guessBranchFromVersion(productName, version);
         branchElement.val(branch);
         branchElement.trigger('change');
+        return branch;
     }
 
     function populatePartialInfo(version) {
@@ -397,7 +398,8 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             populateBuildNumber(version);
             var buildNumber = buildNumberElement.val();
 
-            populateBranch(productName, version);
+            var branchName = populateBranch(productName, version);
+            populateRevisionWithLatest(productName, branchName);
             if (!isFennec(productName)) {
                 // There is no notion of partial on fennec
                 populatePartial(productName, version, previousBuilds, partialElement);
@@ -415,9 +417,11 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         populateBuildNumber(version);
         var buildNumber = buildNumberElement.val();
 
-        populateBranch(productName, version);
+        var branchName = populateBranch(productName, version);
+        populateRevisionWithLatest(productName, branchName);
         populatePartial(productName, version, previousBuilds, partialElement);
         populateL10nChangesets(productName, version, buildNumber);
+
     });
 }
 
