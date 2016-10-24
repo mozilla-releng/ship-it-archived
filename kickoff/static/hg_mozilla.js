@@ -1,13 +1,13 @@
 function getJsonPushesUrl(branchName) {
-    return CONFIG.baseUrls.hg_mozilla + branchName + '/json-pushes';
+    return CONFIG.baseUrls.hgMozilla + branchName + '/json-pushes';
 }
 
 function pluckLatestRevision(jsonPushes) {
     var pushIds = Object.keys(jsonPushes);
-    pushIds = pushIds.map(function(pushId) { return parseInt(pushId)})
-    latestPushId = pushIds.reduce(function(latest, challenger) { return challenger > latest ? challenger : latest })
-    latestRevisions = jsonPushes[latestPushId]['changesets']
-    return latestRevisions[latestRevisions.length - 1]
+    pushIds = pushIds.map(function(pushId) { return parseInt(pushId); });
+    latestPushId = pushIds.reduce(function(latest, challenger) { return challenger > latest ? challenger : latest; });
+    latestRevisions = jsonPushes[latestPushId].changesets;
+    return latestRevisions[latestRevisions.length - 1];
 }
 
 function populateRevisionWithLatest(productName, branchName) {
