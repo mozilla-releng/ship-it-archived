@@ -28,5 +28,6 @@ function populateRevisionWithLatest(productName, branchName) {
     }).always(function() {
         revisionElement.prop('disabled', false);
         revisionElement.attr('placeholder', oldPlaceholder);
+        revisionElement.blur(); // this deactivates relbranch field, if needed
     });
 }
