@@ -131,6 +131,10 @@ function stripBuildNumber(release) {
 }
 
 function populatePartial(productName, version, previousBuilds, partialElement) {
+    if (isFennec(productName)) {
+        // Fennec doesn't support partials
+        return;
+    }
 
     partialElement.val('');
 
@@ -363,7 +367,12 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         return branch;
     }
 
-    function populatePartialInfo(version) {
+    function populatePartialInfo(productName, version) {
+        if (isFennec(productName)) {
+            // Fennec doesn't support partials
+            return;
+        }
+
         if (partialsADI.length == 0 || !isRelease(version)) {
             partialInfo.html('');
             // No ADI available, don't display anything
@@ -377,6 +386,20 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         }
 
         partialInfo.html(partialString);
+    }
+
+    function populateAllPossibleFields(productName, rawVersion, buildNumberElement, previousBuilds, partialElement) {
+        // TODO show a warning if version is not correct
+        var version = getSanitizedVersionString(rawVersion);
+
+        populateBuildNumber(version);
+        var buildNumber = buildNumberElement.val();
+        var branchName = populateBranch(productName, version);
+
+        populateRevisionWithLatest(productName, branchName);
+        populatePartial(productName, version, previousBuilds, partialElement);
+        populatePartialInfo(productName, version);
+        populateL10nChangesets(productName, version, buildNumber);
     }
 
     var VERSION_SUFFIX = '-version';
@@ -393,38 +416,14 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
             collision: 'flipfit',
         },
         select: function(event, ui) {
-            var fieldName = event.target.name;
-            // TODO show a warning if version is not correct
-            var version = getSanitizedVersionString(ui.item.value);
-            var productName = fieldName.slice(0, -VERSION_SUFFIX.length);
-
-            populateBuildNumber(version);
-            var buildNumber = buildNumberElement.val();
-
-            var branchName = populateBranch(productName, version);
-            populateRevisionWithLatest(productName, branchName);
-            if (!isFennec(productName)) {
-                // There is no notion of partial on fennec
-                populatePartial(productName, version, previousBuilds, partialElement);
-                populatePartialInfo(version);
-            }
-            populateL10nChangesets(productName, version, buildNumber);
+            var productName = event.target.name.slice(0, -VERSION_SUFFIX.length);
+            populateAllPossibleFields(productName, ui.item.value, buildNumberElement, previousBuilds, partialElement);
         }
     }).focus(function() {
         $(this).autocomplete('search');
     }).change(function() {
         var productName = this.name.slice(0, -VERSION_SUFFIX.length);
-        // TODO show a warning if version is not correct
-        var version = getSanitizedVersionString(this.value);
-
-        populateBuildNumber(version);
-        var buildNumber = buildNumberElement.val();
-
-        var branchName = populateBranch(productName, version);
-        populateRevisionWithLatest(productName, branchName);
-        populatePartial(productName, version, previousBuilds, partialElement);
-        populateL10nChangesets(productName, version, buildNumber);
-
+        populateAllPossibleFields(productName, this.value, buildNumberElement, previousBuilds, partialElement);
     });
 }
 
