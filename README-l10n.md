@@ -5,4 +5,4 @@
 
 2. Make sure that the language name (both English and localized) is available in `kickoff/static/languages.json`.
 
-3. Run `scripts/scripts/sync-and-check-l10n.py` to download `regionNames.properties` for this new locale.
+3. Run `scripts/sync-and-check-l10n.py` to download `regionNames.properties` for this new locale.
