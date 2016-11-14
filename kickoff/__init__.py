@@ -55,6 +55,7 @@ def index():
 def favicon():
     return app.send_static_file('favicon.ico')
 
+
 app.add_url_rule('/submit_release.html', view_func=SubmitRelease.as_view('submit_release'), methods=['GET', 'POST'])
 app.add_url_rule('/release.html', view_func=Release.as_view('release'), methods=['GET', 'POST'])
 app.add_url_rule('/releases.html', view_func=Releases.as_view('releases'), methods=['GET', 'POST'])
