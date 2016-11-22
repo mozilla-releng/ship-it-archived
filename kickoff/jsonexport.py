@@ -34,7 +34,11 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, w
     version = []
     # we don't export esr in the version name
     if "major" in categories:
-        version.append(("major", "([0-9]+\.[0-9]+|14\.0\.1)$"))
+        if product == "thunderbird":
+            # Thunderbird 38.0.1 was a major release
+            version.append(("major", r"([0-9]+\.[0-9]+|14\.0\.1|38\.0\.1)$"))
+        else:
+            version.append(("major", r"([0-9]+\.[0-9]+|14\.0\.1)$"))
     if "stability" in categories:
         version.append(("stability", "([0-9]+\.[0-9]+\.[0-9]+(esr|)$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(esr|)$)"))
     if "dev" in categories:
