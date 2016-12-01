@@ -37,8 +37,9 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, w
         version.append(("major", "([0-9]+\.[0-9]+|14\.0\.1)$"))
     if "stability" in categories:
         # Ugly fix to prevent ESRs from being listed in the release channel (see bug 1321400)
-        regex = "^[0-9]+(\.[0-9]+){2,3}$" if "not-esr" in categories else \
-            "([0-9]+\.[0-9]+\.[0-9]+(esr|)$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(esr|)$)"
+        regex = '^[0-9]+(\.[0-9]+){2,3}$'
+        if 'not-esr' not in categories:
+            regex = regex.replace('$', 'esr$')
         version.append(("stability", regex))
     if "dev" in categories:
         # We had 38.0.5b2
