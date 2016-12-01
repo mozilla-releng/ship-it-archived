@@ -36,7 +36,11 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, w
     if "major" in categories:
         version.append(("major", "([0-9]+\.[0-9]+|14\.0\.1)$"))
     if "stability" in categories:
-        version.append(("stability", "([0-9]+\.[0-9]+\.[0-9]+(esr|)$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(esr|)$)"))
+        # Ugly fix to prevent ESRs from being listed in the release channel (see bug 1321400)
+        regex = '^[0-9]+(\.[0-9]+){2,3}$'
+        if 'not-esr' not in categories:
+            regex = regex.replace('$', 'esr$')
+        version.append(("stability", regex))
     if "dev" in categories:
         # We had 38.0.5b2
         version.append(("dev", "([0-9]+\.[0-9]|[0-9]+\.[0-9]+\.[0-9])(b|rc|build|plugin)[0-9]+$"))
@@ -124,7 +128,7 @@ def firefoxVersionsJson():
     }
 
     # Stable
-    lastStable = getFilteredReleases("firefox", ["major", "stability"], lastRelease=True)
+    lastStable = getFilteredReleases("firefox", ["major", "stability", "not-esr"], lastRelease=True)
     versions['LATEST_FIREFOX_VERSION'] = lastStable[0][0]
     # beta
     lastStable = getFilteredReleases("firefox", ["dev"], lastRelease=True)
