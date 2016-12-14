@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import pytz
 import re
+from distutils.version import LooseVersion
 
 from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -281,8 +282,10 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
             if shipped:
                 qry = qry.filter(table._shippedAt != None)
             if lastRelease and not paginationCriteria:
-                # Retrieve the last X version
-                qry = qry.order_by(table._submittedAt.desc()).limit(40)
+                # Sort using version
+                results = sorted(
+                    qry.all(), key=lambda x: LooseVersion(x.version),
+                    reverse=True)
             else:
                 if searchFilter:
                     searchList = table.getSearchList(searchFilter)
@@ -296,7 +299,7 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
 
                     qry = qry.order_by(*orderByList).limit(paginationCriteria.length).offset(paginationCriteria.start)
 
-            results = qry.all()
+                results = qry.all()
 
             for r in results:
                 if not versionFilterCategory:

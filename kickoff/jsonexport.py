@@ -30,25 +30,30 @@ def generateJSONFileList(withL10Nfiles=False):
     return sorted(links)
 
 
-def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None, withL10N=False, detailledInfo=False):
+def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None,
+                        withL10N=False, detailledInfo=False,
+                        exclude_esr=False):
     version = []
     # we don't export esr in the version name
     if "major" in categories:
-        version.append(("major", "([0-9]+\.[0-9]+|14\.0\.1)$"))
+        version.append(("major", r"([0-9]+\.[0-9]+|14\.0\.1)$"))
     if "stability" in categories:
-        version.append(("stability", "([0-9]+\.[0-9]+\.[0-9]+(esr|)$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(esr|)$)"))
+        if exclude_esr:
+            version.append(("stability", r"([0-9]+\.[0-9]+\.[0-9]+$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)"))
+        else:
+            version.append(("stability", r"([0-9]+\.[0-9]+\.[0-9]+(esr|)$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(esr|)$)"))
     if "dev" in categories:
         # We had 38.0.5b2
-        version.append(("dev", "([0-9]+\.[0-9]|[0-9]+\.[0-9]+\.[0-9])(b|rc|build|plugin)[0-9]+$"))
+        version.append(("dev", r"([0-9]+\.[0-9]|[0-9]+\.[0-9]+\.[0-9])(b|rc|build|plugin)[0-9]+$"))
     if "esr" in categories:
         if ESR_NEXT and not config.ESR_NEXT:
             # No ESR_NEXT yet
             return
         if ESR_NEXT:
             # Ugly hack to manage the next ESR (when we have two overlapping esr)
-            version.append(("esr", "(" + config.ESR_NEXT + "\.[0-9]+\.[0-9]+esr$|" + config.ESR_NEXT + "\.[0-9]+\.[0-9]+\.[0-9]+esr$)"))
+            version.append(("esr", "(" + config.ESR_NEXT + r"\.[0-9]+\.[0-9]+esr$|" + config.ESR_NEXT + r"\.[0-9]+\.[0-9]+\.[0-9]+esr$)"))
         else:
-            version.append(("esr", "(" + config.CURRENT_ESR + "\.[0-9]+\.[0-9]+esr$|" + config.CURRENT_ESR + "\.[0-9]+\.[0-9]+\.[0-9]+esr$)"))
+            version.append(("esr", "(" + config.CURRENT_ESR + r"\.[0-9]+\.[0-9]+esr$|" + config.CURRENT_ESR + r"\.[0-9]+\.[0-9]+\.[0-9]+esr$)"))
     releases = getReleases(ready=True, productFilter=product, versionFilterCategory=version, lastRelease=lastRelease)
     results = []
     for r in releases:
@@ -124,20 +129,22 @@ def firefoxVersionsJson():
     }
 
     # Stable
-    lastStable = getFilteredReleases("firefox", ["major", "stability"], lastRelease=True)
-    versions['LATEST_FIREFOX_VERSION'] = lastStable[0][0]
+    releases = getFilteredReleases("firefox", ["major", "stability"], lastRelease=True, exclude_esr=True)
+    versions['LATEST_FIREFOX_VERSION'] = releases[0][0]
     # beta
-    lastStable = getFilteredReleases("firefox", ["dev"], lastRelease=True)
-    versions['LATEST_FIREFOX_DEVEL_VERSION'] = lastStable[0][0]
-    versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'] = lastStable[0][0]
+    betas = getFilteredReleases("firefox", ["dev"], lastRelease=True)
+    versions['LATEST_FIREFOX_DEVEL_VERSION'] = betas[0][0]
+    versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'] = betas[0][0]
     # esr
-    lastStable = getFilteredReleases("firefox", ["esr"], lastRelease=True)
-    versions['FIREFOX_ESR'] = lastStable[0][0] + "esr"
+    esr_releases = getFilteredReleases("firefox", ["esr"], lastRelease=True)
+    versions['FIREFOX_ESR'] = esr_releases[0][0] + "esr"
     # esr next
-    lastStable = getFilteredReleases("firefox", ["esr"], lastRelease=True, ESR_NEXT=True)
-    if lastStable:
+    esr_next = getFilteredReleases("firefox", ["esr"], lastRelease=True, ESR_NEXT=True)
+    if esr_next:
         # If not found, that means that we are managing only a single ESR
-        versions['FIREFOX_ESR_NEXT'] = lastStable[0][0] + "esr"
+        versions['FIREFOX_ESR_NEXT'] = esr_next[0][0] + "esr"
+    else:
+        versions['FIREFOX_ESR_NEXT'] = ""
 
     return returnJSONVersionFile('firefox_versions.json', versions)
 
@@ -190,23 +197,23 @@ def fillPrereleaseVersion(buildsVersionLocales, channel='aurora'):
 def updateLocaleWithVersionsTable(product):
     buildsVersionLocales = {}
     # Stable
-    lastStable = getFilteredReleases(product, ["major", "stability"],
-                                     lastRelease=True, withL10N=True)
+    releases = getFilteredReleases(product, ["major", "stability"],
+                                   lastRelease=True, withL10N=True,
+                                   exclude_esr=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
-                                                   lastStable[0][2],
-                                                   lastStable[0][0])
+                                                   releases[0][2],
+                                                   releases[0][0])
 
     # beta
-    lastStable = getFilteredReleases(product, ["dev"], lastRelease=True, withL10N=True)
+    betas = getFilteredReleases(product, ["dev"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
-                                                   lastStable[0][2],
-                                                   lastStable[0][0])
+                                                   betas[0][2], betas[0][0])
 
     # esr
-    lastStable = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True)
+    esr_releases = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
-                                                   lastStable[0][2],
-                                                   lastStable[0][0] + "esr")
+                                                   esr_releases[0][2],
+                                                   esr_releases[0][0] + "esr")
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'aurora')
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'nightly')
 
