@@ -28,6 +28,7 @@ class TestJSONRequestsAPI(ViewTest):
     def testThunderbirdMajorReleases(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird_history_major_releases.json')
         expected = {
+            '2.0': '2005-01-03',
             "23.0": "2005-01-03",
         }
         self.assertEquals(ret.status_code, 200)
@@ -114,7 +115,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('23.0a2' in primary['en-US'])
         self.assertTrue('24.0a1' in primary['en-US'])
         self.assertTrue('3.0b3' in primary['en-US'])
-        self.assertTrue('2.0' in primary['en-US'])
+        self.assertTrue('3.0.1' in primary['en-US'], primary['en-US'])
         # That assertion also tests that we have well-formed ESR numbers
         self.assertTrue('2.0.2esr' in primary['en-US'])
         self.assertEquals(len(primary['en-US']), 5)
@@ -172,7 +173,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("LATEST_FIREFOX_RELEASED_DEVEL_VERSION" in versions)
         self.assertEquals(versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'], "3.0b3")
         self.assertTrue("LATEST_FIREFOX_VERSION" in versions)
-        self.assertEquals(versions['LATEST_FIREFOX_VERSION'], '2.0')
+        self.assertEquals(versions['LATEST_FIREFOX_VERSION'], '3.0.1')
         self.assertTrue("LATEST_FIREFOX_OLDER_VERSION" in versions)
         self.assertEquals(versions['LATEST_FIREFOX_OLDER_VERSION'], "3.6.28")
         self.assertTrue("LATEST_FIREFOX_DEVEL_VERSION" in versions)
@@ -198,7 +199,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['nightly_version'], "24.0a1")
         self.assertEquals(versions['alpha_version'], "23.0a2")
         self.assertEquals(versions['beta_version'], "23.0b2")
-        self.assertEquals(versions['version'], "24.0")
+        self.assertEquals(versions['version'], "24.0.1")
         self.assertEquals(versions['ios_version'], "1.1")
         self.assertEquals(versions['ios_beta_version'], "1.2")
 
@@ -216,7 +217,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(details['nightly_version'], "24.0a1")
         self.assertEquals(details['alpha_version'], "23.0a2")
         self.assertEquals(details['beta_version'], "23.0b2")
-        self.assertEquals(details['version'], "24.0")
+        self.assertEquals(details['version'], "24.0.1")
         self.assertEquals(details['ios_version'], "1.1")
         self.assertEquals(details['ios_beta_version'], "1.2")
         self.assertTrue("builds" in details)
