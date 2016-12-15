@@ -7,6 +7,7 @@ primary_builds = [
     'br',
     'ca',
     'cs',
+    'cy',
     'da',
     'de',
     'dsb',
