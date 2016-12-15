@@ -284,14 +284,14 @@ function getUrlAndMessages(productName, version, buildNumber) {
         var buildString = previousVersion + ' build' + previousBuildNumber;
         opts.url = getPreviousBuildL10nUrl(productName, previousVersion, previousBuildNumber);
         opts.downloadMessage += buildString;
-        opts.previousBuildWarning = 'Changesets gotten from ' + buildString +
+        opts.previousBuildWarning = 'Changesets copied from ' + buildString +
             '. If you want to not use them, please edit this field.';
     } else if (buildNumber > 1) {
         var previousBuildNumber = buildNumber - 1;
         var buildString = 'build' + previousBuildNumber;
         opts.url = getPreviousBuildL10nUrl(productName, version, previousBuildNumber);
         opts.downloadMessage += buildString;
-        opts.previousBuildWarning = 'Changesets gotten from ' + buildString +
+        opts.previousBuildWarning = 'Changesets copied from ' + buildString +
             '. If you want to not use them, please edit this field.';
     } else {
         opts.url = getElmoUrl(productName, version);

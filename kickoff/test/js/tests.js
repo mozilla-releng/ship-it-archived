@@ -298,9 +298,9 @@ QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
 QUnit.test('getUrlAndMessages()', function(assert) {
     var data = [{
         product: 'firefox', version: '32.0', buildNumber: 1,
-        // We get file:/// because tests run under grunt-qunit
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
     }, {
+        // We get file:/// because tests run under grunt-qunit
         product: 'thunderbird', version: '33.0', buildNumber: 2,
         expectedUrl: 'file:///releases/thunderbird-33.0-build1/l10n',
     }, {
