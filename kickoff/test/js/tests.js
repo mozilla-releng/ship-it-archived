@@ -295,6 +295,33 @@ QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
     });
 });
 
+QUnit.test('getUrlAndMessages()', function(assert) {
+    var data = [{
+        product: 'firefox', version: '32.0', buildNumber: 1,
+        expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
+    }, {
+        // We get file:/// because tests run under grunt-qunit
+        product: 'thunderbird', version: '33.0', buildNumber: 2,
+        expectedUrl: 'file:///releases/thunderbird-33.0-build1/l10n',
+    }, {
+        product: 'firefox', version: '44.0.1', buildNumber: 1,
+        expectedUrl: 'file:///releases/firefox-44.0-build1/l10n',
+    }, {
+        product: 'firefox', version: '45.6.0esr', buildNumber: 2,
+        expectedUrl: 'file:///releases/firefox-45.0-build1/l10n',
+    }, {
+        product: 'fennec', version: '32.0b1', buildNumber: 3,
+        expectedUrl: 'file:///releases/fennec-32.0b1-build2/l10n'
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            getUrlAndMessages(piece.product, piece.version, piece.buildNumber).url,
+            piece.expectedUrl
+        );
+    });
+});
+
 QUnit.test('getTreeStatusUrl()', function(assert) {
     var data = [{
         branch: 'releases/mozilla-release',

@@ -18,20 +18,20 @@ class TestBase(unittest.TestCase):
         with app.test_request_context():
             db.init_app(app)
             db.create_all()
-            r = FennecRelease(submitter='joe', version='1', buildNumber=1,
+            r = FennecRelease(submitter='joe', version='1.0', buildNumber=1,
                               branch='a', mozillaRevision='abc',
                               l10nChangesets='{"hi": { "revision": "fe436c75f71d" }}',
                               mozillaRelbranch=None)
             r.ready = True
             db.session.add(r)
 
-            r = FennecRelease(submitter='joe', version='4', buildNumber=4,
+            r = FennecRelease(submitter='joe', version='4.0', buildNumber=4,
                               branch='a', mozillaRevision='abc',
                               l10nChangesets='{"fr": { "revision": "fe436c75f71d" }}',
                               mozillaRelbranch=None)
             db.session.add(r)
 
-            r = FennecRelease(submitter='joe', version='4', buildNumber=5,
+            r = FennecRelease(submitter='joe', version='4.0', buildNumber=5,
                               branch='a', mozillaRevision='abc',
                               l10nChangesets='{"de": { "revision": "fe436c75f71d", "platforms": ["android", "android-multilocale"]  }}',
                               mozillaRelbranch='BAR',
@@ -70,7 +70,7 @@ class TestBase(unittest.TestCase):
                                branch='a', mozillaRevision='def',
                                l10nChangesets='ja zu',
                                mozillaRelbranch='FOO',
-                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
+                               submittedAt=datetime(2015, 1, 2, 3, 4, 5, 6),
                                shippedAt=datetime(2015, 1, 4, 3, 4, 5, 6),
                                comment="yet an other amazing comment")
             r.complete = True
@@ -167,7 +167,7 @@ class TestBase(unittest.TestCase):
             # Thunderbird data
             r = ThunderbirdRelease(commRevision='ghi', commRelbranch=None,
                                    partials='0', promptWaitTime=None,
-                                   submitter='bob', version='2', buildNumber=2,
+                                   submitter='bob', version='2.0', buildNumber=2,
                                    branch='b', mozillaRevision='ghi',
                                    l10nChangesets='li',
                                    mozillaRelbranch=None,
