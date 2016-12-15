@@ -276,8 +276,17 @@ function getUrlAndMessages(productName, version, buildNumber) {
         downloadMessage: 'Trying to download from ',
         previousBuildWarning: '',
     };
-
-    if (buildNumber > 1) {
+    var minor = version.match(/(\d+)\.\d+\.\d+/);
+    if (minor) {
+        // Fall back to $major.0 build1
+        var previousBuildNumber = 1;
+        var previousVersion = minor[1] + '.0';
+        var buildString = previousVersion + ' build' + previousBuildNumber;
+        opts.url = getPreviousBuildL10nUrl(productName, previousVersion, previousBuildNumber);
+        opts.downloadMessage += buildString;
+        opts.previousBuildWarning = 'Changesets gotten from ' + buildString +
+            '. If you want to not use them, please edit this field.';
+    } else if (buildNumber > 1) {
         var previousBuildNumber = buildNumber - 1;
         var buildString = 'build' + previousBuildNumber;
         opts.url = getPreviousBuildL10nUrl(productName, version, previousBuildNumber);
@@ -287,6 +296,7 @@ function getUrlAndMessages(productName, version, buildNumber) {
     } else {
         opts.url = getElmoUrl(productName, version);
         opts.downloadMessage += 'Elmo';
+        opts.previousBuildWarning = '';
     }
 
     return opts;
