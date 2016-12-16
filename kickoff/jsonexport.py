@@ -20,10 +20,12 @@ from jsonexportl10n import generateRegionsJSONFileList, generateL10NJSONFileList
 SPECIAL_FIREFOX_MAJORS = ['14.0.1']
 SPECIAL_THUNDERBIRD_MAJORS = ['14.0.1', '38.0.1']
 
+
 def patternize_versions(versions):
     if not versions:
         return ""
     return "|" + "|".join([v.replace(r'.', r'\.') for v in versions])
+
 
 def generateJSONFileList(withL10Nfiles=False):
     """ From the flask endpoint, generate a list of json files """
