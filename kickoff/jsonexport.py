@@ -16,6 +16,14 @@ from mozilla.release.l10n import parsePlainL10nChangesets
 from jsonexportcommon import jsonify_by_sorting_values, jsonify_by_sorting_keys
 from jsonexportl10n import generateRegionsJSONFileList, generateL10NJSONFileList
 
+# typically, these are dot releases that are considered major
+SPECIAL_FIREFOX_MAJORS = ['14.0.1']
+SPECIAL_THUNDERBIRD_MAJORS = ['14.0.1', '38.0.1']
+
+def patternize_versions(versions):
+    if not versions:
+        return ""
+    return "|" + "|".join([v.replace(r'.', r'\.') for v in versions])
 
 def generateJSONFileList(withL10Nfiles=False):
     """ From the flask endpoint, generate a list of json files """
@@ -36,7 +44,11 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None,
     version = []
     # we don't export esr in the version name
     if "major" in categories:
-        version.append(("major", r"([0-9]+\.[0-9]+|14\.0\.1)$"))
+        if product == "thunderbird":
+            special_majors = patternize_versions(SPECIAL_THUNDERBIRD_MAJORS)
+        else:
+            special_majors = patternize_versions(SPECIAL_FIREFOX_MAJORS)
+        version.append(("major", r"([0-9]+\.[0-9]+%s)$" % special_majors))
     if "stability" in categories:
         if exclude_esr:
             version.append(("stability", r"([0-9]+\.[0-9]+\.[0-9]+$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)"))
