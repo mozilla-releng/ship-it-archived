@@ -6,34 +6,18 @@ from distutils.version import LooseVersion
 
 from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import or_
+from sqlalchemy.ext.declarative import AbstractConcreteBase
+from sqlalchemy.orm import polymorphic_union
+from sqlalchemy.sql.expression import or_, and_
 from mozilla.release.info import getReleaseName
 
 from kickoff import db, config
 
 
-class Release(object):
-
-    """A base class with all of the common columns for any release."""
-    name = db.Column(db.String(100), primary_key=True)
-    submitter = db.Column(db.String(250), nullable=False)
+class Base(AbstractConcreteBase):
     _submittedAt = db.Column('submittedAt', db.DateTime(pytz.utc),
                              nullable=False, default=datetime.utcnow)
     _shippedAt = db.Column('shippedAt', db.DateTime(pytz.utc))
-    version = db.Column(db.String(10), nullable=False)
-    buildNumber = db.Column(db.Integer(), nullable=False)
-    branch = db.Column(db.String(50), nullable=False)
-    mozillaRevision = db.Column(db.String(100), nullable=False)
-    l10nChangesets = db.Column(db.Text(), nullable=False)
-    ready = db.Column(db.Boolean(), nullable=False, default=False)
-    complete = db.Column(db.Boolean(), nullable=False, default=False)
-    status = db.Column(db.String(250), default="")
-    mozillaRelbranch = db.Column(db.String(50), default=None, nullable=True)
-    comment = db.Column(db.Text, default=None, nullable=True)
-    description = db.Column(db.Text, default=None, nullable=True)
-    isSecurityDriven = db.Column(db.Boolean(), nullable=False, default=False)
-    starter = db.Column(db.String(250), nullable=True)
-    mh_changeset = db.Column(db.String(100), nullable=True)
 
     # Dates are always returned in UTC time and ISO8601 format to make them
     # as transportable as possible.
@@ -58,6 +42,27 @@ class Release(object):
     @shippedAt.setter
     def shippedAt(self, shippedAt):
         self._shippedAt = shippedAt
+
+
+class Release(Base, db.Model):
+    __abstract__ = True
+    """A base class with all of the common columns for any release."""
+    name = db.Column(db.String(100), primary_key=True)
+    submitter = db.Column(db.String(250), nullable=False)
+    version = db.Column(db.String(10), nullable=False)
+    buildNumber = db.Column(db.Integer(), nullable=False)
+    branch = db.Column(db.String(50), nullable=False)
+    mozillaRevision = db.Column(db.String(100), nullable=False)
+    l10nChangesets = db.Column(db.Text(), nullable=False)
+    ready = db.Column(db.Boolean(), nullable=False, default=False)
+    complete = db.Column(db.Boolean(), nullable=False, default=False)
+    status = db.Column(db.String(250), default="")
+    mozillaRelbranch = db.Column(db.String(50), default=None, nullable=True)
+    comment = db.Column(db.Text, default=None, nullable=True)
+    description = db.Column(db.Text, default=None, nullable=True)
+    isSecurityDriven = db.Column(db.Boolean(), nullable=False, default=False)
+    starter = db.Column(db.String(250), nullable=True)
+    mh_changeset = db.Column(db.String(100), nullable=True)
 
     def __init__(self, submitter, version, buildNumber, branch,
                  mozillaRevision, l10nChangesets,
@@ -139,9 +144,12 @@ class Release(object):
         return '<Release %r>' % self.name
 
 
-class FennecRelease(Release, db.Model):
+class FennecRelease(Release):
     __tablename__ = 'fennec_release'
     product = 'fennec'
+
+    def __init__(self, *args, **kwargs):
+        Release.__init__(self, *args, **kwargs)
 
     @classmethod
     def createFromForm(cls, submitter, form):
@@ -160,6 +168,8 @@ class FennecRelease(Release, db.Model):
 
 
 class DesktopRelease(Release):
+    __abstract__ = True
+
     partials = db.Column(db.String(100))
     promptWaitTime = db.Column(db.Integer(), nullable=True)
 
@@ -174,9 +184,12 @@ class DesktopRelease(Release):
         self.promptWaitTime = form.promptWaitTime.data
 
 
-class FirefoxRelease(DesktopRelease, db.Model):
+class FirefoxRelease(DesktopRelease):
     __tablename__ = 'firefox_release'
     product = 'firefox'
+
+    def __init__(self, *args, **kwargs):
+        DesktopRelease.__init__(self, *args, **kwargs)
 
     @classmethod
     def createFromForm(cls, submitter, form):
@@ -196,7 +209,7 @@ class FirefoxRelease(DesktopRelease, db.Model):
             mh_changeset=form.mh_changeset.data)
 
 
-class ThunderbirdRelease(DesktopRelease, db.Model):
+class ThunderbirdRelease(DesktopRelease):
     __tablename__ = 'thunderbird_release'
     product = 'thunderbird'
     commRevision = db.Column(db.String(100))
@@ -254,10 +267,34 @@ class ReleasesPaginationCriteria:
         self.orderByDict = orderByDict
 
 
+def getReleasesListView(ready=None, complete=None,
+                        searchFilter=None, paginationCriteria=None):
+    filters = {}
+    if ready is not None:
+        filters['ready'] = ready
+    if complete is not None:
+        filters['complete'] = complete
+
+    if filters:
+        search_list = ProductReleasesView.getSearchList(filters)
+        qry = ProductReleasesView.query().filter(and_(*search_list))
+
+    if searchFilter:
+        search_list = ProductReleasesView.getSearchList(searchFilter)
+        qry = ProductReleasesView.query().filter(or_(*search_list))
+
+    orderByList = ProductReleasesView.getOrderByList(
+        paginationCriteria.orderByDict)
+
+    qry = qry.order_by(*orderByList).limit(
+        paginationCriteria.length).offset(paginationCriteria.start)
+
+    return qry.all()
+
+
 def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
                 versionFilter=None, versionFilterCategory=None,
-                searchOtherShipped=False, lastRelease=None,
-                paginationCriteria=None, searchFilter=None):
+                searchOtherShipped=False, lastRelease=None):
 
     filters = {}
     if ready is not None:
@@ -267,9 +304,7 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
     if versionFilter is not None:
         filters['version'] = versionFilter
 
-    if paginationCriteria:
-        tables = (ProductReleasesView, )
-    elif productFilter:
+    if productFilter:
         tables = (getReleaseTable(productFilter),)
     else:
         tables = (FennecRelease, FirefoxRelease, ThunderbirdRelease)
@@ -281,24 +316,12 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
             qry = table.query.filter_by(**filters)
             if shipped:
                 qry = qry.filter(table._shippedAt != None)
-            if lastRelease and not paginationCriteria:
+            if lastRelease:
                 # Sort using version
                 results = sorted(
                     qry.all(), key=lambda x: LooseVersion(x.version),
                     reverse=True)
             else:
-                if searchFilter:
-                    searchList = table.getSearchList(searchFilter)
-                    qry = qry.filter(or_(*searchList))
-
-                if paginationCriteria:
-                    if productFilter:
-                        qry = qry.filter(ProductReleasesView.product.contains(productFilter))
-
-                    orderByList = getOrderByList(table, paginationCriteria.orderByDict)
-
-                    qry = qry.order_by(*orderByList).limit(paginationCriteria.length).offset(paginationCriteria.start)
-
                 results = qry.all()
 
             for r in results:
@@ -314,17 +337,13 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
                             r.category = versionFilter[0]
                             releases.append(r)
         else:
-            if paginationCriteria:
-                orderByList = getOrderByList(table, paginationCriteria.orderByDict)
-                results = table.query.order_by(*orderByList).limit(paginationCriteria.length).offset(paginationCriteria.start).all()
-            else:
-                results = table.query.all()
+            results = table.query.all()
 
             for r in results:
                 releases.append(r)
 
     for release in releases:
-        if not searchOtherShipped and not paginationCriteria:
+        if not searchOtherShipped:
             # Disable this search to avoid an infinite recursion
 
             # Search if we don't have a build (same version + product) already shipped
@@ -340,36 +359,67 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
     return releases
 
 
-def getOrderByList(obj, orderByDict={}):
-    lst = []
-
-    for k, v in orderByDict.iteritems():
-        column = getattr(obj, k)
-        direction = getattr(column, v)
-        lst.append(direction())
-
-    return lst
+release_union = polymorphic_union({
+    'firefox': FirefoxRelease.__table__,
+    'fennec': FennecRelease.__table__,
+    'thunderbird': ThunderbirdRelease.__table__
+}, 'product', 'release')
 
 
-class ProductReleasesView(Release, db.Model):
-    __tablename__ = 'product_releases'
-
-    product = db.Column(db.String(100))
-    partials = db.Column(db.String(100))
-    promptWaitTime = db.Column(db.Integer(), nullable=True)
-    commRevision = db.Column(db.String(100))
-    commRelbranch = db.Column(db.String(50))
+class ProductReleasesView(object):
+    view = release_union
 
     @classmethod
-    def OR(cls, searchList):
-        return or_(*searchList)
+    def getOrderByList(cls, orderByDict):
+        lst = []
+        for k, v in orderByDict.iteritems():
+            column = getattr(cls.view.c, k)
+            direction = getattr(column, v)
+            lst.append(direction())
+
+        return lst
 
     @classmethod
-    def getSearchList(cls, searchDict={}):
+    def getSearchList(cls, searchDict):
         lst = []
         for k, v in searchDict.iteritems():
-            column = getattr(cls, k)
+            column = getattr(cls.view.c, k)
             contains = getattr(column, 'contains')
             lst.append(contains(v))
 
         return lst
+
+    @classmethod
+    def getTotal(cls, complete, ready, searchFilter):
+        andFilter = {}
+        if ready is not None:
+            andFilter['ready'] = ready
+        if complete is not None:
+            andFilter['complete'] = complete
+
+        qry = db.session.query(cls.view)
+
+        if andFilter:
+            qry = qry.filter(and_(*cls.getSearchList(andFilter)))
+        if searchFilter:
+            qry = qry.filter(or_(*cls.getSearchList(searchFilter)))
+
+        return qry.count()
+
+    @classmethod
+    def query(cls):
+        return db.session.query(cls.view)
+
+    @classmethod
+    def releaseToDict(cls, release):
+        d = {}
+        for i, c in enumerate(cls.view.c):
+            d[c.name] = release[i]
+
+        if d['submittedAt']:
+            d['submittedAt'] = pytz.utc.localize(d['submittedAt']).isoformat()
+
+        if d['shippedAt']:
+            d['shippedAt'] = pytz.utc.localize(d['shippedAt']).isoformat()
+
+        return d
