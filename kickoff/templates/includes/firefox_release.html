@@ -51,7 +51,7 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ firefoxForm.mozillaRevision.label()|safe }}
     {{ firefoxForm.mozillaRevision(placeholder='abcdef123456')|safe }}
-    <div class="help">It is strongly recommended to select a changeset which has been fully built/tested on the TBPL tool (examples: <a href="https://tbpl.mozilla.org/?tree=Mozilla-Beta">Beta</a> or <a href="https://tbpl.mozilla.org/?tree=Mozilla-Release">Release</a>)</div>
+    <div class="help">It is strongly recommended to select a changeset which has been fully built/tested on the Treeherder tool (examples: <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-beta">Beta</a> or <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-release">Release</a>)</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.partials.label()|safe }}
