@@ -167,18 +167,18 @@ class ReleasesListAPI(MethodView):
 
         searchFilterDict = self.getSearchFilterDict()
         orderByDict = self.getOrderByDict()
-        total = ProductReleasesView.getTotal(complete=complete,
-                                             ready=ready,
-                                             searchFilter=searchFilterDict)
+        total = ProductReleasesView.getTotal(complete,
+                                             ready,
+                                             searchFilterDict)
 
         paginationCriteria = ReleasesPaginationCriteria(start,
                                                         length,
                                                         orderByDict)
 
-        releases = getReleasesListView(complete=complete,
-                                       ready=ready,
-                                       paginationCriteria=paginationCriteria,
-                                       searchFilter=searchFilterDict)
+        releases = getReleasesListView(complete,
+                                       ready,
+                                       searchFilterDict,
+                                       paginationCriteria)
 
         paginatedReleases = {
             'releases': [ProductReleasesView.releaseToDict(r) for r in releases],

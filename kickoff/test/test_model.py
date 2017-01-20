@@ -2,6 +2,9 @@ from datetime import timedelta, datetime
 import mock
 
 from kickoff import app
+from kickoff.views.forms import (FennecReleaseForm,
+                                 FirefoxReleaseForm,
+                                 ThunderbirdReleaseForm)
 from kickoff.model import FennecRelease
 from kickoff.test.base import TestBase
 

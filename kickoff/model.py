@@ -267,8 +267,7 @@ class ReleasesPaginationCriteria:
         self.orderByDict = orderByDict
 
 
-def getReleasesListView(ready=None, complete=None,
-                        searchFilter=None, paginationCriteria=None):
+def getReleasesListView(complete, ready, searchFilter, paginationCriteria):
     filters = {}
     if ready is not None:
         filters['ready'] = ready
@@ -416,6 +415,9 @@ class ProductReleasesView(object):
         for i, c in enumerate(cls.view.c):
             d[c.name] = release[i]
 
+        """Because the union query does not binds back to any Release class,
+        the hybrid property that configures the date properly is not called, these
+        two statements bellow have the same behavior of the hybrid properties."""
         if d['submittedAt']:
             d['submittedAt'] = pytz.utc.localize(d['submittedAt']).isoformat()
 
