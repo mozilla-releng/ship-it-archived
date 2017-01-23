@@ -1,7 +1,7 @@
 import textwrap
 import copy
 
-from kickoff import app
+from kickoff import app, db
 from kickoff.model import FirefoxRelease
 from kickoff.test.views.base import ViewTest
 
@@ -39,6 +39,9 @@ class TestSubmitRelease(ViewTest):
 
     def testSubmitInvalidForm(self):
         ret = self.post('/submit_release.html', data='fennec-product=fennec', content_type='application/x-www-form-urlencoded')
+        self.assertEquals(ret.status_code, 400, ret.data)
+
+        ret = self.post('/submit_release.html', data='fennec-product=moz://a', content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 400, ret.data)
 
     def testSubmitWithWhitespaceInPartials(self):
@@ -155,3 +158,26 @@ class TestSubmitRelease(ViewTest):
 
    </ul>
 """) in textwrap.dedent(ret.data), ret.data)
+
+    def testGetSubmitForm(self):
+        ret = self.get('/submit_release.html')
+        self.assertEqual(ret.status_code, 200)
+
+    def testSubmitExistingRelease(self):
+        with app.test_request_context():
+            data = [
+                'firefox-version=9.0',
+                'firefox-buildNumber=1',
+                'firefox-branch=z',
+                'firefox-mozillaRevision=abc',
+                'firefox-partials=1.0build1',
+                'firefox-l10nChangesets=af%20def',
+                'firefox-product=firefox',
+                'firefox-promptWaitTime=',
+                'firefox-mozillaRelbranch=',
+                'firefox-mh_changeset=']
+            ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
+            self.assertEqual(ret.status_code, 302)
+
+            ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
+            self.assertEqual(ret.status_code, 400)

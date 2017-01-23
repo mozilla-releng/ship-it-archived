@@ -7,8 +7,8 @@ import pytz
 
 import simplejson as json
 
-from kickoff import app
-from kickoff.model import FennecRelease, ThunderbirdRelease
+from kickoff import app, db
+from kickoff.model import FennecRelease, ThunderbirdRelease, FirefoxRelease
 from kickoff.test.views.base import ViewTest
 
 
@@ -44,6 +44,7 @@ class TestRequestsAPI(ViewTest):
 
 class TestReleaseAPI(ViewTest):
     maxDiff = None
+
     def testGetRelease(self):
         ret = self.get('/releases/Thunderbird-2.0-build2')
         expected = {
@@ -157,6 +158,58 @@ class TestReleaseAPI(ViewTest):
         data = {'complete': True, 'ready': False}
         ret = self.post('/releases/Fennec-1.0-build1', data=data)
         self.assertEquals(ret.status_code, 400)
+
+    def testChangeDescription(self):
+        description = 'New description'
+        data = {'description': description, 'isSecurityDriven': False}
+        ret = self.post('/releases/Fennec-1.0-build1', data=data)
+        self.assertEquals(ret.status_code, 200)
+
+        with app.test_request_context():
+            fennec = FennecRelease.query.filter_by(name='Fennec-1.0-build1').first()
+            self.assertEquals(description, fennec.description)
+
+    def testCantMarkReleaseAsIncomplete(self):
+        with app.test_request_context():
+            release = FirefoxRelease('48.0b7build1',
+                                     42,
+                                     submitter='moz://a',
+                                     version='50.0b6',
+                                     buildNumber=1,
+                                     mozillaRelbranch='',
+                                     branch='releases/mozilla-beta',
+                                     mozillaRevision='abcdef123456',
+                                     l10nChangesets='ach 72c548f97e82')
+            release.complete = True
+
+            db.session.add(release)
+            db.session.commit()
+
+            data = {'complete': False, 'ready': False}
+            ret = self.post('/releases/Firefox-50.0b6-build1', data=data)
+            self.assertEquals(ret.status_code, 400)
+
+    def testChangeStatusSimilarShipped(self):
+        with app.test_request_context():
+            release = FirefoxRelease('48.0b7build1',
+                                     42,
+                                     submitter='moz://a',
+                                     version='50.0b6',
+                                     buildNumber=1,
+                                     mozillaRelbranch='',
+                                     branch='releases/mozilla-beta',
+                                     mozillaRevision='abcdef123456',
+                                     l10nChangesets='ach 72c548f97e82',
+                                     shippedAt=datetime.datetime(2005, 1, 2, 3, 4, 5, 6))
+            release.ready = True
+            release.complete = True
+
+            db.session.add(release)
+            db.session.commit()
+
+            data = {'status': 'shipped'}
+            ret = self.post('/releases/Firefox-50.0b6-build1', data=data)
+            self.assertEquals(ret.status_code, 400)
 
 
 class TestReleasesView(ViewTest):
@@ -297,6 +350,93 @@ class TestReleaseView(ViewTest):
         ret = self.post('/release.html', query_string={'name': 'Thunderbird-2.0-build2'}, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEquals(ret.status_code, 403)
 
+    def testGetEditableFirefoxRelease(self):
+        with app.test_request_context():
+            release = FirefoxRelease('48.0b7build1',
+                                     42,
+                                     submitter='moz://a',
+                                     version='50.0b6',
+                                     buildNumber=1,
+                                     mozillaRelbranch='',
+                                     branch='releases/mozilla-beta',
+                                     mozillaRevision='abcdef123456',
+                                     l10nChangesets='ach 72c548f97e82')
+            db.session.add(release)
+            db.session.commit()
+
+            ret = self.get('/release.html', query_string={'name': 'Firefox-50.0b6-build1'})
+            self.assertEqual(ret.status_code, 200)
+
+    def testGetEditableFennecRelease(self):
+        with app.test_request_context():
+            release = FennecRelease(submitter='moz://a',
+                                    version='0',
+                                    buildNumber=1,
+                                    mozillaRelbranch='',
+                                    branch='releases/mozilla-beta',
+                                    mozillaRevision='abcdef123456',
+                                    l10nChangesets='ach 72c548f97e82')
+            db.session.add(release)
+            db.session.commit()
+
+            ret = self.get('/release.html', query_string={'name': 'Fennec-0-build1'})
+            self.assertEqual(ret.status_code, 200)
+
+    def testGetEditableThunderbirdRelease(self):
+        with app.test_request_context():
+            release = ThunderbirdRelease('def',
+                                         '48.0b7build1',
+                                         '',
+                                         1,
+                                         submitter='moz://a',
+                                         version='0',
+                                         buildNumber=1,
+                                         mozillaRelbranch='',
+                                         branch='releases/mozilla-beta',
+                                         mozillaRevision='abcdef123456',
+                                         l10nChangesets='ach 72c548f97e82')
+            db.session.add(release)
+            db.session.commit()
+            token = self.get('/csrf_token')
+            ret = self.get('/release.html', query_string={'name': 'Thunderbird-0-build1'}, headers=token.headers)
+            self.assertEqual(ret.status_code, 200, token.headers)
+
+    def testNotFoundRelease(self):
+        ret = self.get('/release.html', query_string={'name': 'Firefox-moz://a'})
+        self.assertEqual(ret.status_code, 404)
+
+    def testThunderbirdUpdateWithNoCommRevision(self):
+        with app.test_request_context():
+            release = ThunderbirdRelease('def',
+                                         '',
+                                         '1.0build1',
+                                         42,
+                                         submitter='moz://a',
+                                         version='0',
+                                         buildNumber=1,
+                                         mozillaRelbranch='',
+                                         branch='releases/mozilla-beta',
+                                         mozillaRevision='abcdef123456',
+                                         l10nChangesets='ach 72c548f97e82')
+            db.session.add(release)
+            db.session.commit()
+
+            data = '&'.join(['thunderbird-version=0',
+                             'thunderbird-branch=a',
+                             'thunderbird-buildNumber=2',
+                             'thunderbird-mozillaRevision=abc',
+                             'thunderbird-commRevision=',
+                             'thunderbird-partials=1.0build1',
+                             'thunderbird-l10nChangesets=xxxx',
+                             'thunderbird-product=thunderbird',
+                             'thunderbird-mozillaRelbranch=',
+                             'thunderbird-commRelbranch=',
+                             'thunderbird-description=foo'])
+
+            ret = self.post('/release.html', query_string={'name': 'Thunderbird-0-build1'}, data=data, content_type='application/x-www-form-urlencoded')
+            self.assertEqual(ret.status_code, 400)
+
+
 class TestReleasesListAPI(ViewTest):
     uri = '/releases/releaseslist'
     dataTableVersion = '1.9.4'
@@ -306,7 +446,7 @@ class TestReleasesListAPI(ViewTest):
             'iDisplayStart': 0,
             'iDisplayLength': 10,
             'datatableVersion': self.dataTableVersion,
-            'complete': True,
+            'complete': 'true',
             'iSortCol_0': 0,
             'mDataProp_0': 'name',
             'sSortDir_0': 'desc',
@@ -321,7 +461,7 @@ class TestReleasesListAPI(ViewTest):
             'iDisplayStart': 0,
             'iDisplayLength': 10,
             'datatableVersion': self.dataTableVersion,
-            'complete': True,
+            'complete': 'true',
             'iSortCol_0': 0,
             'mDataProp_0': 'submittedAt',
             'sSortDir_0': 'desc',
@@ -336,7 +476,7 @@ class TestReleasesListAPI(ViewTest):
             'iDisplayStart': 0,
             'iDisplayLength': 10,
             'datatableVersion': self.dataTableVersion,
-            'complete': True,
+            'complete': 'true',
             'iSortCol_0': 0,
             'mDataProp_0': 'shippedAt',
             'sSortDir_0': 'asc',
@@ -347,17 +487,36 @@ class TestReleasesListAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
 
     def testGetReleasesWithFilter(self):
+        with app.test_request_context():
+            release = FirefoxRelease('48.0b7build1',
+                                     42,
+                                     submitter='moz://a',
+                                     version='50.0b6',
+                                     buildNumber=1,
+                                     mozillaRelbranch='',
+                                     branch='releases/mozilla-beta',
+                                     mozillaRevision='abcdef123456',
+                                     l10nChangesets='ach 72c548f97e82',
+                                     shippedAt=datetime.datetime(2005, 1, 2, 3, 4, 5, 6))
+            release.ready = True
+            release.complete = True
+
+            db.session.add(release)
+            db.session.commit()
+
         params = {
             'iDisplayStart': 0,
             'iDisplayLength': 10,
-            'datatableVersion': self.dataTableVersion,
-            'complete': True,
+            'datatableVersion': '1.0.0',
+            'complete': 'true',
+            'ready': 'true',
             'iSortCol_0': 1,
+            'bSearchable_1': 'true',
             'mDataProp_1': 'name',
             'sSortDir_0': 'desc',
             'iColumns': 17,
-            'sSearch': 'irefo'
+            'sSearch': 'iref'
         }
 
         ret = self.get(self.uri, query_string=params)
-        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(ret.status_code, 200, ret.data)

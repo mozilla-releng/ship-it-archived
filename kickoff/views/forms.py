@@ -156,7 +156,7 @@ class ReleaseAPIForm(Form):
                     self.errors['ready'] = []
                 self.errors['ready'].append('Cannot make a completed release not ready or incomplete.')
 
-            if self.description:
+            if self.description.data:
                 # We just want to update the description & isSecurityDriven
                 valid = True
             else:

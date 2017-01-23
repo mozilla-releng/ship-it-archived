@@ -6,7 +6,7 @@ from flask.views import MethodView
 
 from kickoff import db
 from kickoff.log import cef_event, CEF_WARN, CEF_INFO
-from kickoff.model import getReleaseTable, getReleases, ProductReleasesView, ReleasesPaginationCriteria
+from kickoff.model import getReleaseTable, getReleases, getReleasesListView, ProductReleasesView, ReleasesPaginationCriteria
 from kickoff.views.forms import ReleasesForm, ReleaseAPIForm, getReleaseForm, EditReleaseForm
 
 log = logging.getLogger(__name__)
@@ -103,22 +103,6 @@ class ReleasesListAPI(MethodView):
         self.serchablePrefix = 'bSearchable_'
         self.searchParam = 'sSearch'
 
-    def getTotal(self, complete=None, ready=None, searchFilter={}):
-        filter = {}
-
-        if complete is not None:
-            filter["complete"] = complete
-
-        if ready is not None:
-            filter["ready"] = ready
-
-        query = ProductReleasesView.query.filter_by(**filter)
-
-        if searchFilter:
-            query = query.filter(ProductReleasesView.OR(ProductReleasesView.getSearchList(searchFilter)))
-
-        return query.count()
-
     def checkJQueryDataTableVersion(self):
         version = request.args.get('datatableVersion')
 
@@ -145,13 +129,7 @@ class ReleasesListAPI(MethodView):
 
             name = request.args.get(self.columnNamePrefix + sortIndex)
             direction = request.args.get(self.sortColumnDirectionPrefix + str(i))
-
-            if name == 'submittedAt':
-                order_by['_submittedAt'] = direction
-            elif name == 'shippedAt':
-                order_by['_shippedAt'] = direction
-            else:
-                order_by[name] = direction
+            order_by[name] = direction
 
         return order_by
 
@@ -189,13 +167,21 @@ class ReleasesListAPI(MethodView):
 
         searchFilterDict = self.getSearchFilterDict()
         orderByDict = self.getOrderByDict()
-        total = self.getTotal(complete=complete, ready=ready, searchFilter=searchFilterDict)
+        total = ProductReleasesView.getTotal(complete,
+                                             ready,
+                                             searchFilterDict)
 
-        paginationCriteria = ReleasesPaginationCriteria(start, length, orderByDict)
-        releases = getReleases(complete=complete, ready=ready, paginationCriteria=paginationCriteria, searchFilter=searchFilterDict)
+        paginationCriteria = ReleasesPaginationCriteria(start,
+                                                        length,
+                                                        orderByDict)
+
+        releases = getReleasesListView(complete,
+                                       ready,
+                                       searchFilterDict,
+                                       paginationCriteria)
 
         paginatedReleases = {
-            'releases': [r.toDict() for r in releases],
+            'releases': [ProductReleasesView.releaseToDict(r) for r in releases],
             'iTotalDisplayRecords': total,
             'iTotalRecords': total
         }
