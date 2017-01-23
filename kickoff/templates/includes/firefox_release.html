@@ -27,10 +27,6 @@ $(document).ready(function() {
         $('#{{ firefoxForm.partials.id }}'),
         {{ firefoxForm.partials.suggestions|safe }}
     );
-    setupRevisionDisabling(
-        $('#{{ firefoxForm.mozillaRelbranch.id }}'),
-        $('#{{ firefoxForm.mozillaRevision.id }}')
-    );
 })
 </script>
 {{ firefoxForm.hidden_tag() }}
@@ -54,12 +50,8 @@ $(document).ready(function() {
 </div>
 <div class="submit_release">
     {{ firefoxForm.mozillaRevision.label()|safe }}
-    {% if firefoxForm.mozillaRelbranch.data %}
-        {{ firefoxForm.mozillaRevision(disabled='disabled')|safe }}
-    {% else %}
-        {{ firefoxForm.mozillaRevision(placeholder='abcdef123456')|safe }}
-    {% endif %}
-    <div class="help">If a relbranch is specified this field is disabled and ignored. The tip of the relbranch will be used instead. It is strongly recommended to select a changeset which has been fully built/tested on the TBPL tool (examples: <a href="https://tbpl.mozilla.org/?tree=Mozilla-Beta">Beta</a> or <a href="https://tbpl.mozilla.org/?tree=Mozilla-Release">Release</a>)</div>
+    {{ firefoxForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+    <div class="help">It is strongly recommended to select a changeset which has been fully built/tested on the Treeherder tool (examples: <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-beta">Beta</a> or <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-release">Release</a>)</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.partials.label()|safe }}
@@ -76,15 +68,6 @@ $(document).ready(function() {
         <div class="warning"></div>
         The l10n changesets for this release (first column: locale, second: revision). Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. ESR releases re-use the same changesets as the previous release on the same branch. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a>
     </div>
-</div>
-<div class="submit_release">
-    {{ firefoxForm.mozillaRelbranch.label()|safe }}
-    {% if firefoxForm.mozillaRevision.data %}
-        {{ firefoxForm.mozillaRelbranch(disabled='disabled')|safe }}
-    {% else %}
-        {{ firefoxForm.mozillaRelbranch()|safe }}
-    {% endif %}
-    <div class="help">If a revision is specified this field is disabled and ignored otherwise the relbranch specified will be used put version bumps/tags for this release on. If not specified, one will be generated automatically during tagging. When provided the release will be created from tip of this branch thus it cannot be used in conjunction with revision.</div>
 </div>
 <div class="submit_release">
     {{ firefoxForm.promptWaitTime.label()|safe }}
