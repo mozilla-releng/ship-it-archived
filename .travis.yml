@@ -1,12 +1,13 @@
+sudo: false
+
 language: python
 env:
     - TOX_ENV=py26
     - TOX_ENV=py27
 
 install:
-    - travis_retry sudo apt-get update -qq
-    - travis_retry sudo apt-get install -y npm
     - travis_retry pip install tox coveralls flake8
+    - travis_retry nvm install
     - travis_retry npm install
 
 script:
