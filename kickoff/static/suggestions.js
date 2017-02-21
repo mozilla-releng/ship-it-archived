@@ -422,8 +422,17 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
     }).focus(function() {
         $(this).autocomplete('search');
     }).change(function() {
-        var productName = this.name.slice(0, -VERSION_SUFFIX.length);
-        populateAllPossibleFields(productName, this.value, buildNumberElement, previousBuilds, partialElement);
+        // This setTimeout prevents bug 1339118 from happening. It solves the case where: a version has been picked
+        // via `select` and then the form is submit via a click on it. This click triggers a `change` event, which
+        // causes some fields (like revision of l10n changesets) to be cleared right before the form is submitted.
+        //
+        // Putting a setTimeout without a time makes the call to `populateAllPossibleFields()` happen when the event
+        // loop is free. Because, submitting a form keeps the event loop busy, `populateAllPossibleFields()` is not
+        // called right before the submission.
+        setTimeout(function() {
+            var productName = this.name.slice(0, -VERSION_SUFFIX.length);
+            populateAllPossibleFields(productName, this.value, buildNumberElement, previousBuilds, partialElement);
+        }.bind(this));
     });
 }
 
