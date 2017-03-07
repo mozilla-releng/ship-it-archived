@@ -65,9 +65,9 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None,
             return
         if ESR_NEXT:
             # Ugly hack to manage the next ESR (when we have two overlapping esr)
-            version.append(("esr", "(" + config.ESR_NEXT + r"\.[0-9]+\.[0-9]+esr$|" + config.ESR_NEXT + r"\.[0-9]+\.[0-9]+\.[0-9]+esr$)"))
+            version.append(("esr", config.ESR_NEXT + r"(\.[0-9]+){1,2}esr$"))
         else:
-            version.append(("esr", "(" + config.CURRENT_ESR + r"\.[0-9]+\.[0-9]+esr$|" + config.CURRENT_ESR + r"\.[0-9]+\.[0-9]+\.[0-9]+esr$)"))
+            version.append(("esr", config.CURRENT_ESR + r"(\.[0-9]+){1,2}esr$"))
     releases = getReleases(ready=True, productFilter=product, versionFilterCategory=version, lastRelease=lastRelease)
     results = []
     for r in releases:
