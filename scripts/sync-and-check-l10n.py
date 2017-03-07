@@ -57,7 +57,7 @@ if remoteAuroraLocalesList:
         warnings.append("Warning: '%s' NOT found in SUPPORTED_AURORA_LOCALES" % loc)
 if warnings:
     print ("\n".join(warnings))
-    print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES (lo, tsz and wo are expected)" % len(remoteAuroraLocalesList))
+    print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES (lo, trs, tsz and wo are expected)" % len(remoteAuroraLocalesList))
 
 nbLocaleMissing = 0
 listLocaleNightlyURL = "https://raw.githubusercontent.com/mozilla-l10n/mozilla-l10n-query/master/app/sources/central.txt"
