@@ -36,10 +36,10 @@ class TestJSONRequestsAPI(ViewTest):
 
     def testStablityReleases(self):
         ret = self.get(BASE_JSON_PATH + '/firefox_history_stability_releases.json')
-        expected = {'2.0.2': '2005-01-04',
-                    "3.0.1": "2005-01-02",
-                    "38.1.0": "2015-01-04",
-                    }
+        expected = {
+            '2.0.2': '2005-01-04',
+            '3.0.1': '2005-01-02',
+        }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
@@ -118,7 +118,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('3.0.1' in primary['en-US'], primary['en-US'])
         # Verify ESR numbers are well-formed and both esr/esr_next are present
         self.assertTrue('2.0.2esr' in primary['en-US'])
-        self.assertTrue('38.1.0esr' in primary['en-US'])
+        self.assertTrue('38.0esr' in primary['en-US'])
         self.assertEquals(len(primary['en-US']), 6)
         # ja-JP-mac is not a locale we want to expose into product-details
         self.assertFalse('ja-JP-mac' in primary)
@@ -168,7 +168,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
 
         self.assertTrue("FIREFOX_ESR_NEXT" in versions)
-        self.assertEquals(versions['FIREFOX_ESR_NEXT'], "38.1.0esr")
+        self.assertEquals(versions['FIREFOX_ESR_NEXT'], "38.0esr")
         self.assertTrue("FIREFOX_ESR" in versions)
         self.assertEquals(versions['FIREFOX_ESR'], "2.0.2esr")
         self.assertTrue("LATEST_FIREFOX_RELEASED_DEVEL_VERSION" in versions)
@@ -385,5 +385,5 @@ class TestJSONRequestsAPI(ViewTest):
         versions = json.loads(ret.data)
 
         self.assertEquals(ret.status_code, 200)
-        self.assertEquals(versions['FIREFOX_ESR'], "38.1.0esr")
+        self.assertEquals(versions['FIREFOX_ESR'], "38.0esr")
         self.assertEqual(versions["FIREFOX_ESR_NEXT"], "")

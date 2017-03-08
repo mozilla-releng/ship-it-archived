@@ -21,7 +21,7 @@ class TestRequestsAPI(ViewTest):
                          'Fennec-4.0-build5', 'Fennec-24.0-build4',
                          'Fennec-24.0.1-build4', 'Fennec-23.0b2-build4',
                          'Firefox-2.0-build1', "Firefox-2.0.2esr-build1",
-                         'Firefox-38.1.0esr-build1',
+                         'Firefox-38.0esr-build1',
                          'Firefox-3.0b2-build1', 'Firefox-3.0b2-build2', 'Firefox-3.0b3-build1',
                          'Firefox-3.0.1-build1',
                          'Thunderbird-2.0-build2', 'Thunderbird-4.0-build1',
