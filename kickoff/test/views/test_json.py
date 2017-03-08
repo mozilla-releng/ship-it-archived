@@ -123,6 +123,14 @@ class TestJSONRequestsAPI(ViewTest):
         # ja-JP-mac is not a locale we want to expose into product-details
         self.assertFalse('ja-JP-mac' in primary)
 
+    def testPrimaryBuildsDontShowEsrNextIfNonePresent(self):
+        config.ESR_NEXT = ''
+        ret = self.get(BASE_JSON_PATH + '/firefox_primary_builds.json')
+        self.assertEquals(ret.status_code, 200)
+        primary_builds = json.loads(ret.data)
+        self.assertTrue('2.0.2esr' in primary_builds['en-US'])
+        self.assertTrue('38.1.0esr' not in primary_builds['en-US'])
+
     def testPrimaryBuildsAreSorted(self):
         ret = self.get(BASE_JSON_PATH + '/firefox_primary_builds.json')
         self.assertEquals(ret.status_code, 200)
