@@ -40,7 +40,7 @@ def generateJSONFileList(withL10Nfiles=False):
     return sorted(links)
 
 
-def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None,
+def getFilteredReleases(product, categories, esrNext=False, lastRelease=None,
                         withL10N=False, detailledInfo=False,
                         exclude_esr=False):
     version = []
@@ -60,10 +60,10 @@ def getFilteredReleases(product, categories, ESR_NEXT=False, lastRelease=None,
         # We had 38.0.5b2
         version.append(("dev", r"([0-9]+\.[0-9]|[0-9]+\.[0-9]+\.[0-9])(b|rc|build|plugin)[0-9]+$"))
     if "esr" in categories:
-        if ESR_NEXT and not config.ESR_NEXT:
+        if esrNext and not config.ESR_NEXT:
             # No ESR_NEXT yet
             return
-        if ESR_NEXT:
+        if esrNext:
             # Ugly hack to manage the next ESR (when we have two overlapping esr)
             version.append(("esr", config.ESR_NEXT + r"(\.[0-9]+){1,2}esr$"))
         else:
@@ -153,7 +153,7 @@ def firefoxVersionsJson():
     esr_releases = getFilteredReleases("firefox", ["esr"], lastRelease=True)
     versions['FIREFOX_ESR'] = esr_releases[0][0] + "esr"
     # esr next
-    esr_next = getFilteredReleases("firefox", ["esr"], lastRelease=True, ESR_NEXT=True)
+    esr_next = getFilteredReleases("firefox", ["esr"], lastRelease=True, esrNext=True)
     if esr_next:
         # If not found, that means that we are managing only a single ESR
         versions['FIREFOX_ESR_NEXT'] = esr_next[0][0] + "esr"
@@ -228,6 +228,13 @@ def updateLocaleWithVersionsTable(product):
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
                                                    esr_releases[0][2],
                                                    esr_releases[0][0] + "esr")
+
+    esr_next = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True, esrNext=True)
+    if esr_next:
+        buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
+                                                       esr_next[0][2],
+                                                       esr_next[0][0] + "esr")
+
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'aurora')
     buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'nightly')
 
