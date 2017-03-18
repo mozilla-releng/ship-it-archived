@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 import pytz
 import re
-from distutils.version import LooseVersion
 
 from sqlalchemy import func
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -12,6 +11,7 @@ from sqlalchemy.sql.expression import or_, and_
 from mozilla.release.info import getReleaseName
 
 from kickoff import db, config
+from kickoff.versions import MozVersion
 
 
 class Base(AbstractConcreteBase):
@@ -318,7 +318,7 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
             if lastRelease:
                 # Sort using version
                 results = sorted(
-                    qry.all(), key=lambda x: LooseVersion(x.version),
+                    qry.all(), key=lambda x: MozVersion(x.version),
                     reverse=True)
             else:
                 results = qry.all()
