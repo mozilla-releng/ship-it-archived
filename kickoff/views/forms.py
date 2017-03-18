@@ -6,7 +6,6 @@ import re
 from datetime import datetime
 from ast import literal_eval
 from collections import defaultdict
-from distutils.version import LooseVersion
 
 from flask.ext.wtf import (SelectMultipleField, ListWidget, CheckboxInput,
                            Form, BooleanField, StringField, TextAreaField,
@@ -18,6 +17,7 @@ from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
 
 from kickoff.model import Release, getReleaseTable, getReleases
+from kickoff.versions import MozVersion
 
 log = logging.getLogger(__name__)
 
@@ -237,7 +237,7 @@ class ReleaseForm(Form):
         recentBranches = defaultdict(list)
         for release in recentReleases:
             recentVersions.add(release.version)
-            recentBranches[release.branch].append(LooseVersion(release.version))
+            recentBranches[release.branch].append(MozVersion(release.version))
 
         # Now that we have the data in the format we want it in we can start
         # making suggestions.
