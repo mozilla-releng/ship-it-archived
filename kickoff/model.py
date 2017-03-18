@@ -315,13 +315,8 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
             qry = table.query.filter_by(**filters)
             if shipped:
                 qry = qry.filter(table._shippedAt != None)
-            if lastRelease:
-                # Sort using version
-                results = sorted(
-                    qry.all(), key=lambda x: MozVersion(x.version),
-                    reverse=True)
-            else:
-                results = qry.all()
+
+            results = qry.all()
 
             for r in results:
                 if not versionFilterCategory:
@@ -335,6 +330,11 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
                         if re.match(versionFilter[1], r.version):
                             r.category = versionFilter[0]
                             releases.append(r)
+
+            if lastRelease:
+                # Sort using version. We need to sort releases after they are filtered out,
+                # otherwise we may compare beta against ESR, which breaks MozVersion
+                releases = sorted(releases, key=lambda x: MozVersion(x.version), reverse=True)
         else:
             results = table.query.all()
 
