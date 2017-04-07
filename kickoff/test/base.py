@@ -52,31 +52,35 @@ class TestBase(unittest.TestCase):
             r.status = "shipped"
             db.session.add(r)
 
-            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='2.0.2esr', buildNumber=1,
-                               branch='a', mozillaRevision='def',
-                               l10nChangesets='ja zu',
-                               mozillaRelbranch='FOO',
-                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazing comment")
-            r.complete = True
-            r.ready = True
-            r.status = "shipped"
-            db.session.add(r)
+            three_digit_esr_release = FirefoxRelease(
+                partials='0,1', promptWaitTime=5,
+                submitter='joe', version='2.0.2esr', buildNumber=1,
+                branch='a', mozillaRevision='def',
+                l10nChangesets='ja zu',
+                mozillaRelbranch='FOO',
+                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
+                shippedAt=datetime(2005, 1, 4, 3, 4, 5, 6),
+                comment="yet an other amazing comment"
+            )
+            three_digit_esr_release.complete = True
+            three_digit_esr_release.ready = True
+            three_digit_esr_release.status = "shipped"
+            db.session.add(three_digit_esr_release)
 
-            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
-                               submitter='joe', version='38.1.0esr', buildNumber=1,
-                               branch='a', mozillaRevision='def',
-                               l10nChangesets='ja zu',
-                               mozillaRelbranch='FOO',
-                               submittedAt=datetime(2015, 1, 2, 3, 4, 5, 6),
-                               shippedAt=datetime(2015, 1, 4, 3, 4, 5, 6),
-                               comment="yet an other amazing comment")
-            r.complete = True
-            r.ready = True
-            r.status = "shipped"
-            db.session.add(r)
+            two_digit_esr_release = FirefoxRelease(
+                partials='0,1', promptWaitTime=5,
+                submitter='joe', version='38.0esr', buildNumber=1,
+                branch='a', mozillaRevision='def',
+                l10nChangesets='ja zu',
+                mozillaRelbranch='FOO',
+                submittedAt=datetime(2015, 1, 2, 3, 4, 5, 6),
+                shippedAt=datetime(2015, 1, 4, 3, 4, 5, 6),
+                comment="yet an other amazing comment"
+            )
+            two_digit_esr_release.complete = True
+            two_digit_esr_release.ready = True
+            two_digit_esr_release.status = "shipped"
+            db.session.add(two_digit_esr_release)
 
             r = FennecRelease(submitter='joe', version='24.0', buildNumber=4,
                               branch='a', mozillaRevision='abc',
