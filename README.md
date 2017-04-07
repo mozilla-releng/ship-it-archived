@@ -3,7 +3,10 @@
 
 [![Build Status](https://travis-ci.org/mozilla-releng/ship-it.svg?branch=master)](https://travis-ci.org/mozilla-releng/ship-it)
 [![Coverage Status](https://coveralls.io/repos/github/mozilla-releng/ship-it/badge.svg?branch=master)](https://coveralls.io/github/mozilla-releng/ship-it?branch=master)
-[![Code Health](https://landscape.io/github/mozilla-releng/ship-it/master/landscape.svg?style=flat)](https://landscape.io/github/mozilla-releng/ship-it/master)
+
+
+[Product-details JSON sync status](https://github.com/mozilla/product-details-json): [![Build Status](https://ci.us-west.moz.works/job/product-details-json-watch/badge/icon)](https://ci.us-west.moz.works/job/product-details-json-watch/)
+
 
 ## About
 Release kick-off (ship-it) is a Mozilla "internal" tool used to start the release of
@@ -36,11 +39,11 @@ Or with MySQL:
 
 Open your Firefox on: **http://127.0.0.1:5000/**
 
-If you're on Mac or Windows you'll need Docker for Mac or Docker for Windows v1.12.0 or higher. Or if you're
+If you're on Mac or Windows, you'll need Docker for Mac or Docker for Windows v1.12.0 or higher. Or if you're
 running Docker in a VM for another reason, you'll need to replace 127.0.0.1 with the IP of your VM.
 
 To have the auto completion in the various forms there needs to be some releases in the database. A
-snapshot of data is included in the repo. You can reset the db by remove the .cache/mysql directory
+snapshot of data is included in the repo. You can reset the db by removing the .cache/mysql directory
 and run `docker-compose up`.
 
 ## Testing
