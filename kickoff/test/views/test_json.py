@@ -107,10 +107,6 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('fr' in config.SUPPORTED_NIGHTLY_LOCALES)
         self.assertTrue('fr' in config.SUPPORTED_AURORA_LOCALES)
         self.assertEquals(len(primary['fr']), 2)
-        # We don't have Nightly builds for Acholi but have Aurora builds
-        self.assertFalse('ach' in config.SUPPORTED_NIGHTLY_LOCALES)
-        self.assertTrue('ach' in config.SUPPORTED_AURORA_LOCALES)
-        self.assertEquals(len(primary['ach']), 1)
         # We always have en-US for all channels
         self.assertTrue('23.0a2' in primary['en-US'])
         self.assertTrue('24.0a1' in primary['en-US'])
