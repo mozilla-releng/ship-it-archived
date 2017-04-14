@@ -40,25 +40,32 @@ def getListLocalesFromURL(URL):
 enUSURL = "https://hg.mozilla.org/mozilla-central/raw-file/tip/toolkit/locales/en-US/chrome/global/regionNames.properties"
 saveJSON(enUSURL, "en-US")
 
-# Check list of locales for Nightly, store regionNames.properties for each of
-# them
-listLocalesNightlyURL = "https://hg.mozilla.org/mozilla-central/raw-file/default/browser/locales/all-locales"
-remoteNightlyLocalesList = getListLocalesFromURL(listLocalesNightlyURL)
+# Get the list of locales on Nightly for desktop
+listDesktopNightlyLocalesURL = "https://hg.mozilla.org/mozilla-central/raw-file/default/browser/locales/all-locales"
+remoteDesktopNightlyLocalesList = getListLocalesFromURL(listDesktopNightlyLocalesURL)
+# Get the list of locales on Nightly for Android
+listAndroidNightlyLocalesURL = "https://hg.mozilla.org/mozilla-central/raw-file/default/mobile/android/locales/all-locales"
+remoteAndroidNightlyLocalesList = getListLocalesFromURL(listAndroidNightlyLocalesURL)
+
+# Build the list of all locales available on Nightly
+remoteNightlyLocalesList = list(set(remoteAndroidNightlyLocalesList + remoteDesktopNightlyLocalesList))
+remoteNightlyLocalesList.sort()
+
 warnings = []
-for loc in SUPPORTED_NIGHTLY_LOCALES:
-    if loc != 'en-US':
-        try:
-            url = "https://hg.mozilla.org/l10n-central/%s/raw-file/tip/toolkit/chrome/global/regionNames.properties" % loc
-            saveJSON(url, loc)
-            if loc in remoteNightlyLocalesList:
-                remoteNightlyLocalesList.remove(loc)
-        except:
-            warnings.append("Warning: regionNames.properties is not available for %s" % loc)
-for loc in remoteNightlyLocalesList:
-    warnings.append("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % loc)
+missingLocales = []
+for locale in remoteNightlyLocalesList:
+    try:
+        url = "https://hg.mozilla.org/l10n-central/%s/raw-file/tip/toolkit/chrome/global/regionNames.properties" % locale
+        saveJSON(url, locale)
+        if locale not in SUPPORTED_NIGHTLY_LOCALES:
+            missingLocales.append(locale)
+    except:
+        warnings.append("Warning: regionNames.properties is not available for %s" % locale)
+for locale in missingLocales:
+    warnings.append("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % locale)
 if warnings:
     print ("\n".join(warnings))
-print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES" % len(remoteNightlyLocalesList))
+print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES (5 expected: lo, trs, tsz, wo, zam)" % len(missingLocales))
 
 auroraLocalesMissing = 0
 listLocalesAuroraURL = "https://hg.mozilla.org/releases/mozilla-aurora/raw-file/default/browser/locales/all-locales"
