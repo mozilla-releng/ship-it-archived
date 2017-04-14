@@ -36,36 +36,37 @@ def getListLocalesFromURL(URL):
     response = urllib2.urlopen(URL)
     return response.read().splitlines()
 
-enUSURL = "https://hg.mozilla.org/releases/mozilla-aurora/raw-file/tip/toolkit/locales/en-US/chrome/global/regionNames.properties"
+# Get regionNames.properties for en-US from mozilla-central
+enUSURL = "https://hg.mozilla.org/mozilla-central/raw-file/tip/toolkit/locales/en-US/chrome/global/regionNames.properties"
 saveJSON(enUSURL, "en-US")
 
-
-listLocaleURL = "https://raw.githubusercontent.com/mozilla-l10n/mozilla-l10n-query/master/app/sources/aurora.txt"
-remoteAuroraLocalesList = getListLocalesFromURL(listLocaleURL)
+# Check list of locales for Nightly, store regionNames.properties for each of
+# them
+listLocalesNightlyURL = "https://hg.mozilla.org/mozilla-central/raw-file/default/browser/locales/all-locales"
+remoteNightlyLocalesList = getListLocalesFromURL(listLocalesNightlyURL)
 warnings = []
-for loc in SUPPORTED_AURORA_LOCALES:
+for loc in SUPPORTED_NIGHTLY_LOCALES:
     if loc != 'en-US':
         try:
-            url = "https://hg.mozilla.org/releases/l10n/mozilla-aurora/%s/raw-file/tip/toolkit/chrome/global/regionNames.properties" % loc
+            url = "https://hg.mozilla.org/l10n-central/%s/raw-file/tip/toolkit/chrome/global/regionNames.properties" % loc
             saveJSON(url, loc)
-            if loc in remoteAuroraLocalesList:
-                remoteAuroraLocalesList.remove(loc)
+            if loc in remoteNightlyLocalesList:
+                remoteNightlyLocalesList.remove(loc)
         except:
             warnings.append("Warning: regionNames.properties is not available for %s" % loc)
-if remoteAuroraLocalesList:
-    for loc in remoteAuroraLocalesList:
-        warnings.append("Warning: '%s' NOT found in SUPPORTED_AURORA_LOCALES" % loc)
+for loc in remoteNightlyLocalesList:
+    warnings.append("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % loc)
 if warnings:
     print ("\n".join(warnings))
-    print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES (lo, trs, tsz, wo, zam are expected)" % len(remoteAuroraLocalesList))
+print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES" % len(remoteNightlyLocalesList))
 
-nbLocaleMissing = 0
-listLocaleNightlyURL = "https://raw.githubusercontent.com/mozilla-l10n/mozilla-l10n-query/master/app/sources/central.txt"
-for loc in getListLocalesFromURL(listLocaleNightlyURL):
-    if loc not in SUPPORTED_NIGHTLY_LOCALES:
-        nbLocaleMissing = nbLocaleMissing + 1
-        print("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % loc)
-print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES (lo, trs, tsz, wo, zam are expected)" % nbLocaleMissing)
+auroraLocalesMissing = 0
+listLocalesAuroraURL = "https://hg.mozilla.org/releases/mozilla-aurora/raw-file/default/browser/locales/all-locales"
+for loc in getListLocalesFromURL(listLocalesAuroraURL):
+    if loc not in SUPPORTED_AURORA_LOCALES:
+        auroraLocalesMissing += 1
+        print("Warning: '%s' NOT found in SUPPORTED_AURORA_LOCALES" % loc)
+print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES" % auroraLocalesMissing)
 
 print("Note that ship-it IS the source of truth for supported locales")
 print("Please report a bug to have a locale added/remove: https://bugzilla.mozilla.org/enter_bug.cgi?product=Release%20Engineering&component=Ship%20It")
