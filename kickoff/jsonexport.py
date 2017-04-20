@@ -1,3 +1,4 @@
+import json
 import os
 
 from collections import defaultdict
@@ -253,13 +254,31 @@ def firefox_primary_builds_json():
 # Mobile JSON
 
 def mobileVersions():
+    locales = json.load(open(os.path.join(os.path.dirname(__file__), "static", "languages.json")))
+
+    def getBuild(locale, channel):
+        return {
+            "locale": {
+                "code": locale,
+                "english": locales[locale]["English"],
+                "native": locales[locale]["native"],
+            },
+            "download": {
+                "android": "market://details?id=org.mozilla.firefox" + ("_beta" if channel == "beta" else ""),
+            },
+        }
+
     versions = {
         "nightly_version": config.NIGHTLY_VERSION,
         "alpha_version": config.AURORA_VERSION,
         "ios_version": config.IOS_VERSION,
         "ios_beta_version": config.IOS_BETA_VERSION,
         "stable": getFilteredReleases("fennec", ["major", "stability"], lastRelease=True)[0][0],
-        "beta_version": getFilteredReleases("fennec", ["dev"], lastRelease=True)[0][0]
+        "beta_version": getFilteredReleases("fennec", ["dev"], lastRelease=True)[0][0],
+        "nightly_builds": [getBuild(locale, "nightly") for locale in config.ANDROID_NIGHTLY_LOCALES],
+        "alpha_builds": [getBuild(locale, "alpha") for locale in config.ANDROID_ALPHA_LOCALES],
+        "beta_builds": [getBuild(locale, "beta") for locale in config.ANDROID_BETA_LOCALES],
+        "builds": [getBuild(locale, "release") for locale in config.ANDROID_RELEASE_LOCALES]
     }
     return versions
 
