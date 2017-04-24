@@ -10,8 +10,8 @@ CURRENT_ESR = "45"
 ESR_NEXT = "52"
 JSON_FORMAT_VERSION = "1.0"
 JSON_FORMAT_L10N_VERSION = "1.0"
-IOS_BETA_VERSION = "6.0"
-IOS_VERSION = "5.0"
+IOS_BETA_VERSION = "8.0"
+IOS_VERSION = "7.3"
 
 # The keyword used in the ship-it db for old release before the changeset/json l10n files
 LEGACY_KEYWORD = "legacy"
