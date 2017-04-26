@@ -138,7 +138,6 @@ def firefoxVersionsJson():
 
     versions = {
         "FIREFOX_NIGHTLY": config.NIGHTLY_VERSION,
-        "FIREFOX_AURORA": config.AURORA_VERSION,
         "LATEST_FIREFOX_OLDER_VERSION": config.LATEST_FIREFOX_OLDER_VERSION,
     }
 
@@ -149,6 +148,13 @@ def firefoxVersionsJson():
     betas = getFilteredReleases("firefox", ["dev"], lastRelease=True)
     versions['LATEST_FIREFOX_DEVEL_VERSION'] = betas[0][0]
     versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'] = betas[0][0]
+    # devedition
+    deveditions = getFilteredReleases("devedition", ["dev"], lastRelease=True)
+    if deveditions:
+        versions['FIREFOX_AURORA'] = deveditions[0][0]
+    else:
+        # fallback to Beta version
+        versions['FIREFOX_AURORA'] = betas[0][0]
     # esr
     esr_releases = getFilteredReleases("firefox", ["esr"], lastRelease=True)
     versions['FIREFOX_ESR'] = esr_releases[0][0] + "esr"
@@ -192,10 +198,10 @@ def generateLocalizedBuilds(buildsVersionLocales, l10nchangesets, lastVersion):
     return buildsVersionLocales
 
 
-def fillPrereleaseVersion(buildsVersionLocales, channel='aurora'):
+def fillPrereleaseVersion(buildsVersionLocales):
     # Our default values are for Aurora
-    locales = config.SUPPORTED_NIGHTLY_LOCALES if channel == 'nightly' else config.SUPPORTED_AURORA_LOCALES
-    versionBranch = config.NIGHTLY_VERSION if channel == 'nightly' else config.AURORA_VERSION
+    locales = config.SUPPORTED_NIGHTLY_LOCALES
+    versionBranch = config.NIGHTLY_VERSION
 
     for localeCode in locales:
         # insert the filesize info for backward compa
@@ -222,7 +228,13 @@ def updateLocaleWithVersionsTable(product):
     betas = getFilteredReleases(product, ["dev"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
                                                    betas[0][2], betas[0][0])
-
+    # devedition
+    if product == "firefox":
+        deveditions = getFilteredReleases("devedition", ["dev"],
+                                          lastRelease=True, withL10N=True)
+        if deveditions:
+            buildsVersionLocales = generateLocalizedBuilds(
+                buildsVersionLocales, deveditions[0][2], deveditions[0][0])
     # esr
     esr_releases = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
@@ -235,8 +247,7 @@ def updateLocaleWithVersionsTable(product):
                                                        esr_next[0][2],
                                                        esr_next[0][0] + "esr")
 
-    buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'aurora')
-    buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'nightly')
+    buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales)
 
     # Backward compatibility: don't expose ja-JP-mac in product-details json API
     del buildsVersionLocales['ja-JP-mac']
@@ -255,7 +266,7 @@ def firefox_primary_builds_json():
 def mobileVersions():
     versions = {
         "nightly_version": config.NIGHTLY_VERSION,
-        "alpha_version": config.AURORA_VERSION,
+        "alpha_version": config.NIGHTLY_VERSION,  # Aurora is m-c!
         "ios_version": config.IOS_VERSION,
         "ios_beta_version": config.IOS_BETA_VERSION,
         "stable": getFilteredReleases("fennec", ["major", "stability"], lastRelease=True)[0][0],

@@ -18,6 +18,9 @@
 {% elif form.product.data == 'firefox' %}
     {% set firefoxForm = form %}
     {% include 'includes/firefox_release.html' %}
+{% elif form.product.data == 'devedition' %}
+    {% set deveditionForm = form %}
+    {% include 'includes/devedition_release.html' %}
 {% elif form.product.data == 'thunderbird' %}
     {% set thunderbirdForm = form %}
     {% include 'includes/thunderbird_release.html' %}

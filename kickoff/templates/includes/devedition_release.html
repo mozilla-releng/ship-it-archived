@@ -1,0 +1,82 @@
+<script type='text/javascript'>
+URLToPartial="/cron/partial.json";
+$(document).ready(function() {
+
+    $.getJSON( URLToPartial )
+    .done(function( allPartial ) {
+        window.allPartial = allPartial;
+    })
+    .fail(function( jqxhr, textStatus, error ) {
+        var err = textStatus + ", " + error;
+        console.log( "Request to URL (" + URLToPartial + ") Failed: " + err );
+   });
+
+    setupVersionSuggestions(
+        $('#{{ deveditionForm.version.id }}'),
+        {{ deveditionForm.version.suggestions|safe }},
+        $('#{{ deveditionForm.buildNumber.id }}'),
+        {{ deveditionForm.buildNumber.suggestions|safe }},
+        $('#{{ deveditionForm.branch.id }}'),
+        $('#{{ deveditionForm.partials.id }}'),
+        {{ deveditionForm.partials.suggestions|safe }},
+        $('#partialInfo')
+    );
+    setupBranchSuggestions(
+        $('#{{ deveditionForm.branch.id }}'),
+        {{ deveditionForm.branch.suggestions|safe }},
+        $('#{{ deveditionForm.partials.id }}'),
+        {{ deveditionForm.partials.suggestions|safe }}
+    );
+})
+</script>
+{{ deveditionForm.hidden_tag() }}
+<div class="submit_release">
+    {{ deveditionForm.version.label()|safe }}
+    {{ deveditionForm.version(placeholder='28.0b6')|safe }}
+    <div>&nbsp;</div>
+</div>
+<div class="submit_release">
+    {{ deveditionForm.buildNumber.label()|safe }}
+    {{ deveditionForm.buildNumber(placeholder='1')|safe }}
+    <div class="help">Build number must be set to 1 for the first release with this version. If a previous build has already been attempted and it has tagged the source repositories, build 2 or higher should be used. Generally, the autofilled value for this is correct.</div>
+</div>
+<div class="submit_release">
+    {{ deveditionForm.branch.label()|safe }}
+    {{ deveditionForm.branch(placeholder='releases/mozilla-beta')|safe }}
+    <div class="help">
+        <div class="warning"></div>
+        The branch to build the release from, relative to the root of the VCS.
+    </div>
+</div>
+<div class="submit_release">
+    {{ deveditionForm.mozillaRevision.label()|safe }}
+    {{ deveditionForm.mozillaRevision(placeholder='abcdef123456')|safe }}
+    <div class="help">It is strongly recommended to select a changeset which has been fully built/tested on the Treeherder tool (examples: <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-beta">Beta</a> or <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-release">Release</a>)</div>
+</div>
+<div class="submit_release">
+    {{ deveditionForm.partials.label()|safe }}
+    {{ deveditionForm.partials(placeholder='15.0b5build1,15.0b4build2')|safe }}
+    <div class="helpPartial" id="partialInfo"></div>
+    <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 4, for Betas it's 3, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
+</div>
+<h4>Advanced Options:</h4>
+<div class="advanced">
+<div class="submit_release">
+    {{ deveditionForm.l10nChangesets.label()|safe }}
+    {{ deveditionForm.l10nChangesets(placeholder='de abcdef123456', title='The l10n changesets, in release automation format.')|safe }}
+    <div class="help">
+        <div class="warning"></div>
+        The l10n changesets for this release (first column: locale, second: revision). Betas and release-channel releases these are normally copied from the <a href="https://l10n.mozilla.org/shipping/milestones">L10n Dashboard</a>. ESR releases re-use the same changesets as the previous release on the same branch. For more information consult <a href="https://wiki.mozilla.org/Release:Release_Automation_on_Mercurial:Starting_a_Release#L10N_Changesets">the milestone creation documentation</a>
+    </div>
+</div>
+<div class="submit_release">
+    {{ deveditionForm.promptWaitTime.label()|safe }}
+    {{ deveditionForm.promptWaitTime()|safe }}
+    <div class="help">Number of seconds to wait before prompting users to apply the update to this release. Not specifying this will use the default value as specified in the application.</div>
+</div>
+<div class="submit_release">
+    {{ deveditionForm.mh_changeset.label()|safe }}
+    {{ deveditionForm.mh_changeset(placeholder='abcdef123456')|safe }}
+    <div class="help">Mozharness changeset. If unset defaults to using the mozilla revision of the build. Not used in non release promotion scenario.</div>
+</div>
+</div> <!-- advanced -->

@@ -354,6 +354,13 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         self.mh_changeset.data = row.mh_changeset
 
 
+class DeveditionReleaseForm(FirefoxReleaseForm):
+
+    def __init__(self, *args, **kwargs):
+        ReleaseForm.__init__(self, prefix='devedition', product='devedition',
+                             *args, **kwargs)
+
+
 class ThunderbirdReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
     commRevision = StringField('Comm Revision:')
@@ -397,6 +404,8 @@ def getReleaseForm(release):
         return FennecReleaseForm
     elif release.startswith('firefox'):
         return FirefoxReleaseForm
+    elif release.startswith('devedition'):
+        return DeveditionReleaseForm
     elif release.startswith('thunderbird'):
         return ThunderbirdReleaseForm
     else:

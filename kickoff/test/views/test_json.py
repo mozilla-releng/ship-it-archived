@@ -92,12 +92,9 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue(len(primary) > 20)
         # i guess we will always have french or german
         self.assertTrue('fr' in primary)
-        self.assertTrue('23.0a2' in primary['fr'])
         self.assertTrue('24.0a1' in primary['fr'])
-        self.assertTrue("Windows" in primary['fr']['23.0a2'])
         self.assertTrue("Linux" in primary['fr']['24.0a1'])
         self.assertTrue("OS X" in primary['de']['24.0a1'])
-        self.assertEquals(primary['fr']['23.0a2']["Windows"]["filesize"], 0)
         self.assertEquals(primary['fr']['24.0a1']["Windows"]["filesize"], 0)
         self.assertTrue('de' in primary)
         self.assertTrue('en-US' in primary)
@@ -105,10 +102,8 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('en' not in primary)
         # We will always have Nightly and Aurora builds for French
         self.assertTrue('fr' in config.SUPPORTED_NIGHTLY_LOCALES)
-        self.assertTrue('fr' in config.SUPPORTED_AURORA_LOCALES)
-        self.assertEquals(len(primary['fr']), 2)
+        self.assertEquals(len(primary['fr']), 1)
         # We always have en-US for all channels
-        self.assertTrue('23.0a2' in primary['en-US'])
         self.assertTrue('24.0a1' in primary['en-US'])
         self.assertTrue('3.0b3' in primary['en-US'])
         self.assertTrue('3.0.1' in primary['en-US'], primary['en-US'])
@@ -186,7 +181,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("FIREFOX_NIGHTLY" in versions)
         self.assertDigitsAndSuffix(versions['FIREFOX_NIGHTLY'], 'a1')
         self.assertTrue("FIREFOX_AURORA" in versions)
-        self.assertDigitsAndSuffix(versions['FIREFOX_AURORA'], 'a2')
+        self.assertEquals(versions['FIREFOX_AURORA'], "3.0b5")
 
         self.assertTrue("LATEST_THUNDERBIRD_VERSION" not in versions)
 
@@ -194,7 +189,6 @@ class TestJSONRequestsAPI(ViewTest):
         config.CURRENT_ESR = "2"
         config.ESR_NEXT = "38"
         config.NIGHTLY_VERSION = "24.0a1"
-        config.AURORA_VERSION = "23.0a2"
         config.IOS_VERSION = "1.1"
         config.IOS_BETA_VERSION = "1.2"
         ret = self.get(BASE_JSON_PATH + '/mobile_versions.json')
@@ -202,7 +196,7 @@ class TestJSONRequestsAPI(ViewTest):
 
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(versions['nightly_version'], "24.0a1")
-        self.assertEquals(versions['alpha_version'], "23.0a2")
+        self.assertEquals(versions['alpha_version'], "24.0a1")
         self.assertEquals(versions['beta_version'], "23.0b2")
         self.assertEquals(versions['version'], "24.0.1")
         self.assertEquals(versions['ios_version'], "1.1")
@@ -212,7 +206,6 @@ class TestJSONRequestsAPI(ViewTest):
         config.CURRENT_ESR = "2"
         config.ESR_NEXT = "38"
         config.NIGHTLY_VERSION = "24.0a1"
-        config.AURORA_VERSION = "23.0a2"
         config.IOS_VERSION = "1.1"
         config.IOS_BETA_VERSION = "1.2"
         ret = self.get(BASE_JSON_PATH + '/mobile_details.json')
@@ -220,7 +213,7 @@ class TestJSONRequestsAPI(ViewTest):
 
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(details['nightly_version'], "24.0a1")
-        self.assertEquals(details['alpha_version'], "23.0a2")
+        self.assertEquals(details['alpha_version'], "24.0a1")
         self.assertEquals(details['beta_version'], "23.0b2")
         self.assertEquals(details['version'], "24.0.1")
         self.assertEquals(details['ios_version'], "1.1")

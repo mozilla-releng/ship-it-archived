@@ -7,7 +7,7 @@ from kickoff import db
 from kickoff.log import cef_event, CEF_ALERT, CEF_INFO
 from kickoff.model import getReleaseTable
 from kickoff.views.forms import FennecReleaseForm, FirefoxReleaseForm, \
-    ThunderbirdReleaseForm, getReleaseForm
+    ThunderbirdReleaseForm, getReleaseForm, DeveditionReleaseForm
 
 log = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ class SubmitRelease(MethodView):
     def get(self):
         return render_template('submit_release.html', fennecForm=FennecReleaseForm(),
                                firefoxForm=FirefoxReleaseForm(),
+                               deveditionForm=DeveditionReleaseForm(),
                                thunderbirdForm=ThunderbirdReleaseForm())
 
     def post(self):
@@ -27,6 +28,7 @@ class SubmitRelease(MethodView):
         forms = {
             'fennecForm': FennecReleaseForm(formdata=None),
             'firefoxForm': FirefoxReleaseForm(formdata=None),
+            'deveditionForm': DeveditionReleaseForm(formdata=None),
             'thunderbirdForm': ThunderbirdReleaseForm(formdata=None)
         }
 
