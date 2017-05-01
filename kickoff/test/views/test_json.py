@@ -181,7 +181,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue("FIREFOX_NIGHTLY" in versions)
         self.assertDigitsAndSuffix(versions['FIREFOX_NIGHTLY'], 'a1')
         self.assertTrue("FIREFOX_AURORA" in versions)
-        self.assertEquals(versions['FIREFOX_AURORA'], "3.0b5")
+        self.assertEquals(versions['FIREFOX_AURORA'], "54.0a2")
 
         self.assertTrue("LATEST_THUNDERBIRD_VERSION" not in versions)
 
