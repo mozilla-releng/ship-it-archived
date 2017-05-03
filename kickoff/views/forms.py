@@ -131,7 +131,6 @@ class OptionalPartials(object):
             pass
 
 
-
 class ReleasesForm(Form):
     readyReleases = MultiCheckboxField('readyReleases')
     deleteReleases = MultiCheckboxField('deleteReleases')
