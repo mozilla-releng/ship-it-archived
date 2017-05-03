@@ -1,7 +1,7 @@
 # Process for l10n
 ## Adding a new locale to Aurora builds
 
-1. Add the new locale code to `SUPPORTED_AURORA_LOCALES` in `kickoff/config.py`.
+1. Add the new locale code to `SUPPORTED_NIGHTLY_LOCALES` in `kickoff/config.py`.
 
 2. Make sure that the language name (both English and localized) is available in `kickoff/static/languages.json`.
 
