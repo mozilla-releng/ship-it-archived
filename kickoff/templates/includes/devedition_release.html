@@ -46,18 +46,19 @@ $(document).ready(function() {
     <div class="help">
         <div class="warning"></div>
         The branch to build the release from, relative to the root of the VCS.
+        Use the mozilla-beta default, unless something very unusual is needed.
     </div>
 </div>
 <div class="submit_release">
     {{ deveditionForm.mozillaRevision.label()|safe }}
     {{ deveditionForm.mozillaRevision(placeholder='abcdef123456')|safe }}
-    <div class="help">It is strongly recommended to select a changeset which has been fully built/tested on the Treeherder tool (examples: <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-beta">Beta</a> or <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-release">Release</a>)</div>
+    <div class="help">It is strongly recommended to select a changeset which has been fully built/tested on the Treeherder tool (example: <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-beta">Beta</a>)</div>
 </div>
 <div class="submit_release">
     {{ deveditionForm.partials.label()|safe }}
     {{ deveditionForm.partials(placeholder='15.0b5build1,15.0b4build2')|safe }}
     <div class="helpPartial" id="partialInfo"></div>
-    <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 4, for Betas it's 3, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
+    <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. Dev Edition doesn't support partials from beta nor release.</div>
 </div>
 <h4>Advanced Options:</h4>
 <div class="advanced">

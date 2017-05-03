@@ -6,7 +6,7 @@ from sqlalchemy import Column, String, Integer, Boolean, Text, DateTime, MetaDat
 meta = MetaData()
 devedition = Table(
     'devedition_release', meta,
-    Column('submittedAt', DateTime(pytz.utc), nullable=False,
+    Column('submittedAt', DateTime(pytz.utc), nullable=True,
            default=datetime.utcnow),
     Column('shippedAt', DateTime(pytz.utc)),
     Column('name', String(100), primary_key=True),
@@ -22,8 +22,8 @@ devedition = Table(
     Column('mozillaRelbranch', String(50), default=None, nullable=True),
     Column('comment', Text, default=None, nullable=True),
     Column('description', Text, default=None, nullable=True),
-    Column('isSecurityDriven', Boolean(), nullable=False, default=False),
-    Column('starter', String(250), nullable=True),
+    Column('isSecurityDriven', Boolean(), nullable=True, default=False),
+    Column('starter', String(255), nullable=True),
     Column('mh_changeset', String(100), nullable=True),
     Column('partials', String(100)),
     Column('promptWaitTime', Integer(), nullable=True),
