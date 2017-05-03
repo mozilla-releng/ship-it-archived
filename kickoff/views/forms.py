@@ -114,6 +114,24 @@ def collapseSpaces(value):
     return value
 
 
+class OptionalPartials(object):
+    """
+    Allows empty partials if there is no suggestions.
+
+    Works only for forms with form.partials.suggestions defined.
+    """
+
+    def __call__(self, form, field):
+        try:
+            suggestions = json.loads(form.partials.suggestions)
+            if not field.data and not suggestions:
+                field.errors[:] = []
+            raise validators.StopValidation()
+        except AttributeError:
+            pass
+
+
+
 class ReleasesForm(Form):
     readyReleases = MultiCheckboxField('readyReleases')
     deleteReleases = MultiCheckboxField('deleteReleases')
@@ -305,7 +323,7 @@ class FennecReleaseForm(ReleaseForm):
 
 class DesktopReleaseForm(ReleaseForm):
     partials = StringField('Partial versions:',
-                           validators=[Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
+                           validators=[OptionalPartials(), Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
                            filters=[collapseSpaces],
                            )
     promptWaitTime = NullableIntegerField('Update prompt wait time:')
