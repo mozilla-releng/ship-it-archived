@@ -65,7 +65,7 @@ for locale in missingLocales:
     warnings.append("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % locale)
 if warnings:
     print ("\n".join(warnings))
-print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES (5 expected: lo, trs, tsz, wo, zam)" % len(missingLocales))
+print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES (4 expected: trs, tsz, wo, zam)" % len(missingLocales))
 
 auroraLocalesMissing = 0
 listLocalesAuroraURL = "https://hg.mozilla.org/releases/mozilla-aurora/raw-file/default/browser/locales/all-locales"
