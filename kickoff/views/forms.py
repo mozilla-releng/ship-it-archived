@@ -116,17 +116,17 @@ def collapseSpaces(value):
 
 class OptionalPartials(object):
     """
-    Allows empty partials if there is no suggestions.
+    Allows empty partials if there is no recent releases.
 
-    Works only for forms with form.partials.suggestions defined.
+    Works only for forms with form.recentReleases defined.
     """
 
     def __call__(self, form, field):
         try:
-            suggestions = json.loads(form.partials.suggestions)
-            if not field.data and not suggestions:
+            log.info("form.recentReleases: %s", form.recentReleases)
+            if not field.data and not form.recentReleases:
                 field.errors[:] = []
-            raise validators.StopValidation()
+                raise validators.StopValidation()
         except AttributeError:
             pass
 
@@ -331,14 +331,14 @@ class DesktopReleaseForm(ReleaseForm):
     def addSuggestions(self):
         ReleaseForm.addSuggestions(self)
         table = getReleaseTable(self.product.data)
-        recentReleases = table.getRecentShipped()
+        self.recentReleases = table.getRecentShipped()
         seenVersions = []
         partials = defaultdict(list)
         # The UI will suggest any versions which are on the same branch as
         # the one given, but only the highest build number for that version.
         # One exception is Firefox RC builds (version X.0), which should be added
         # to the list of betas
-        for release in reversed(recentReleases):
+        for release in reversed(self.recentReleases):
             if release.version not in seenVersions:
                 partials[release.branch].append('%sbuild%d' % (release.version, release.buildNumber))
                 seenVersions.append(release.version)
