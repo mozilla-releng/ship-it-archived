@@ -22,12 +22,6 @@ class TestMozVersion(TestCase):
         self.assertTrue(MozVersion("10.0a1") > MozVersion("1.0a1"))
         self.assertTrue(MozVersion("10.0a1") > MozVersion("2.0a1"))
 
-    def test_aurora_version(self):
-        self.assertTrue(MozVersion("2.0a2") > MozVersion("1.0a2"))
-        self.assertTrue(MozVersion("20.0a2") > MozVersion("1.0a2"))
-        self.assertTrue(MozVersion("10.0a2") > MozVersion("1.0a2"))
-        self.assertTrue(MozVersion("10.0a2") > MozVersion("2.0a2"))
-
     def test_beta_version(self):
         self.assertTrue(MozVersion("2.0b1") > MozVersion("1.0b1"))
         self.assertTrue(MozVersion("20.0b1") > MozVersion("1.0b1"))
