@@ -123,7 +123,7 @@ class OptionalPartials(object):
 
     def __call__(self, form, field):
         try:
-            log.info("form.recentReleases: %s", form.recentReleases)
+            log.debug("form.recentReleases: %s", form.recentReleases)
             if not field.data and not form.recentReleases:
                 field.errors[:] = []
                 raise validators.StopValidation()
