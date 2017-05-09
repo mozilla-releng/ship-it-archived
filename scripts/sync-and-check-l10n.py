@@ -7,7 +7,6 @@ import ConfigParser
 import StringIO
 import urllib2
 from collections import OrderedDict
-from config import SUPPORTED_AURORA_LOCALES
 from config import SUPPORTED_NIGHTLY_LOCALES
 
 
@@ -66,14 +65,6 @@ for locale in missingLocales:
 if warnings:
     print ("\n".join(warnings))
 print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES (4 expected: trs, tsz, wo, zam)" % len(missingLocales))
-
-auroraLocalesMissing = 0
-listLocalesAuroraURL = "https://hg.mozilla.org/releases/mozilla-aurora/raw-file/default/browser/locales/all-locales"
-for loc in getListLocalesFromURL(listLocalesAuroraURL):
-    if loc not in SUPPORTED_AURORA_LOCALES:
-        auroraLocalesMissing += 1
-        print("Warning: '%s' NOT found in SUPPORTED_AURORA_LOCALES" % loc)
-print("Sanity check: %d locales not in SUPPORTED_AURORA_LOCALES" % auroraLocalesMissing)
 
 print("Note that ship-it IS the source of truth for supported locales")
 print("Please report a bug to have a locale added/remove: https://bugzilla.mozilla.org/enter_bug.cgi?product=Release%20Engineering&component=Ship%20It")
