@@ -209,6 +209,31 @@ class FirefoxRelease(DesktopRelease):
             mh_changeset=form.mh_changeset.data)
 
 
+class DeveditionRelease(DesktopRelease):
+    __tablename__ = 'devedition_release'
+    product = 'devedition'
+
+    def __init__(self, *args, **kwargs):
+        DesktopRelease.__init__(self, *args, **kwargs)
+
+    @classmethod
+    def createFromForm(cls, submitter, form):
+        return cls(
+            partials=form.partials.data,
+            promptWaitTime=form.promptWaitTime.data,
+            submitter=submitter,
+            version=form.version.data,
+            buildNumber=form.buildNumber.data,
+            branch=form.branch.data,
+            mozillaRevision=form.mozillaRevision.data,
+            l10nChangesets=form.l10nChangesets.data,
+            mozillaRelbranch=form.mozillaRelbranch.data,
+            comment=form.comment.data,
+            description=form.description.data,
+            isSecurityDriven=form.isSecurityDriven.data,
+            mh_changeset=form.mh_changeset.data)
+
+
 class ThunderbirdRelease(DesktopRelease):
     __tablename__ = 'thunderbird_release'
     product = 'thunderbird'
@@ -254,6 +279,8 @@ def getReleaseTable(release):
         return FennecRelease
     elif release.startswith('firefox'):
         return FirefoxRelease
+    elif release.startswith('devedition'):
+        return DeveditionRelease
     elif release.startswith('thunderbird'):
         return ThunderbirdRelease
     else:
@@ -306,7 +333,8 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
     if productFilter:
         tables = (getReleaseTable(productFilter),)
     else:
-        tables = (FennecRelease, FirefoxRelease, ThunderbirdRelease)
+        tables = (FennecRelease, FirefoxRelease, DeveditionRelease,
+                  ThunderbirdRelease)
 
     releases = []
 
@@ -361,6 +389,7 @@ def getReleases(ready=None, complete=None, shipped=None, productFilter=None,
 release_union = polymorphic_union({
     'firefox': FirefoxRelease.__table__,
     'fennec': FennecRelease.__table__,
+    'devedition': DeveditionRelease.__table__,
     'thunderbird': ThunderbirdRelease.__table__
 }, 'product', 'release')
 

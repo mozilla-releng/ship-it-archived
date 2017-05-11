@@ -242,6 +242,8 @@ function _getElmoShortName(productName) {
     switch (productName) {
         case 'firefox':
             return 'fx';
+        case 'devedition':
+            return 'fx';
         case 'thunderbird':
             return 'tb';
         case 'fennec':
