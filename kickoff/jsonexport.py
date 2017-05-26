@@ -200,10 +200,10 @@ def generateLocalizedBuilds(buildsVersionLocales, l10nchangesets, lastVersion):
     return buildsVersionLocales
 
 
-def fillPrereleaseVersion(buildsVersionLocales):
+def fillPrereleaseVersion(buildsVersionLocales, channel='aurora'):
     # Our default values are for Aurora
-    locales = config.SUPPORTED_NIGHTLY_LOCALES
-    versionBranch = config.NIGHTLY_VERSION
+    locales = config.SUPPORTED_NIGHTLY_LOCALES if channel == 'nightly' else config.SUPPORTED_AURORA_LOCALES
+    versionBranch = config.NIGHTLY_VERSION if channel == 'nightly' else config.AURORA_VERSION
 
     for localeCode in locales:
         # insert the filesize info for backward compa
@@ -249,7 +249,8 @@ def updateLocaleWithVersionsTable(product):
                                                        esr_next[0][2],
                                                        esr_next[0][0] + "esr")
 
-    buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales)
+    buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'aurora')
+    buildsVersionLocales = fillPrereleaseVersion(buildsVersionLocales, 'nightly')
 
     # Backward compatibility: don't expose ja-JP-mac in product-details json API
     del buildsVersionLocales['ja-JP-mac']
