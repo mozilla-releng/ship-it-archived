@@ -102,7 +102,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertTrue('en' not in primary)
         # We will always have Nightly and Aurora builds for French
         self.assertTrue('fr' in config.SUPPORTED_NIGHTLY_LOCALES)
-        self.assertEquals(len(primary['fr']), 1)
+        self.assertEquals(len(primary['fr']), 2)
         # We always have en-US for all channels
         self.assertTrue('24.0a1' in primary['en-US'])
         self.assertTrue('3.0b3' in primary['en-US'])
@@ -110,7 +110,7 @@ class TestJSONRequestsAPI(ViewTest):
         # Verify ESR numbers are well-formed and both esr/esr_next are present
         self.assertTrue('2.0.2esr' in primary['en-US'])
         self.assertTrue('38.0esr' in primary['en-US'])
-        self.assertEquals(len(primary['en-US']), 6)
+        self.assertEquals(len(primary['en-US']), 7)
         # ja-JP-mac is not a locale we want to expose into product-details
         self.assertFalse('ja-JP-mac' in primary)
 
