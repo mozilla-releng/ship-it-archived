@@ -18,6 +18,7 @@ class Base(AbstractConcreteBase):
     _submittedAt = db.Column('submittedAt', db.DateTime(pytz.utc),
                              nullable=False, default=datetime.utcnow)
     _shippedAt = db.Column('shippedAt', db.DateTime(pytz.utc))
+    _release_eta = db.Column('release_eta', db.DateTime(pytz.utc))
 
     # Dates are always returned in UTC time and ISO8601 format to make them
     # as transportable as possible.
@@ -42,6 +43,17 @@ class Base(AbstractConcreteBase):
     @shippedAt.setter
     def shippedAt(self, shippedAt):
         self._shippedAt = shippedAt
+
+    @hybrid_property
+    def release_eta(self):
+        if self._release_eta:
+            return pytz.utc.localize(self._release_eta).isoformat()
+        else:
+            return None
+
+    @release_eta.setter
+    def release_eta(self, release_eta):
+        self._release_eta = release_eta
 
 
 class Release(Base, db.Model):

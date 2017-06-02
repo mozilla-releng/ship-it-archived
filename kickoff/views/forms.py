@@ -160,6 +160,7 @@ class ReleaseAPIForm(Form):
     shippedAt = DateTimeField('shippedAt', [validators.optional()])
     description = TextAreaField('description', [validators.optional()])
     isSecurityDriven = BooleanField('isSecurityDriven', [validators.optional()])
+    release_eta = DateTimeField('release_eta', [validators.optional()])
 
     def validate(self, release, *args, **kwargs):
         valid = Form.validate(self, *args, **kwargs)
@@ -212,6 +213,9 @@ class ReleaseForm(Form):
     description = TextAreaField('Description:')
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
     mh_changeset = StringField('Mozharness Revision:')
+    release_eta_date = DateField('Release date', format='%Y/%m/%d',
+                                 validators=[validators.optional()])
+    release_eta_time = StringField('Release time')
 
     VALID_VERSION_PATTERN = re.compile(r"""^(\d+)\.(    # Major version number
         (0)(a1|a2|b(\d+)|esr)?    # 2-digit-versions (like 46.0, 46.0b1, 46.0esr)
@@ -298,6 +302,16 @@ class ReleaseForm(Form):
         self.branch.suggestions = json.dumps(list(recentBranches.keys()))
         self.version.suggestions = json.dumps(list(suggestedVersions))
         self.buildNumber.suggestions = json.dumps(buildNumbers)
+
+    @property
+    def release_eta(self):
+        if self.release_eta_date.data and self.release_eta_time.data:
+            dt = self.release_eta_date.data
+            tm = datetime.strptime(self.release_eta_time.data,
+                                   '%H:%M:%S').time()
+            return datetime.combine(dt, tm)
+        else:
+            return None
 
 
 class FennecReleaseForm(ReleaseForm):
