@@ -130,6 +130,7 @@ class Release(Base, db.Model):
         self.description = form.description.data
         self.isSecurityDriven = form.isSecurityDriven.data
         self.mh_changeset = form.mh_changeset.data
+        self.release_eta = form.release_eta
 
     @classmethod
     def getRecent(cls, age=timedelta(weeks=7)):

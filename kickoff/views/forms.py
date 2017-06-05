@@ -1,9 +1,9 @@
 import logging
-
 import simplejson as json
 import re
 
 from datetime import datetime
+import dateutil.parser
 from ast import literal_eval
 from collections import defaultdict
 
@@ -213,9 +213,9 @@ class ReleaseForm(Form):
     description = TextAreaField('Description:')
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
     mh_changeset = StringField('Mozharness Revision:')
-    release_eta_date = DateField('Release date', format='%Y-%m-%d',
+    release_eta_date = DateField('Release ETA date:', format='%Y-%m-%d',
                                  validators=[validators.optional()])
-    release_eta_time = StringField('Release time')
+    release_eta_time = StringField('Release ETA time:')
 
     VALID_VERSION_PATTERN = re.compile(r"""^(\d+)\.(    # Major version number
         (0)(a1|a2|b(\d+)|esr)?    # 2-digit-versions (like 46.0, 46.0b1, 46.0esr)
@@ -303,6 +303,22 @@ class ReleaseForm(Form):
         self.version.suggestions = json.dumps(list(suggestedVersions))
         self.buildNumber.suggestions = json.dumps(buildNumbers)
 
+    def updateFromRow(self, row):
+        self.version.data = row.version
+        self.buildNumber.data = row.buildNumber
+        self.branch.data = row.branch
+        # Revision is a disabled field if relbranch is present, so we shouldn't
+        # put any data in it.
+        if not row.mozillaRelbranch:
+            self.mozillaRevision.data = row.mozillaRevision
+        self.l10nChangesets.data = row.l10nChangesets
+        self.mozillaRelbranch.data = row.mozillaRelbranch
+        self.mh_changeset.data = row.mh_changeset
+        release_eta = dateutil.parser.parse(row.release_eta)
+
+        self.release_eta_date.data = release_eta.date()
+        self.release_eta_time.data = '{:%H:%M %Z}'.format(release_eta)
+
     @property
     def release_eta(self):
         if self.release_eta_date.data and self.release_eta_time.data:
@@ -320,18 +336,6 @@ class FennecReleaseForm(ReleaseForm):
 
     def __init__(self, *args, **kwargs):
         ReleaseForm.__init__(self, prefix='fennec', product='fennec', *args, **kwargs)
-
-    def updateFromRow(self, row):
-        self.version.data = row.version
-        self.buildNumber.data = row.buildNumber
-        self.branch.data = row.branch
-        # Revision is a disabled field if relbranch is present, so we shouldn't
-        # put any data in it.
-        if not row.mozillaRelbranch:
-            self.mozillaRevision.data = row.mozillaRevision
-        self.l10nChangesets.data = row.l10nChangesets
-        self.mozillaRelbranch.data = row.mozillaRelbranch
-        self.mh_changeset.data = row.mh_changeset
 
 
 class DesktopReleaseForm(ReleaseForm):
@@ -363,6 +367,10 @@ class DesktopReleaseForm(ReleaseForm):
                     partials['releases/mozilla-beta'].append('%sbuild%d' % (release.version, release.buildNumber))
         self.partials.suggestions = json.dumps(partials)
 
+    def updateFromRow(self, row):
+        ReleaseForm.updateFromRow(self, row)
+        self.partials.data = row.partials
+
 
 class FirefoxReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
@@ -371,18 +379,9 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         ReleaseForm.__init__(self, prefix='firefox', product='firefox', *args, **kwargs)
 
     def updateFromRow(self, row):
-        self.version.data = row.version
-        self.buildNumber.data = row.buildNumber
-        self.branch.data = row.branch
-        if not row.mozillaRelbranch:
-            self.mozillaRevision.data = row.mozillaRevision
-        self.partials.data = row.partials
-        self.promptWaitTime.data = row.promptWaitTime
-        self.l10nChangesets.data = row.l10nChangesets
-        self.mozillaRelbranch.data = row.mozillaRelbranch
+        DesktopReleaseForm.updateFromRow(self, row)
         self.comment.data = row.comment
         self.description.data = row.description
-        self.mh_changeset.data = row.mh_changeset
 
 
 class DeveditionReleaseForm(FirefoxReleaseForm):
@@ -412,19 +411,11 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
         return valid
 
     def updateFromRow(self, row):
-        self.version.data = row.version
-        self.buildNumber.data = row.buildNumber
-        self.branch.data = row.branch
-        if not row.mozillaRelbranch:
-            self.mozillaRevision.data = row.mozillaRevision
+        DesktopReleaseForm.updateFromRow(self, row)
+        self.promptWaitTime.data = row.promptWaitTime
+        self.commRelbranch.data = row.commRelbranch
         if not row.commRelbranch:
             self.commRevision.data = row.commRevision
-        self.partials.data = row.partials
-        self.promptWaitTime.data = row.promptWaitTime
-        self.l10nChangesets.data = row.l10nChangesets
-        self.mozillaRelbranch.data = row.mozillaRelbranch
-        self.commRelbranch.data = row.commRelbranch
-        self.mh_changeset.data = row.mh_changeset
 
 
 def getReleaseForm(release):

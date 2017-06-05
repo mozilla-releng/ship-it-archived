@@ -7,3 +7,4 @@ sqlalchemy-migrate==0.7.2
 cef==0.5
 pytz==2016.3
 requests==2.10.0
+python-dateutil==2.6.0
