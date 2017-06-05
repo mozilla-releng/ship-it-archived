@@ -80,7 +80,7 @@ class Release(Base, db.Model):
                  mozillaRevision, l10nChangesets,
                  mozillaRelbranch, submittedAt=None,
                  shippedAt=None, comment=None, description=None,
-                 isSecurityDriven=False, mh_changeset=None):
+                 isSecurityDriven=False, mh_changeset=None, release_eta=None):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version.strip()
@@ -99,6 +99,7 @@ class Release(Base, db.Model):
             self.description = description
         self.isSecurityDriven = isSecurityDriven
         self.mh_changeset = mh_changeset
+        self.release_eta = release_eta
 
     @property
     def isShippedWithL10n(self):
@@ -176,7 +177,8 @@ class FennecRelease(Release):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
 
 class DesktopRelease(Release):
@@ -218,7 +220,8 @@ class FirefoxRelease(DesktopRelease):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
 
 class DeveditionRelease(DesktopRelease):
@@ -243,7 +246,8 @@ class DeveditionRelease(DesktopRelease):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
 
 class ThunderbirdRelease(DesktopRelease):
@@ -274,7 +278,8 @@ class ThunderbirdRelease(DesktopRelease):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
     def updateFromForm(self, form):
         DesktopRelease.updateFromForm(self, form)
