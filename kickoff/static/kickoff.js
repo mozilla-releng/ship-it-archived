@@ -30,6 +30,7 @@ function initialSetup() {
     // Show the tooltip. Mostly use for the "is security driven" checkbox
     $(document).tooltip();
 
+    // Defines a custom spinner
     $.widget('ui.timespinner', $.ui.spinner, {
         options: {
             min: 0, // 00:00
@@ -51,6 +52,7 @@ function initialSetup() {
 
     SUPPORTED_PRODUCTS.forEach(function(product) {
         $('#' + product + '-release_eta_time').timespinner();
+        $('#' + product + '-release_eta_date').datepicker({dateFormat: 'yy-mm-dd'});
     });
 }
 

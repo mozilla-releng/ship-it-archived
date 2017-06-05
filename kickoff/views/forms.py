@@ -213,7 +213,7 @@ class ReleaseForm(Form):
     description = TextAreaField('Description:')
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
     mh_changeset = StringField('Mozharness Revision:')
-    release_eta_date = DateField('Release date', format='%Y/%m/%d',
+    release_eta_date = DateField('Release date', format='%Y-%m-%d',
                                  validators=[validators.optional()])
     release_eta_time = StringField('Release time')
 
@@ -308,7 +308,7 @@ class ReleaseForm(Form):
         if self.release_eta_date.data and self.release_eta_time.data:
             dt = self.release_eta_date.data
             tm = datetime.strptime(self.release_eta_time.data,
-                                   '%H:%M:%S').time()
+                                   '%H:%M %Z').time()
             return datetime.combine(dt, tm)
         else:
             return None
