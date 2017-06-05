@@ -47,6 +47,11 @@ $(document).ready(function() {
     {% endif %}
     <div class="help">If a relbranch is specified this field is disabled and ignored. The tip of the relbranch will be used instead. It is strongly recommended to select a changeset which has been fully built/tested on the Treeherder tool (example for beta: <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-beta">Beta</a> or <a href="https://treeherder.mozilla.org/#/jobs?repo=mozilla-release">Release</a>)</div>
 </div>
+<div class="submit_release">
+    {{ fennecForm.release_eta_time.label()|safe }}
+    {{ fennecForm.release_eta_time(placeholder='00:00 UTC')|safe }}
+    <div class="help">Lorem ipsum dolor sit amet...</div>
+</div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
 <div class="submit_release">

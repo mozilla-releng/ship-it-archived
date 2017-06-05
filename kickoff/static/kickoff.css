@@ -27,6 +27,7 @@ a {
 }
 
 .submit_release textarea,
+.submit_release .ui-spinner,
 .submit_release input {
     float: left;
     width: 25em;

@@ -69,6 +69,11 @@ $(document).ready(function() {
     <div class="helpPartial" id="partialInfo"></div>
     <div class="help">A comma separated list of previous releases to create partial updates for. You MUST list the previous release from the chosen branch as one of the partials. For release-channel releases the recommend number of partials is 3, for Betas it's 2, and for ESRs only 1. Each partial chosen adds roughly 1.5h to the end-to-end time of the release.</div>
 </div>
+<div class="submit_release">
+    {{ thunderbirdForm.release_eta_time.label()|safe }}
+    {{ thunderbirdForm.release_eta_time(placeholder='00:00 UTC')|safe }}
+    <div class="help">Lorem ipsum dolor sit amet...</div>
+</div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
 <div class="submit_release">

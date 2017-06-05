@@ -30,6 +30,28 @@ function initialSetup() {
     // Show the tooltip. Mostly use for the "is security driven" checkbox
     $(document).tooltip();
 
+    $.widget('ui.timespinner', $.ui.spinner, {
+        options: {
+            min: 0, // 00:00
+            max: 24 * 60 - 1,   // 23:59
+            step: 15, // 15 by 15 minutes
+        },
+
+        _parse: function(value) {
+            if (typeof value === 'string') {
+              return convertUtcStringToNumberOfMinutes(value);
+            }
+            return value;
+        },
+
+        _format: function(value) {
+            return convertMinutesToUtcString(value);
+        },
+    });
+
+    SUPPORTED_PRODUCTS.forEach(function(product) {
+        $('#' + product + '-release_eta_time').timespinner();
+    });
 }
 
 function viewReleases() {
