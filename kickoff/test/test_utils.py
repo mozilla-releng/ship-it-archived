@@ -35,3 +35,12 @@ class TestRelease(unittest.TestCase):
 
         for test_value in test_values:
             self.assertRaises(test_value['expected'], parse_iso8601_to_date_time, test_value['value'])
+
+    def testNonValidIso8601(self):
+        test_values = ({
+            'value': None,
+            'expected': TypeError,
+        },)
+
+        for test_value in test_values:
+            self.assertRaises(test_value['expected'], parse_iso8601_to_date_time, test_value['value'])

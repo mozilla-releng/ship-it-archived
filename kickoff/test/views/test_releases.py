@@ -72,6 +72,7 @@ class TestReleaseAPI(ViewTest):
             'mozillaRelbranch': None,
             'commRelbranch': None,
             'mh_changeset': 'xyz',
+            'release_eta': None,
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -100,6 +101,7 @@ class TestReleaseAPI(ViewTest):
             'promptWaitTime': 5,
             'mozillaRelbranch': 'FOO',
             'mh_changeset': 'xyz',
+            'release_eta': None,
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)

@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 
 def parse_iso8601_to_date_time(string):
     # XXX Only supports the 'YYYY-mm-ddTHH:MM:SS+ZZ:ZZ' format
+    if not isinstance(string, str):
+        raise TypeError('"%s" is not a string' % string)
+
     datetime_without_timezone = string[0:19]
     timezone_sign = string[19]
     timezone_offset_hours = int(string[20:22])
