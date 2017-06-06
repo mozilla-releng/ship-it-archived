@@ -230,13 +230,6 @@ def updateLocaleWithVersionsTable(product):
     betas = getFilteredReleases(product, ["dev"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
                                                    betas[0][2], betas[0][0])
-    # devedition
-    if product == "firefox":
-        deveditions = getFilteredReleases("devedition", ["dev"],
-                                          lastRelease=True, withL10N=True)
-        if deveditions:
-            buildsVersionLocales = generateLocalizedBuilds(
-                buildsVersionLocales, deveditions[0][2], deveditions[0][0])
     # esr
     esr_releases = getFilteredReleases(product, ["esr"], lastRelease=True, withL10N=True)
     buildsVersionLocales = generateLocalizedBuilds(buildsVersionLocales,
