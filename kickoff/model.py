@@ -471,4 +471,7 @@ class ProductReleasesView(object):
         if d['shippedAt']:
             d['shippedAt'] = pytz.utc.localize(d['shippedAt']).isoformat()
 
+        if d['release_eta']:
+            d['release_eta'] = pytz.utc.localize(d['release_eta']).isoformat()
+
         return d
