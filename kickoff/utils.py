@@ -11,7 +11,7 @@ def parse_iso8601_to_date_time(string):
     timezone_offset_hours = int(string[20:22])
     timezone_offset_minutes = int(string[23:])
 
-    local_date_time = datetime.strptime(datetime_without_timezone,'%Y-%m-%dT%H:%M:%S')
+    local_date_time = datetime.strptime(datetime_without_timezone, '%Y-%m-%dT%H:%M:%S')
     timezone_delta = timedelta(hours=timezone_offset_hours, minutes=timezone_offset_minutes)
 
     if timezone_sign == '+':
