@@ -97,6 +97,39 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.status, '')
             self.assertEquals(got.mozillaRelbranch, 'FOO')
 
+    def testSubmitWithReleaseEta(self):
+        data = [
+            'firefox-version=9.0',
+            'firefox-buildNumber=1',
+            'firefox-branch=z',
+            'firefox-mozillaRevision=abc',
+            'firefox-partials=1.0build1',
+            'firefox-l10nChangesets=af%20def',
+            'firefox-product=firefox',
+            'firefox-promptWaitTime=',
+            'firefox-mozillaRelbranch=',
+            'firefox-mh_changeset=',
+            'firefox-release_eta_date=2005-01-02',
+            'firefox-release_eta_time=03:04%20UTC',
+        ]
+        ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
+        self.assertEquals(ret.status_code, 302, ret.data)
+        with app.test_request_context():
+            got = FirefoxRelease.query.filter_by(name='Firefox-9.0-build1').first()
+            self.assertEquals(got.version, '9.0')
+            self.assertEquals(got.buildNumber, 1)
+            self.assertEquals(got.branch, 'z')
+            self.assertEquals(got.mozillaRevision, 'abc')
+            self.assertEquals(got.partials, '1.0build1')
+            self.assertEquals(got.l10nChangesets, 'af def')
+            self.assertEquals(got.ready, False)
+            self.assertEquals(got.complete, False)
+            self.assertEquals(got.promptWaitTime, None)
+            self.assertEquals(got.status, '')
+            self.assertEquals(got.mozillaRelbranch, None)
+            self.assertEquals(got.mh_changeset, '')
+            self.assertEquals(got.release_eta, '2005-01-02T03:04:00+00:00')
+
     def testSubmitValidVersionNumbers(self):
         valid_versions = (
             '46.0', '46.0.1', '46.0.10', '46.2.0', '46.2.1', '46.10.0', '46.10.10',
