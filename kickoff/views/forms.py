@@ -318,7 +318,8 @@ class ReleaseForm(Form):
         if row.release_eta:
             release_eta = parse_iso8601_to_date_time(row.release_eta)
             self.release_eta_date.data = release_eta.date()
-            self.release_eta_time.data = '{:%H:%M %Z}'.format(release_eta)
+            # Conversion needed because release_eta_time is a StringField
+            self.release_eta_time.data = release_eta.strftime('%H:%M %Z')
 
     @property
     def release_eta(self):

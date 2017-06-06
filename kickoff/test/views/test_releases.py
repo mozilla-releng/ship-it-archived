@@ -401,6 +401,26 @@ class TestReleaseView(ViewTest):
             ret = self.get('/release.html', query_string={'name': 'Firefox-50.0b6-build1'})
             self.assertEqual(ret.status_code, 200)
 
+    def testGetEditableFirefoxReleaseWithReleaseEta(self):
+        with app.test_request_context():
+            release = FirefoxRelease('48.0b7build1',
+                                     42,
+                                     submitter='moz://a',
+                                     version='50.0b6',
+                                     buildNumber=2,
+                                     mozillaRelbranch='',
+                                     branch='releases/mozilla-beta',
+                                     mozillaRevision='abcdef123456',
+                                     l10nChangesets='ach 72c548f97e82',
+                                     release_eta=datetime.datetime(2005, 1, 2, 3, 4))
+            db.session.add(release)
+            db.session.commit()
+
+            ret = self.get('/release.html', query_string={'name': 'Firefox-50.0b6-build2'})
+            self.assertEqual(ret.status_code, 200)
+            self.assertTrue('2005-01-02' in ret.data)
+            self.assertTrue('03:04' in ret.data)
+
     def testGetEditableFennecRelease(self):
         with app.test_request_context():
             release = FennecRelease(submitter='moz://a',
