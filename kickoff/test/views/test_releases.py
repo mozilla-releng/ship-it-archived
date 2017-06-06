@@ -108,6 +108,35 @@ class TestReleaseAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
 
+    def testGetReleaseWithReleaseEta(self):
+        ret = self.get('/releases/Firefox-3.0b1-build1')
+        expected = {
+            'name': 'Firefox-3.0b1-build1',
+            'product': 'firefox',
+            'submitter': 'joe',
+            'submittedAt': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat(),
+            'version': '3.0b1',
+            'buildNumber': 1,
+            'comment': 'Rule with release_eta',
+            'branch': 'a',
+            'mozillaRevision': 'def',
+            'description': 'Rule with release_eta',
+            'isSecurityDriven': False,
+            'l10nChangesets': 'ja zu',
+            'partials': '0,1',
+            'ready': True,
+            'shippedAt': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat(),
+            'complete': True,
+            'starter': None,
+            'status': 'shipped',
+            'promptWaitTime': 5,
+            'mozillaRelbranch': 'FOO',
+            'mh_changeset': None,
+            'release_eta': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 7)).isoformat(),
+        }
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(json.loads(ret.data), expected)
+
     def testMarkAsComplete(self):
         ret = self.post('/releases/Fennec-1.0-build1', data={'complete': True})
         self.assertEquals(ret.status_code, 200, ret.data)
