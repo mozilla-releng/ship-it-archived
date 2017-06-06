@@ -63,12 +63,12 @@ $(document).ready(function() {
 <div class="submit_release">
     {{ deveditionForm.release_eta_date.label()|safe }}
     {{ deveditionForm.release_eta_date(placeholder='2017-06-01')|safe }}
-    <div class="help">Lorem ipsum dolor sit amet...</div>
+    <div class="help">Date at which the release is planned to be public. This date is used by Balrog to automatically activate the new rule. One extra condition: The new rule should be signed off by a set of human before going live. In the case the date expires, the rule will go live immediately after every signoff is made.</div>
 </div>
 <div class="submit_release">
     {{ deveditionForm.release_eta_time.label()|safe }}
     {{ deveditionForm.release_eta_time(placeholder='00:00 UTC')|safe }}
-    <div class="help">Lorem ipsum dolor sit amet...</div>
+    <div class="help">Time at which the release is planned to be public. This must be used alongside the previous field.</div>
 </div>
 <h4>Advanced Options:</h4>
 <div class="advanced">
