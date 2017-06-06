@@ -557,3 +557,26 @@ QUnit.test('toString()', function(assert) {
         })
     }
 });
+
+QUnit.module('datetime');
+
+QUnit.test('convertMinutesToUtcString()', function(assert) {
+    assert.equal(convertMinutesToUtcString(0), '00:00 UTC');
+    assert.equal(convertMinutesToUtcString(721), '12:01 UTC');
+    assert.equal(convertMinutesToUtcString(1439), '23:59 UTC');
+});
+
+QUnit.test('convertUtcStringToNumberOfMinutes()', function(assert) {
+    assert.equal(convertUtcStringToNumberOfMinutes('00:00 UTC'), 0);
+    assert.equal(convertUtcStringToNumberOfMinutes('12:01 UTC'), 721);
+    assert.equal(convertUtcStringToNumberOfMinutes('23:59 UTC'), 1439);
+});
+
+QUnit.test('pad()', function(assert) {
+    assert.equal(pad(0), '00');
+    assert.equal(pad(0, 2), '00');
+    assert.equal(pad(0, 2, 0), '00');
+    assert.equal(pad(1), '01');
+    assert.equal(pad(10), '10');
+    assert.equal(pad(123), '123');
+});

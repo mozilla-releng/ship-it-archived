@@ -12,10 +12,6 @@ function convertUtcStringToNumberOfMinutes(utcString) {
     return hours * 60 + minutes;
 }
 
-function convertUtcStringToNumberOfMilliseconds(string) {
-    return convertUtcStringToNumberOfMinutes(string) * 60 * 1000;
-}
-
 function pad(numberToPad, width, characterToPadWith) {
     width = width || 2;
     characterToPadWith = characterToPadWith || '0';

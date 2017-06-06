@@ -40,7 +40,7 @@ function initialSetup() {
 
         _parse: function(value) {
             if (typeof value === 'string') {
-              return convertUtcStringToNumberOfMinutes(value);
+                return convertUtcStringToNumberOfMinutes(value);
             }
             return value;
         },
