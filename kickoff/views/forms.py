@@ -3,7 +3,6 @@ import simplejson as json
 import re
 
 from datetime import datetime
-import dateutil.parser
 from ast import literal_eval
 from collections import defaultdict
 
@@ -17,6 +16,7 @@ from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
 
 from kickoff.model import Release, getReleaseTable, getReleases
+from kickoff.utils import parse_iso8601_to_date_time
 from kickoff.versions import MozVersion
 
 log = logging.getLogger(__name__)
@@ -314,7 +314,7 @@ class ReleaseForm(Form):
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.mh_changeset.data = row.mh_changeset
-        release_eta = dateutil.parser.parse(row.release_eta)
+        release_eta = parse_iso8601_to_date_time(row.release_eta)
 
         self.release_eta_date.data = release_eta.date()
         self.release_eta_time.data = '{:%H:%M %Z}'.format(release_eta)
