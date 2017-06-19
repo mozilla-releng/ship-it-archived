@@ -111,7 +111,7 @@ class TestJSONRequestsAPI(ViewTest):
         # Verify ESR numbers are well-formed and both esr/esr_next are present
         self.assertTrue('2.0.2esr' in primary['en-US'])
         self.assertTrue('38.0esr' in primary['en-US'])
-        self.assertEquals(len(primary['en-US']), 7)
+        self.assertEquals(len(primary['en-US']), 6)
         # ja-JP-mac is not a locale we want to expose into product-details
         self.assertFalse('ja-JP-mac' in primary)
 

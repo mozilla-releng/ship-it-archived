@@ -258,7 +258,7 @@ class ThunderbirdRelease(DesktopRelease):
     commRelbranch = db.Column(db.String(50))
 
     def __init__(self, commRevision, commRelbranch, *args, **kwargs):
-        self.commRevision = commRevision
+        self.commRevision = commRevision.strip()
         self.commRelbranch = commRelbranch
         DesktopRelease.__init__(self, *args, **kwargs)
 
