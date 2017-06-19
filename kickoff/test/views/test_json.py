@@ -62,6 +62,7 @@ class TestJSONRequestsAPI(ViewTest):
     def testBetaReleases(self):
         ret = self.get(BASE_JSON_PATH + '/firefox_history_development_releases.json')
         expected = {
+            "3.0b1": "2005-01-02",
             "3.0b2": "2005-01-02",
             "3.0b3": "2005-02-03",
         }

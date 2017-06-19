@@ -27,10 +27,15 @@ a {
 }
 
 .submit_release textarea,
+.submit_release .ui-spinner,
 .submit_release input {
     float: left;
     width: 25em;
     margin-bottom: 1em;
+}
+
+.ui-widget {
+    font-size: 1em;
 }
 
 .submit_release input[type="submit"] {

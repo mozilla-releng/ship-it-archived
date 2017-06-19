@@ -82,7 +82,7 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertEquals(ret.status_code, 200)
 
         beta_releases = jsonFx['releases']
-        self.assertEquals(len(beta_releases), 2)
+        self.assertEquals(len(beta_releases), 3)
         for beta in beta_releases:
             self.assertTrue(self.FIREFOX_BETA_3_REGEX.match(beta['name']) is not None)
             self.assertTrue('ja' in beta['locales'])

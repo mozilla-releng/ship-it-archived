@@ -1,5 +1,4 @@
 import logging
-
 import simplejson as json
 import re
 
@@ -17,6 +16,7 @@ from mozilla.build.versions import ANY_VERSION_REGEX, getPossibleNextVersions
 from mozilla.release.l10n import parsePlainL10nChangesets
 
 from kickoff.model import Release, getReleaseTable, getReleases
+from kickoff.utils import parse_iso8601_to_date_time
 from kickoff.versions import MozVersion
 
 log = logging.getLogger(__name__)
@@ -160,6 +160,7 @@ class ReleaseAPIForm(Form):
     shippedAt = DateTimeField('shippedAt', [validators.optional()])
     description = TextAreaField('description', [validators.optional()])
     isSecurityDriven = BooleanField('isSecurityDriven', [validators.optional()])
+    release_eta = DateTimeField('release_eta', [validators.optional()])
 
     def validate(self, release, *args, **kwargs):
         valid = Form.validate(self, *args, **kwargs)
@@ -212,6 +213,9 @@ class ReleaseForm(Form):
     description = TextAreaField('Description:')
     isSecurityDriven = BooleanField('Is a security driven release?', default=False)
     mh_changeset = StringField('Mozharness Revision:')
+    release_eta_date = DateField('Release ETA date:', format='%Y-%m-%d',
+                                 validators=[validators.optional()])
+    release_eta_time = StringField('Release ETA time:')
 
     VALID_VERSION_PATTERN = re.compile(r"""^(\d+)\.(    # Major version number
         (0)(a1|a2|b(\d+)|esr)?    # 2-digit-versions (like 46.0, 46.0b1, 46.0esr)
@@ -299,14 +303,6 @@ class ReleaseForm(Form):
         self.version.suggestions = json.dumps(list(suggestedVersions))
         self.buildNumber.suggestions = json.dumps(buildNumbers)
 
-
-class FennecReleaseForm(ReleaseForm):
-    product = HiddenField('product')
-    l10nChangesets = JSONField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
-
-    def __init__(self, *args, **kwargs):
-        ReleaseForm.__init__(self, prefix='fennec', product='fennec', *args, **kwargs)
-
     def updateFromRow(self, row):
         self.version.data = row.version
         self.buildNumber.data = row.buildNumber
@@ -318,6 +314,30 @@ class FennecReleaseForm(ReleaseForm):
         self.l10nChangesets.data = row.l10nChangesets
         self.mozillaRelbranch.data = row.mozillaRelbranch
         self.mh_changeset.data = row.mh_changeset
+
+        if row.release_eta:
+            release_eta = parse_iso8601_to_date_time(row.release_eta)
+            self.release_eta_date.data = release_eta.date()
+            # Conversion needed because release_eta_time is a StringField
+            self.release_eta_time.data = release_eta.strftime('%H:%M %Z')
+
+    @property
+    def release_eta(self):
+        if self.release_eta_date.data and self.release_eta_time.data:
+            dt = self.release_eta_date.data
+            tm = datetime.strptime(self.release_eta_time.data,
+                                   '%H:%M %Z').time()
+            return datetime.combine(dt, tm)
+        else:
+            return None
+
+
+class FennecReleaseForm(ReleaseForm):
+    product = HiddenField('product')
+    l10nChangesets = JSONField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
+
+    def __init__(self, *args, **kwargs):
+        ReleaseForm.__init__(self, prefix='fennec', product='fennec', *args, **kwargs)
 
 
 class DesktopReleaseForm(ReleaseForm):
@@ -349,6 +369,10 @@ class DesktopReleaseForm(ReleaseForm):
                     partials['releases/mozilla-beta'].append('%sbuild%d' % (release.version, release.buildNumber))
         self.partials.suggestions = json.dumps(partials)
 
+    def updateFromRow(self, row):
+        ReleaseForm.updateFromRow(self, row)
+        self.partials.data = row.partials
+
 
 class FirefoxReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
@@ -357,18 +381,9 @@ class FirefoxReleaseForm(DesktopReleaseForm):
         ReleaseForm.__init__(self, prefix='firefox', product='firefox', *args, **kwargs)
 
     def updateFromRow(self, row):
-        self.version.data = row.version
-        self.buildNumber.data = row.buildNumber
-        self.branch.data = row.branch
-        if not row.mozillaRelbranch:
-            self.mozillaRevision.data = row.mozillaRevision
-        self.partials.data = row.partials
-        self.promptWaitTime.data = row.promptWaitTime
-        self.l10nChangesets.data = row.l10nChangesets
-        self.mozillaRelbranch.data = row.mozillaRelbranch
+        DesktopReleaseForm.updateFromRow(self, row)
         self.comment.data = row.comment
         self.description.data = row.description
-        self.mh_changeset.data = row.mh_changeset
 
 
 class DeveditionReleaseForm(FirefoxReleaseForm):
@@ -398,19 +413,11 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
         return valid
 
     def updateFromRow(self, row):
-        self.version.data = row.version
-        self.buildNumber.data = row.buildNumber
-        self.branch.data = row.branch
-        if not row.mozillaRelbranch:
-            self.mozillaRevision.data = row.mozillaRevision
+        DesktopReleaseForm.updateFromRow(self, row)
+        self.promptWaitTime.data = row.promptWaitTime
+        self.commRelbranch.data = row.commRelbranch
         if not row.commRelbranch:
             self.commRevision.data = row.commRevision
-        self.partials.data = row.partials
-        self.promptWaitTime.data = row.promptWaitTime
-        self.l10nChangesets.data = row.l10nChangesets
-        self.mozillaRelbranch.data = row.mozillaRelbranch
-        self.commRelbranch.data = row.commRelbranch
-        self.mh_changeset.data = row.mh_changeset
 
 
 def getReleaseForm(release):

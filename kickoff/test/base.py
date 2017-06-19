@@ -117,6 +117,22 @@ class TestBase(unittest.TestCase):
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
+                               submitter='joe', version='3.0b1', buildNumber=1,
+                               branch='a', mozillaRevision='def',
+                               l10nChangesets='ja zu',
+                               mozillaRelbranch='FOO',
+                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
+                               shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
+                               comment="Rule with release_eta",
+                               description="Rule with release_eta",
+                               release_eta=datetime(2005, 1, 2, 3, 4, 5, 7))
+            r.complete = True
+            r.ready = True
+            r.status = "shipped"
+            db.session.add(r)
+
+
+            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
                                submitter='joe', version='3.0b2', buildNumber=1,
                                branch='a', mozillaRevision='def',
                                l10nChangesets='ja zu',
