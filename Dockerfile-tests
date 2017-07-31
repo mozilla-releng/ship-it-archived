@@ -1,4 +1,4 @@
-FROM rail/python-test-runner
+FROM mozillareleases/python-test-runner
 
 MAINTAINER callek@mozilla.com
 

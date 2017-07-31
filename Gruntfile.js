@@ -6,6 +6,7 @@ sources = [
     "kickoff/static/treestatus.js",
     "kickoff/static/hg_mozilla.js",
     "kickoff/static/suggestions.js",
+    "kickoff/static/datetime.js",
 ];
 
 module.exports = function(grunt) {

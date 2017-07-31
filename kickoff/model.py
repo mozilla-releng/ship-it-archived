@@ -18,6 +18,7 @@ class Base(AbstractConcreteBase):
     _submittedAt = db.Column('submittedAt', db.DateTime(pytz.utc),
                              nullable=False, default=datetime.utcnow)
     _shippedAt = db.Column('shippedAt', db.DateTime(pytz.utc))
+    _release_eta = db.Column('release_eta', db.DateTime(pytz.utc))
 
     # Dates are always returned in UTC time and ISO8601 format to make them
     # as transportable as possible.
@@ -42,6 +43,17 @@ class Base(AbstractConcreteBase):
     @shippedAt.setter
     def shippedAt(self, shippedAt):
         self._shippedAt = shippedAt
+
+    @hybrid_property
+    def release_eta(self):
+        if self._release_eta:
+            return pytz.utc.localize(self._release_eta).isoformat()
+        else:
+            return None
+
+    @release_eta.setter
+    def release_eta(self, release_eta):
+        self._release_eta = release_eta
 
 
 class Release(Base, db.Model):
@@ -68,7 +80,7 @@ class Release(Base, db.Model):
                  mozillaRevision, l10nChangesets,
                  mozillaRelbranch, submittedAt=None,
                  shippedAt=None, comment=None, description=None,
-                 isSecurityDriven=False, mh_changeset=None):
+                 isSecurityDriven=False, mh_changeset=None, release_eta=None):
         self.name = getReleaseName(self.product, version, buildNumber)
         self.submitter = submitter
         self.version = version.strip()
@@ -87,6 +99,7 @@ class Release(Base, db.Model):
             self.description = description
         self.isSecurityDriven = isSecurityDriven
         self.mh_changeset = mh_changeset
+        self.release_eta = release_eta
 
     @property
     def isShippedWithL10n(self):
@@ -117,6 +130,7 @@ class Release(Base, db.Model):
         self.description = form.description.data
         self.isSecurityDriven = form.isSecurityDriven.data
         self.mh_changeset = form.mh_changeset.data
+        self.release_eta = form.release_eta
 
     @classmethod
     def getRecent(cls, age=timedelta(weeks=7)):
@@ -164,7 +178,8 @@ class FennecRelease(Release):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
 
 class DesktopRelease(Release):
@@ -206,7 +221,8 @@ class FirefoxRelease(DesktopRelease):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
 
 class DeveditionRelease(DesktopRelease):
@@ -231,7 +247,8 @@ class DeveditionRelease(DesktopRelease):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
 
 class ThunderbirdRelease(DesktopRelease):
@@ -262,7 +279,8 @@ class ThunderbirdRelease(DesktopRelease):
             comment=form.comment.data,
             description=form.description.data,
             isSecurityDriven=form.isSecurityDriven.data,
-            mh_changeset=form.mh_changeset.data)
+            mh_changeset=form.mh_changeset.data,
+            release_eta=form.release_eta)
 
     def updateFromForm(self, form):
         DesktopRelease.updateFromForm(self, form)
@@ -452,5 +470,8 @@ class ProductReleasesView(object):
 
         if d['shippedAt']:
             d['shippedAt'] = pytz.utc.localize(d['shippedAt']).isoformat()
+
+        if d['release_eta']:
+            d['release_eta'] = pytz.utc.localize(d['release_eta']).isoformat()
 
         return d

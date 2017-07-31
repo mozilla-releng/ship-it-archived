@@ -6,4 +6,4 @@ var CONFIG = {
     },
 };
 
-var SUPPORTED_PRODUCTS = ['fennec', 'firefox', 'thunderbird'];
+var SUPPORTED_PRODUCTS = ['fennec', 'firefox', 'devedition', 'thunderbird'];

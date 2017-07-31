@@ -22,7 +22,9 @@ class TestRequestsAPI(ViewTest):
                          'Fennec-24.0.1-build4', 'Fennec-23.0b2-build4',
                          'Firefox-2.0-build1', "Firefox-2.0.2esr-build1",
                          'Firefox-38.0esr-build1',
-                         'Firefox-3.0b2-build1', 'Firefox-3.0b2-build2', 'Firefox-3.0b3-build1',
+                         'Firefox-3.0b1-build1',
+                         'Firefox-3.0b2-build1', 'Firefox-3.0b2-build2',
+                         'Firefox-3.0b3-build1',
                          'Firefox-3.0.1-build1',
                          'Devedition-3.0b5-build1',
                          'Thunderbird-2.0-build2', 'Thunderbird-4.0-build1',
@@ -72,6 +74,7 @@ class TestReleaseAPI(ViewTest):
             'mozillaRelbranch': None,
             'commRelbranch': None,
             'mh_changeset': 'xyz',
+            'release_eta': None,
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -100,6 +103,36 @@ class TestReleaseAPI(ViewTest):
             'promptWaitTime': 5,
             'mozillaRelbranch': 'FOO',
             'mh_changeset': 'xyz',
+            'release_eta': None,
+        }
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(json.loads(ret.data), expected)
+
+    def testGetReleaseWithReleaseEta(self):
+        ret = self.get('/releases/Firefox-3.0b1-build1')
+        expected = {
+            'name': 'Firefox-3.0b1-build1',
+            'product': 'firefox',
+            'submitter': 'joe',
+            'submittedAt': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat(),
+            'version': '3.0b1',
+            'buildNumber': 1,
+            'comment': 'Rule with release_eta',
+            'branch': 'a',
+            'mozillaRevision': 'def',
+            'description': 'Rule with release_eta',
+            'isSecurityDriven': False,
+            'l10nChangesets': 'ja zu',
+            'partials': '0,1',
+            'ready': True,
+            'shippedAt': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat(),
+            'complete': True,
+            'starter': None,
+            'status': 'shipped',
+            'promptWaitTime': 5,
+            'mozillaRelbranch': 'FOO',
+            'mh_changeset': None,
+            'release_eta': pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 7)).isoformat(),
         }
         self.assertEquals(ret.status_code, 200)
         self.assertEquals(json.loads(ret.data), expected)
@@ -367,6 +400,26 @@ class TestReleaseView(ViewTest):
 
             ret = self.get('/release.html', query_string={'name': 'Firefox-50.0b6-build1'})
             self.assertEqual(ret.status_code, 200)
+
+    def testGetEditableFirefoxReleaseWithReleaseEta(self):
+        with app.test_request_context():
+            release = FirefoxRelease('48.0b7build1',
+                                     42,
+                                     submitter='moz://a',
+                                     version='50.0b6',
+                                     buildNumber=2,
+                                     mozillaRelbranch='',
+                                     branch='releases/mozilla-beta',
+                                     mozillaRevision='abcdef123456',
+                                     l10nChangesets='ach 72c548f97e82',
+                                     release_eta=datetime.datetime(2005, 1, 2, 3, 4))
+            db.session.add(release)
+            db.session.commit()
+
+            ret = self.get('/release.html', query_string={'name': 'Firefox-50.0b6-build2'})
+            self.assertEqual(ret.status_code, 200)
+            self.assertTrue('2005-01-02' in ret.data)
+            self.assertTrue('03:04' in ret.data)
 
     def testGetEditableFennecRelease(self):
         with app.test_request_context():

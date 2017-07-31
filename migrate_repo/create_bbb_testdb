@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+
+docker kill shipit-test-mysql 2>/dev/null || true
+docker rm shipit-test-mysql 2>/dev/null || true
+
+docker run -d --name shipit-test-mysql \
+    -p 3306:3306 \
+    -e MYSQL_ALLOW_EMPTY_PASSWORD="yes" \
+    -e MYSQL_DATABASE="shipit" \
+    mysql:5.6
+
+echo "Starting mysql server in background..."
+sleep 20
+
+
+echo
+echo
+echo "shipit DB is ready."
+echo "To test your changes put the bd under version control first:"
+echo
+echo "  python manage.py version_control mysql://root@127.0.0.1/shipit ."
+echo
+echo "then you can run your usual migrate scripts similar to:"
+echo
+echo "  python manage.py upgrade mysql://root@127.0.0.1/shipit ."
+echo
+echo "and the results in the following interactive shell."
+echo
+echo "The database and the corresponding docker container will be destroyed"
+echo "after you quit the session"
+echo
+echo
+docker exec -ti shipit-test-mysql sh -c mysql shipit
+
+docker kill shipit-test-mysql || true
+docker rm shipit-test-mysql || true
