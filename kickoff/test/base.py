@@ -153,7 +153,8 @@ class TestBase(unittest.TestCase):
                                l10nChangesets='ja zu',
                                mozillaRelbranch='FOO',
                                submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
-                               comment="yet an other amazing comment")
+                               comment="yet an other amazing comment",
+                               release_eta=datetime(2005, 1, 2, 3, 4, 5, 7))
             db.session.add(r)
 
             r = FirefoxRelease(partials='0,1', promptWaitTime=5,
