@@ -462,7 +462,7 @@ class TestReleaseView(ViewTest):
     def testReleaseWithETA(self):
         ret = self.get('/releases.html')
         self.assertEqual(ret.status_code, 200)
-        self.assertIn('ETA: 2005-01-02T03:04:05.000007+00:00', ret.data)
+        self.assertTrue('ETA: 2005-01-02T03:04:05.000007+00:00' in ret.data)
 
     def testThunderbirdUpdateWithNoCommRevision(self):
         with app.test_request_context():
