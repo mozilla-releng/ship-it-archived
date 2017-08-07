@@ -29,6 +29,9 @@
      <li>Comm Relbranch: {{ rel.commRelbranch }}</li>
      {% endif %}
      <li><a href="/releases/{{ rel.name }}/l10n">L10n Changeset</a></li>
+     {% if rel.release_eta %}
+     <li>ETA: {{ rel.release_eta }}</li>
+     {% endif %}
      {% if not 'Fennec' in rel.name %}
      <li>Partial versions: {{ rel.partials }}</li>
      {% if not rel.promptWaitTime %}
