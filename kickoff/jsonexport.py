@@ -144,15 +144,23 @@ def firefoxVersionsJson():
     # Stable
     releases = getFilteredReleases("firefox", ["major", "stability"], lastRelease=True, exclude_esr=True)
     versions['LATEST_FIREFOX_VERSION'] = releases[0][0]
+
     # beta
     betas = getFilteredReleases("firefox", ["dev"], lastRelease=True)
     versions['LATEST_FIREFOX_DEVEL_VERSION'] = betas[0][0]
     versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'] = betas[0][0]
-    # devedition
+
+    # devedition (now based on beta)
+    # Most of the time, beta == deveditions but not always ...
+    deveditions = getFilteredReleases("devedition", ["dev"], lastRelease=True)
+    versions['FIREFOX_DEVEDITION'] = deveditions[0][0]
+    # We used to have aurora, not anymore, moving the value to empty
     versions['FIREFOX_AURORA'] = ""
+
     # esr
     esr_releases = getFilteredReleases("firefox", ["esr"], lastRelease=True)
     versions['FIREFOX_ESR'] = esr_releases[0][0] + "esr"
+
     # esr next
     esr_next = getFilteredReleases("firefox", ["esr"], lastRelease=True, esrNext=True)
     if esr_next:
