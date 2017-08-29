@@ -149,14 +149,7 @@ def firefoxVersionsJson():
     versions['LATEST_FIREFOX_DEVEL_VERSION'] = betas[0][0]
     versions['LATEST_FIREFOX_RELEASED_DEVEL_VERSION'] = betas[0][0]
     # devedition
-    deveditions = getFilteredReleases("devedition", ["dev"], lastRelease=True)
-    if deveditions:
-        versions['FIREFOX_AURORA'] = deveditions[0][0]
-    else:
-        # fallback to Beta version
-        versions['FIREFOX_AURORA'] = betas[0][0]
-    # FIXME: remove the following line when Bedrock stops using FIREFOX_AURORA
-    versions['FIREFOX_AURORA'] = "54.0a2"
+    versions['FIREFOX_AURORA'] = ""
     # esr
     esr_releases = getFilteredReleases("firefox", ["esr"], lastRelease=True)
     versions['FIREFOX_ESR'] = esr_releases[0][0] + "esr"
