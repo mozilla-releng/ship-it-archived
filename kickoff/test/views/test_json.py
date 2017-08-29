@@ -179,6 +179,8 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(versions['LATEST_FIREFOX_OLDER_VERSION'], "3.6.28")
         self.assertTrue("LATEST_FIREFOX_DEVEL_VERSION" in versions)
         self.assertEquals(versions['LATEST_FIREFOX_DEVEL_VERSION'], "3.0b3")
+        self.assertTrue("FIREFOX_DEVEDITION" in versions)
+        self.assertEquals(versions['FIREFOX_DEVEDITION'], "3.0b5")
         self.assertTrue("FIREFOX_NIGHTLY" in versions)
         self.assertDigitsAndSuffix(versions['FIREFOX_NIGHTLY'], 'a1')
         self.assertTrue("FIREFOX_AURORA" in versions)
