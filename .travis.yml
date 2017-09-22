@@ -2,19 +2,20 @@ sudo: false
 dist: precise
 
 language: python
-env:
-    - TOX_ENV=py26
-    - TOX_ENV=py27
+python:
+  - "2.6"
+  - "2.7"
 
 install:
-    - travis_retry pip install tox coveralls flake8
-    - travis_retry nvm install
-    - travis_retry npm install
+    - travis_retry pip install tox-travis
+    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry pip install flake8; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry nvm install; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry npm install; fi
 
 script:
-    - tox -e $TOX_ENV
-    - ./node_modules/.bin/grunt --verbose
-    - flake8 kickoff/ --exclude=kickoff/test/ --max-line-length=2000 --ignore=E402,E711
+    - tox
+    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then ./node_modules/.bin/grunt --verbose; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then flake8 kickoff/ --exclude=kickoff/test/ --max-line-length=2000 --ignore=E402,E711; fi
 
 after_success:
-    - travis_retry pip install coveralls; coveralls;
+    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry pip install coveralls && coveralls; fi
