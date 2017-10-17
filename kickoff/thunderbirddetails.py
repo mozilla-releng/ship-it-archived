@@ -33,6 +33,7 @@ primary_builds = [
     'is',
     'it',
     'ja',
+    'kab',
     'ko',
     'lt',
     'nb-NO',
