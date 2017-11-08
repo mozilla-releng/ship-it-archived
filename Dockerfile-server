@@ -8,6 +8,7 @@ RUN apt-get -q update && \
     apt-get -q --yes install \
         sqlite3 \
         libmysqlclient-dev \
+        mysql-client \
     && apt-get clean
 
 WORKDIR /app
