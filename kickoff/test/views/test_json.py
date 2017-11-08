@@ -106,12 +106,13 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(len(primary['fr']), 2)
         # We always have en-US for all channels
         self.assertTrue('24.0a1' in primary['en-US'])
-        self.assertTrue('3.0b3' in primary['en-US'])
-        self.assertTrue('3.0.1' in primary['en-US'], primary['en-US'])
+        self.assertTrue('3.0b3' in primary['en-US'])   # beta
+        self.assertTrue('3.0b5' in primary['en-US'])   # deved
+        self.assertTrue('3.0.1' in primary['en-US'], primary['en-US']) # release
         # Verify ESR numbers are well-formed and both esr/esr_next are present
         self.assertTrue('2.0.2esr' in primary['en-US'])
         self.assertTrue('38.0esr' in primary['en-US'])
-        self.assertEquals(len(primary['en-US']), 6)
+        self.assertEquals(len(primary['en-US']), 7)
         # ja-JP-mac is not a locale we want to expose into product-details
         self.assertFalse('ja-JP-mac' in primary)
 
