@@ -21,8 +21,9 @@ from kickoff.versions import MozVersion
 
 log = logging.getLogger(__name__)
 
-
-PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d+)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
+# We only allow 6 partials maximum because the partial field is limited at 100 characters maximum.
+# One partial can be 16-char-long (for instance "52.1.0esrbuild1"). Hence 6 partials.
+PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d+){0,5}$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
 
 
 # From http://wtforms.simplecodes.com/docs/1.0.2/specific_problems.html#specialty-field-tricks
@@ -341,10 +342,17 @@ class FennecReleaseForm(ReleaseForm):
 
 
 class DesktopReleaseForm(ReleaseForm):
-    partials = StringField('Partial versions:',
-                           validators=[OptionalPartials(), Regexp(PARTIAL_VERSIONS_REGEX, message='Invalid partials format.')],
-                           filters=[collapseSpaces],
-                           )
+    partials = StringField(
+        'Partial versions:',
+        validators=[
+            OptionalPartials(),
+            Regexp(
+                PARTIAL_VERSIONS_REGEX,
+                message='Invalid partials format. Maximum 6 partials are allowed. There must be no trailing comma.'
+            )
+        ],
+        filters=[collapseSpaces],
+    )
     promptWaitTime = NullableIntegerField('Update prompt wait time:')
     l10nChangesets = PlainChangesetsField('L10n Changesets:', validators=[DataRequired('L10n Changesets are required.')])
 
