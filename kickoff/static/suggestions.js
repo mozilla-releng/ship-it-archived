@@ -75,7 +75,7 @@ function guessBranchFromVersion(name, version) {
     return '';
 }
 
-function addLastVersionAsPartial(versionString, allPreviousReleasesStrings, nbExpected) {
+function craftLastReleasesAsPartials(versionString, allPreviousReleasesStrings, nbExpected) {
     var version = new Release(versionString);
     var allPreviousReleases = allPreviousReleasesStrings.map(function(string) {
         return new Release(string);
@@ -140,7 +140,7 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
 
     base = getBaseRepository(productName);
 
-    nbPartial = 0;
+    maximumNumberOfPartials = 0;
     previousReleases =  [];
     partialsADI = [];
     isFxBeta = false;
@@ -148,7 +148,7 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
     betaVersion = version.match(REGEXES.beta);
     if (betaVersion != null && typeof previousBuilds !== 'undefined' && typeof previousBuilds[base + 'beta'] !== 'undefined') {
         previousReleases = previousBuilds[base + 'beta'];
-        nbPartial = 3;
+        maximumNumberOfPartials = 3;
         // Copy the global variable
         // For now, this is pretty much useless as we don't have metrics for specific beta
         // Just prepare the code when it is ready
@@ -172,7 +172,7 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
         }
 
         partialsADI = isCurrentVersionESR ? allPartial.esr : allPartial.release;
-        nbPartial = isCurrentVersionESR ? 1 : 3; // 1 for ESR; max of 3 for promotion until we chain tasks instead of group
+        maximumNumberOfPartials = isCurrentVersionESR ? 1 : 3; // 1 for ESR; max of 3 for promotion until we chain tasks instead of group
     }
 
     // Transform the partialsADI datastruct in a single array to
@@ -189,52 +189,37 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
     // Check that all partials match a build.
     partialConsistencyCheck(partialsADIVersion, previousReleases);
 
-    partial = [];
-    partialAdded = 0;
-
     // When we have the ADI for Firefox Beta or Thunderbird, we can remove
     // this special case
-    if (isTB(productName) || isFxBeta) {
-        // No ADI, select the three first
-        partial = addLastVersionAsPartial(version, previousReleases, 3);
-        partialAdded = 3;
-        partialElement.val(partial.join());
-        return true;
-    } else {
+    partials = isTB(productName) || isFxBeta ?
+        craftLastReleasesAsPartials(version, previousReleases, 3) :
         // The first partial will always be the previous published release
-        partial = addLastVersionAsPartial(version, previousReleases, 1);
-        partialAdded++;
-    }
+        craftLastReleasesAsPartials(version, previousReleases, 1);
 
     // Firefox X.0 releases are published to the beta channel, so generate a partial
     // from the most recent beta build to speed that up
-    if (isFirefox(productName) && version.match(/^\d+\.0$/)) {
+    if (partials.length < maximumNumberOfPartials && isFirefox(productName) && version.match(/^\d+\.0$/)) {
         betaBuilds = previousBuilds[base + 'beta'];
         if (betaBuilds) {
-            // we use addLastVersionAsPartial() to avoid duplicates
-            lastBeta = addLastVersionAsPartial(version, betaBuilds, 1);
-            partial.unshift(lastBeta);
-            partialAdded++;
+            // we use craftLastReleasesAsPartials() to avoid duplicates
+            lastBeta = craftLastReleasesAsPartials(version, betaBuilds, 1);
+            partials.unshift(lastBeta);
         } else {
             console.warn('Expected to add a beta release but none were found');
         }
     }
 
-    for (i = 0; i < partialsADIVersion.length; i++) {
+    var i = 0;
+    while (partials.length < maximumNumberOfPartials && i < partialsADIVersion.length) {
         newPartial = getVersionWithBuildNumber(partialsADIVersion[i], previousReleases);
-        if (newPartial != undefined &&
-            partial.indexOf(newPartial) < 0) {
+        if (newPartial != undefined && partials.indexOf(newPartial) < 0) {
             // Only add when we found a matching version we haven't used already
-            partial.push(newPartial);
-            partialAdded++;
+            partials.push(newPartial);
         }
-
-        if (partialAdded == nbPartial) {
-            // We have enough partials. Bye bye.
-            break;
-        }
+        i++;
     }
-    partialElement.val(partial.join());
+
+    partialElement.val(partials.join());
     return true;
 }
 
