@@ -22,7 +22,7 @@ from kickoff.versions import MozVersion
 log = logging.getLogger(__name__)
 
 
-PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
+PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d+)*$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
 
 
 # From http://wtforms.simplecodes.com/docs/1.0.2/specific_problems.html#specialty-field-tricks
