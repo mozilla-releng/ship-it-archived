@@ -242,3 +242,21 @@ class TestSubmitRelease(ViewTest):
 
             ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
             self.assertEqual(ret.status_code, 400)
+
+    def testSubmitTooManyPartials(self):
+        with app.test_request_context():
+            data = [
+                'firefox-version=9.0',
+                'firefox-buildNumber=1',
+                'firefox-branch=z',
+                'firefox-mozillaRevision=abc',
+                'firefox-partials=1.0build1,2.0build1,3.0build1,4.0build1,5.0build1,6.0build1,7.0build1',
+                'firefox-l10nChangesets=af%20def',
+                'firefox-product=firefox',
+                'firefox-promptWaitTime=',
+                'firefox-mozillaRelbranch=',
+                'firefox-mh_changeset=']
+
+            ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
+            self.assertEqual(ret.status_code, 400)
+            self.assertTrue('Invalid partials format. Maximum 6 partials are allowed. There must be no trailing comma.' in ret.data)
