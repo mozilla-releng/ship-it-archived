@@ -82,7 +82,7 @@ assert.strictEqual( guessBranchFromVersion("firefox", "31.0.1esr"), "releases/mo
 
 ///////////////////////////////////////////////////
 
-QUnit.test( "addLastVersionAsPartial", function( assert ) {
+QUnit.test( "craftLastReleasesAsPartials", function( assert ) {
     name="firefox";
     base = getBaseRepository(name);
     previousBuilds = {
@@ -96,14 +96,14 @@ QUnit.test( "addLastVersionAsPartial", function( assert ) {
     };
 
     previousReleases = previousBuilds[base + 'release'].sort().reverse();
-    assert.deepEqual( addLastVersionAsPartial("35.0", previousReleases, 1), ["33.0.1build2"]);
+    assert.deepEqual( craftLastReleasesAsPartials("35.0", previousReleases, 1), ["33.0.1build2"]);
 
     previousReleases = previousBuilds[base + 'beta'].sort().reverse();
-    assert.deepEqual( addLastVersionAsPartial("35.0b2", previousReleases, 1), ["31.0b2build2"]);
-    assert.deepEqual( addLastVersionAsPartial("48.0b10", previousReleases, 3), ["48.0b9build1", "48.0b7build1", "48.0b6build1"]);
+    assert.deepEqual( craftLastReleasesAsPartials("35.0b2", previousReleases, 1), ["31.0b2build2"]);
+    assert.deepEqual( craftLastReleasesAsPartials("48.0b10", previousReleases, 3), ["48.0b9build1", "48.0b7build1", "48.0b6build1"]);
 
     previousReleases = previousBuilds[base + 'esr31'].sort().reverse();
-    assert.deepEqual( addLastVersionAsPartial("38.0esr", previousReleases, 1), ["31.1.0esrbuild1"]);
+    assert.deepEqual( craftLastReleasesAsPartials("38.0esr", previousReleases, 1), ["31.1.0esrbuild1"]);
 });
 
 
@@ -244,6 +244,18 @@ partialElement = $('#partials');
 var result = populatePartial("firefox", "49.0b1", previousBuilds, partialElement);
 assert.ok( result );
 assert.strictEqual($('#partials').val(), "48.0build2,48.0b10build1,48.0b9build1");
+
+// Verify only 1 ESR build remains. In bug 1415268, we realized too many partials were added.
+// This was caused by allPartialJ are ordered by number of ADIs (instead by release number).
+allPartialJ='{"esr": [{"version": "52.4.0esr", "ADI": 5000}, {"version": "52.3.0esr", "ADI": 4000}, {"version": "52.4.1esr", "ADI": 3000}]}';
+allPartial=JSON.parse(allPartialJ);
+
+previousBuilds = {"releases/mozilla-esr52": ["52.4.1esrbuild1", "52.4.0esrbuild2", "52.3.0esrbuild2"]}
+
+partialElement = $('#partials');
+var result = populatePartial("firefox", "52.5.0esr", previousBuilds, partialElement);
+assert.ok( result );
+assert.strictEqual($('#partials').val(), "52.4.1esrbuild1");
 
 });
 
