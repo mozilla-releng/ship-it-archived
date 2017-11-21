@@ -72,6 +72,34 @@ class TestSubmitRelease(ViewTest):
             self.assertEquals(got.mozillaRelbranch, None)
             self.assertEquals(got.mh_changeset, 'xyz')
 
+    def testSubmitMultiDigitBuildNumInPartials(self):
+        data = [
+            'firefox-version=59.0',
+            'firefox-buildNumber=1',
+            'firefox-branch=z',
+            'firefox-mozillaRevision=abc',
+            'firefox-partials=12.0build12,13.0build23',
+            'firefox-l10nChangesets=af%20def',
+            'firefox-product=firefox',
+            'firefox-mozillaRelbranch=',
+            'firefox-mh_changeset=xyz',
+        ]
+        ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
+        self.assertEquals(ret.status_code, 302, ret.data)
+        with app.test_request_context():
+            got = FirefoxRelease.query.filter_by(name='Firefox-59.0-build1').first()
+            self.assertEquals(got.version, '59.0')
+            self.assertEquals(got.buildNumber, 1)
+            self.assertEquals(got.branch, 'z')
+            self.assertEquals(got.mozillaRevision, 'abc')
+            self.assertEquals(got.partials, '12.0build12,13.0build23')
+            self.assertEquals(got.l10nChangesets, 'af def')
+            self.assertEquals(got.ready, False)
+            self.assertEquals(got.complete, False)
+            self.assertEquals(got.status, '')
+            self.assertEquals(got.mozillaRelbranch, None)
+            self.assertEquals(got.mh_changeset, 'xyz')
+
     def testSubmitWithRelbranch(self):
         data = [
             'firefox-version=9.0',
@@ -214,3 +242,21 @@ class TestSubmitRelease(ViewTest):
 
             ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
             self.assertEqual(ret.status_code, 400)
+
+    def testSubmitTooManyPartials(self):
+        with app.test_request_context():
+            data = [
+                'firefox-version=9.0',
+                'firefox-buildNumber=1',
+                'firefox-branch=z',
+                'firefox-mozillaRevision=abc',
+                'firefox-partials=1.0build1,2.0build1,3.0build1,4.0build1,5.0build1,6.0build1,7.0build1',
+                'firefox-l10nChangesets=af%20def',
+                'firefox-product=firefox',
+                'firefox-promptWaitTime=',
+                'firefox-mozillaRelbranch=',
+                'firefox-mh_changeset=']
+
+            ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
+            self.assertEqual(ret.status_code, 400)
+            self.assertTrue('Invalid partials format. Maximum 6 partials are allowed. There must be no trailing comma.' in ret.data)
