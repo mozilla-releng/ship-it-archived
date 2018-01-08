@@ -286,7 +286,7 @@ QUnit.test('getElmoUrl()', function(assert) {
     });
 });
 
-QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
+QUnit.test('_getPreviousBuildL10nUrl()', function(assert) {
     var data = [{
         product: 'firefox', version: '32.0', previousBuildNumber: 1,
         // We get file:/// because tests run under grunt-qunit
@@ -301,34 +301,57 @@ QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
 
     data.forEach(function(piece) {
         assert.equal(
-            getPreviousBuildL10nUrl(piece.product, piece.version, piece.previousBuildNumber),
+            _getPreviousBuildL10nUrl(piece.product, piece.version, piece.previousBuildNumber),
             piece.expectedUrl
         );
     });
 });
 
-QUnit.test('getUrlAndMessages()', function(assert) {
+QUnit.test('_getUrlAndMessages()', function(assert) {
     var data = [{
-        product: 'firefox', version: '32.0', buildNumber: 1,
+        product: 'firefox', version: '32.0', buildNumber: 1, revision: 'unused',
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
     }, {
+        product: 'fennec', version: '32.0', buildNumber: 1, revision: 'unused',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
+            '&multi_android-multilocale_repo=releases/mozilla-beta' +
+            '&multi_android-multilocale_rev=default' +
+            '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
+    }, {
         // We get file:/// because tests run under grunt-qunit
-        product: 'thunderbird', version: '33.0', buildNumber: 2,
+        product: 'thunderbird', version: '33.0', buildNumber: 2, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/thunderbird-33.0-build1/l10n',
     }, {
-        product: 'firefox', version: '44.0.1', buildNumber: 1,
+        product: 'firefox', version: '44.0.1', buildNumber: 1, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/firefox-44.0-build1/l10n',
     }, {
-        product: 'firefox', version: '45.6.0esr', buildNumber: 2,
+        product: 'firefox', version: '45.6.0esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/firefox-45.0-build1/l10n',
     }, {
-        product: 'fennec', version: '32.0b1', buildNumber: 3,
-        expectedUrl: 'file:///releases/fennec-32.0b1-build2/l10n'
+        product: 'fennec', version: '32.0b1', buildNumber: 3, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/fennec-32.0b1-build2/l10n',
+    }, {
+        // Starting Firefox/Devedition/Fennec 59, l10nChangesets are fetched in-tree (not Thunderbird, though)
+        product: 'firefox', version: '59.0b1', buildNumber: 1, branchName: 'mozilla-beta', revision: 'abcdef123456',
+        expectedUrl: 'https://hg.mozilla.org/mozilla-beta/raw-file/abcdef123456/browser/locales/l10n-changesets.json',
+    }, {
+        product: 'devedition', version: '59.0b1', buildNumber: 1, branchName: 'mozilla-beta', revision: 'abcdef123456',
+        expectedUrl: 'https://hg.mozilla.org/mozilla-beta/raw-file/abcdef123456/browser/locales/l10n-changesets.json',
+    }, {
+        product: 'fennec', version: '59.0', buildNumber: 1, branchName: 'mozilla-release', revision: '123456abcdef',
+        expectedUrl: 'https://hg.mozilla.org/mozilla-release/raw-file/123456abcdef/mobile/locales/l10n-changesets.json',
+    }, {
+        product: 'thunderbird', version: '59.0', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=tb59',
+    }, {
+        // Build 2 is still copied from previous build
+        product: 'firefox', version: '59.0b1', buildNumber: 2, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-59.0b1-build1/l10n',
     }];
 
     data.forEach(function(piece) {
         assert.equal(
-            getUrlAndMessages(piece.product, piece.version, piece.buildNumber).url,
+            _getUrlAndMessages(piece.product, piece.version, piece.buildNumber, piece.branchName, piece.revision).url,
             piece.expectedUrl
         );
     });
