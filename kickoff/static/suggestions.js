@@ -325,8 +325,6 @@ function populateL10nChangesets(productName, version, buildNumber, branchName, r
     changesetsElement.prop('disabled', true);
     warningElement.text('');
 
-    console.log(opts.url);
-
     $.ajax({
         url: opts.url,
     }).done(function(changesets) {
@@ -408,7 +406,6 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         populatePartialInfo(productName, version);
 
         $('#' + productName + '-mozillaRevision').change(function(event) {
-            console.log(event);
             var revision = $(this).val();
             populateL10nChangesets(productName, version, buildNumber, branchName, revision);
         });
