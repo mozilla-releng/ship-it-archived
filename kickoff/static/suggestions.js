@@ -258,9 +258,17 @@ function _getL10nChangesetsOptsOfNewVersion(productName, versionObject, branchNa
     if (productName === 'thunderbird' || versionObject.majorNumber < 59) {
         opts.url = getElmoUrl(productName, versionObject.majorNumber);
         opts.downloadPlaceholder = 'Elmo';
+        opts.mustConvertToOldFormat = false;
     } else {
         opts.downloadPlaceholder = 'l10n-changesets.json on hg.mozilla.org';
-        var topFolder = productName === 'fennec' ? 'mobile' : 'browser';
+        var topFolder;
+        if (productName === 'fennec') {
+            opts.mustConvertToOldFormat = false;
+            topFolder = 'mobile';
+        } else {
+            opts.mustConvertToOldFormat = true;
+            topFolder = 'browser';
+        }
         opts.url = getInTreeFileUrl(branchName, revision, topFolder + '/locales/l10n-changesets.json');
     }
 
@@ -296,6 +304,7 @@ function _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject) {
     opts.downloadPlaceholder = previousVersion.toString();
     opts.previousBuildWarning = 'Changesets copied from ' + previousVersion.toString() +
         '. If you want to not use them, please edit this field.';
+    opts.mustConvertToOldFormat = false;
 
     return opts;
 }
@@ -330,8 +339,11 @@ function populateL10nChangesets(productName, version, buildNumber, branchName, r
     $.ajax({
         url: opts.url,
     }).done(function(changesets) {
-        if (typeof changesets === 'object') {
-            changesets = JSON.stringify(changesets, null, '  ');
+        if (opts.mustConvertToOldFormat) {
+            changesets = convertJsonIntoOldChangesetFormat(changesets);
+        }
+        if (typeof changesets !== 'string') {
+            changesets = JSON.stringify(changesets, null, ' ');
         }
         changesetsElement.val(changesets);
         warningElement.text(opts.previousBuildWarning);
@@ -344,6 +356,16 @@ function populateL10nChangesets(productName, version, buildNumber, branchName, r
         changesetsElement.prop('disabled', false);
         changesetsElement.attr('placeholder', oldPlaceholder);
     });
+}
+
+function convertJsonIntoOldChangesetFormat(jsonChangesets) {
+    var changesets = [];
+    for (var locale in jsonChangesets) {
+        changeset = jsonChangesets[locale].revision;
+        changesets.push(locale + ' ' + changeset);
+    }
+    changesets.sort();
+    return changesets.join('\n');
 }
 
 function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, partialInfo) {

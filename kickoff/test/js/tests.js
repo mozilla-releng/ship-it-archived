@@ -367,6 +367,64 @@ QUnit.test('_getUrlAndMessages()', function(assert) {
     });
 });
 
+QUnit.test('convertJsonIntoOldChangesetFormat()', function(assert) {
+    var data = [{
+        jsonChangesets: {
+           'es-ES': {
+               'revision': 'fedcba654321',
+               'platforms': [
+                 'linux',
+                 'linux-devedition',
+                 'linux64',
+                 'linux64-devedition',
+                 'macosx64',
+                 'macosx64-devedition',
+                 'win32',
+                 'win32-devedition',
+                 'win64',
+                 'win64-devedition',
+              ],
+            }, 'en-GB': {
+                'revision': 'abcdef123456',
+                'platforms': [
+                  'linux',
+                  'linux-devedition',
+                  'linux64',
+                  'linux64-devedition',
+                  'macosx64',
+                  'macosx64-devedition',
+                  'win32',
+                  'win32-devedition',
+                  'win64',
+                  'win64-devedition',
+               ],
+            }, 'de': {
+                'revision': '123456abcdef',
+                'platforms': [
+                  'linux',
+                  'linux-devedition',
+                  'linux64',
+                  'linux64-devedition',
+                  'macosx64',
+                  'macosx64-devedition',
+                  'win32',
+                  'win32-devedition',
+                  'win64',
+                  'win64-devedition',
+               ],
+            }
+        },
+        expected: "de 123456abcdef\nen-GB abcdef123456\nes-ES fedcba654321",
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            convertJsonIntoOldChangesetFormat(piece.jsonChangesets),
+            piece.expected
+        );
+    });
+});
+
 QUnit.test('getTreeStatusUrl()', function(assert) {
     var data = [{
         branch: 'releases/mozilla-release',
