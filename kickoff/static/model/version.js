@@ -102,9 +102,9 @@ Version.prototype = {
         this[field] = parseInt(matchValue, 10);
     },
 
-    _assignFieldIfItExists: function(field, string) {
+    _assignFieldIfItExists: function(field, matches, string) {
         try {
-            this._assignMandatoryField(field, string);
+            this._assignMandatoryField(field, matches, string);
         } catch (err) {
             if (!(err instanceof MissingFieldError)) {
                 throw err;
