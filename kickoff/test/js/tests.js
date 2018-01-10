@@ -261,18 +261,13 @@ assert.strictEqual($('#partials').val(), "52.4.1esrbuild1");
 
 QUnit.test('getElmoUrl()', function(assert) {
     var data = [{
-        product: 'firefox', version: '32.0',
+        product: 'firefox', majorVersion: 32,
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
     }, {
-        product: 'thunderbird', version: '33.0',
+        product: 'thunderbird', majorVersion: 33,
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=tb33',
     }, {
-        product: 'fennec', version: '32.0',
-        expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
-            '&multi_android-multilocale_repo=releases/mozilla-beta&multi_android-multilocale_rev=default' +
-            '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
-    }, {
-        product: 'fennec', version: '32.0b1',
+        product: 'fennec', majorVersion: 32.0,
         expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
             '&multi_android-multilocale_repo=releases/mozilla-beta&multi_android-multilocale_rev=default' +
             '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
@@ -280,7 +275,7 @@ QUnit.test('getElmoUrl()', function(assert) {
 
     data.forEach(function(piece) {
         assert.equal(
-            getElmoUrl(piece.product, piece.version),
+            getElmoUrl(piece.product, piece.majorVersion),
             piece.expectedUrl
         );
     });
@@ -288,14 +283,14 @@ QUnit.test('getElmoUrl()', function(assert) {
 
 QUnit.test('_getPreviousBuildL10nUrl()', function(assert) {
     var data = [{
-        product: 'firefox', version: '32.0', previousBuildNumber: 1,
+        product: 'firefox', version: new Release('32.0build1'),
         // We get file:/// because tests run under grunt-qunit
         expectedUrl: 'file:///releases/firefox-32.0-build1/l10n',
     }, {
-        product: 'thunderbird', version: '33.0', previousBuildNumber: 2,
+        product: 'thunderbird', version: new Release('33.0build2'),
         expectedUrl: 'file:///releases/thunderbird-33.0-build2/l10n',
     }, {
-        product: 'fennec', version: '32.0b1', previousBuildNumber: 3,
+        product: 'fennec', version: new Release('32.0b1build3'),
         expectedUrl: 'file:///releases/fennec-32.0b1-build3/l10n'
     }];
 
@@ -326,7 +321,7 @@ QUnit.test('_getUrlAndMessages()', function(assert) {
         expectedUrl: 'file:///releases/firefox-44.0-build1/l10n',
     }, {
         product: 'firefox', version: '45.6.0esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
-        expectedUrl: 'file:///releases/firefox-45.0-build1/l10n',
+        expectedUrl: 'file:///releases/firefox-45.6.0esr-build1/l10n',
     }, {
         product: 'fennec', version: '32.0b1', buildNumber: 3, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/fennec-32.0b1-build2/l10n',

@@ -216,7 +216,9 @@ Release.prototype = {
         }, this);
     },
 
-    toString: function() {
+    toString: function(stripBuildNumber) {
+        stripBuildNumber = stripBuildNumber || false;
+
         var semvers = [this.majorNumber, this.minorNumber];
         if (this.patchNumber !== undefined) {
             semvers.push(this.patchNumber);
@@ -239,7 +241,7 @@ Release.prototype = {
             string += 'esr';
         }
 
-        if (this.buildNumber !== undefined) {
+        if (!stripBuildNumber && this.buildNumber !== undefined) {
             string += 'build' + this.buildNumber;
         }
 

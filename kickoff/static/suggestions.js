@@ -238,27 +238,26 @@ function _getElmoShortName(productName) {
     }
 }
 
-function getElmoUrl(productName, version) {
+function getElmoUrl(productName, majorVersionNumber) {
     var shortName = _getElmoShortName(productName);
-    var majorVersion = version.match(REGEXES.majorNumber)[1];
 
     var url = CONFIG.baseUrls.elmo;
     url += isFennec(productName) ?
-        'json-changesets?av=' + shortName + majorVersion +
+        'json-changesets?av=' + shortName + majorVersionNumber +
         '&platforms=android' +
         // TODO Use actual branch instead of mozilla-beta once bug 1280730 lands
         '&multi_android-multilocale_repo=releases/mozilla-beta' +
         '&multi_android-multilocale_rev=default' +
         '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
         :
-        'l10n-changesets?av=' + shortName + majorVersion;
+        'l10n-changesets?av=' + shortName + majorVersionNumber;
     return url;
 }
 
-function _getL10nChangesetsOptsOfNewVersion(productName, version, branchName, revision) {
+function _getL10nChangesetsOptsOfNewVersion(productName, versionObject, branchName, revision) {
     var opts = {};
-    if (productName === 'thunderbird' || version < '59') {
-        opts.url = getElmoUrl(productName, version);
+    if (productName === 'thunderbird' || versionObject.majorNumber < 59) {
+        opts.url = getElmoUrl(productName, versionObject.majorNumber);
         opts.downloadPlaceholder = 'Elmo';
     } else {
         opts.downloadPlaceholder = 'l10n-changesets.json on hg.mozilla.org';
@@ -270,41 +269,46 @@ function _getL10nChangesetsOptsOfNewVersion(productName, version, branchName, re
     return opts;
 }
 
-function _getPreviousBuildL10nUrl(productName, version, previousBuildNumber) {
+function _getPreviousBuildL10nUrl(productName, versionObject) {
     var baseUrl = window.location.origin;
-    var releaseFullName = [productName, version, 'build' + previousBuildNumber].join('-');
+    var stripBuildNumber = true;
+    var versionWithoutBuildNumber = versionObject.toString(stripBuildNumber);
+    var releaseFullName = [productName, versionWithoutBuildNumber, 'build' + versionObject.buildNumber].join('-');
     return baseUrl + '/releases/' + releaseFullName + '/l10n';
 }
 
-function _getL10nChangesetsOptsOfPreviousBuild(productName, version, buildNumber, minorVersionNumber) {
+function _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject) {
     var opts = {};
-    if (minorVersionNumber) {
-        // Fall back to $major.0 build1
-        var previousBuildNumber = 1;
-        var previousVersion = minorVersionNumber[1] + '.0';
-        opts.url = _getPreviousBuildL10nUrl(productName, previousVersion, previousBuildNumber);
-        var buildString = previousVersion + ' build' + previousBuildNumber;
-    } else if (buildNumber > 1) {
-        var previousBuildNumber = buildNumber - 1;
-        opts.url = _getPreviousBuildL10nUrl(productName, version, previousBuildNumber);
-        var buildString = 'build' + previousBuildNumber;
+    // Deep copy object
+    var previousVersion = $.extend(true, {}, versionObject);
+
+    if (versionObject.buildNumber > 1) {
+        previousVersion.buildNumber--;
+        opts.url = _getPreviousBuildL10nUrl(productName, previousVersion);
+    } else if (versionObject.patchNumber) {
+        // XX.0.Z Fall back to XX.0 build1
+        previousVersion.buildNumber = 1;
+        previousVersion.patchNumber = undefined;
+        opts.url = _getPreviousBuildL10nUrl(productName, previousVersion);
     } else {
         throw Error('Unsupported condition for previous build');
     }
 
-    opts.downloadPlaceholder = buildString;
-    opts.previousBuildWarning = 'Changesets copied from ' + buildString +
+    opts.downloadPlaceholder = previousVersion.toString();
+    opts.previousBuildWarning = 'Changesets copied from ' + previousVersion.toString() +
         '. If you want to not use them, please edit this field.';
 
     return opts;
 }
 
-function _getUrlAndMessages(productName, version, buildNumber, branchName, revision) {
-    var minorVersionNumber = version.match(/(\d+)\.\d+\.\d+/);
-    if (minorVersionNumber || buildNumber > 1) {
-        return _getL10nChangesetsOptsOfPreviousBuild(productName, version, buildNumber, minorVersionNumber);
+function _getUrlAndMessages(productName, versionString, buildNumber, branchName, revision) {
+    // TODO rename Release into Version
+    var versionObject = new Release(versionString);
+    versionObject.buildNumber = parseInt(buildNumber, 10);
+    if (versionObject.patchNumber || versionObject.buildNumber > 1) {
+        return _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject);
     } else {
-        return _getL10nChangesetsOptsOfNewVersion(productName, version, branchName, revision);
+        return _getL10nChangesetsOptsOfNewVersion(productName, versionObject, branchName, revision);
     }
 }
 
