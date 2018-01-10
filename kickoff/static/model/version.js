@@ -223,6 +223,10 @@ Version.prototype = {
         if (this.patchNumber !== undefined) {
             semvers.push(this.patchNumber);
         }
+        if (this.isEsr && this.minorNumber > 0 && this.patchNumber === undefined) {
+            semvers.push(0);
+        }
+
         var string = semvers.join('.');
 
         if (this.isNightly) {

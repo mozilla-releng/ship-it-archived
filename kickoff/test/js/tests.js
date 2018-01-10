@@ -323,6 +323,21 @@ QUnit.test('_getUrlAndMessages()', function(assert) {
         product: 'firefox', version: '45.6.0esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/firefox-45.6.0esr-build1/l10n',
     }, {
+        product: 'firefox', version: '45.6.1esr', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-45.6.0esr-build1/l10n',
+    }, {
+        product: 'firefox', version: '45.6.1esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-45.6.1esr-build1/l10n',
+    }, {
+        product: 'firefox', version: '57.0.1', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-57.0-build1/l10n',
+    }, {
+        product: 'firefox', version: '57.0.2', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-57.0.1-build1/l10n',
+    }, {
+        product: 'firefox', version: '45.6.1esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-45.6.1esr-build1/l10n',
+    }, {
         product: 'fennec', version: '32.0b1', buildNumber: 3, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/fennec-32.0b1-build2/l10n',
     }, {
@@ -574,6 +589,7 @@ QUnit.test('toString()', function(assert) {
         '32.0b1': ['32.0b1', '32.0b01'],
         '32.0esr': ['32.0esr'],
         '32.0.1esr': ['32.0.1esr'],
+        '32.1.0esr': ['32.1.0esr'],
     }
 
     for (var expectedString in data) {

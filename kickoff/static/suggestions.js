@@ -285,9 +285,9 @@ function _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject) {
         previousVersion.buildNumber--;
         opts.url = _getPreviousBuildL10nUrl(productName, previousVersion);
     } else if (versionObject.patchNumber) {
-        // XX.0.Z Fall back to XX.0 build1
+        // XX.Y.Z falls back to XX.Y.(Z-1)build1 or XX.Ybuild1.
         previousVersion.buildNumber = 1;
-        previousVersion.patchNumber = undefined;
+        previousVersion.patchNumber = versionObject.patchNumber <= 1 ? undefined : versionObject.patchNumber - 1;
         opts.url = _getPreviousBuildL10nUrl(productName, previousVersion);
     } else {
         throw Error('Unsupported condition for previous build');
