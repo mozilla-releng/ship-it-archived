@@ -1,7 +1,7 @@
 sources = [
     "kickoff/static/global_config.js",
     "kickoff/static/kickoff.js",
-    "kickoff/static/model/release.js",
+    "kickoff/static/model/version.js",
     "kickoff/static/model/errors.js",
     "kickoff/static/treestatus.js",
     "kickoff/static/hg_mozilla.js",

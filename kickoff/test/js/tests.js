@@ -283,14 +283,14 @@ QUnit.test('getElmoUrl()', function(assert) {
 
 QUnit.test('_getPreviousBuildL10nUrl()', function(assert) {
     var data = [{
-        product: 'firefox', version: new Release('32.0build1'),
+        product: 'firefox', version: new Version('32.0build1'),
         // We get file:/// because tests run under grunt-qunit
         expectedUrl: 'file:///releases/firefox-32.0-build1/l10n',
     }, {
-        product: 'thunderbird', version: new Release('33.0build2'),
+        product: 'thunderbird', version: new Version('33.0build2'),
         expectedUrl: 'file:///releases/thunderbird-33.0-build2/l10n',
     }, {
-        product: 'fennec', version: new Release('32.0b1build3'),
+        product: 'fennec', version: new Version('32.0b1build3'),
         expectedUrl: 'file:///releases/fennec-32.0b1-build3/l10n'
     }];
 
@@ -422,10 +422,10 @@ QUnit.test('pluckLatestRevision()', function(assert) {
 });
 
 
-QUnit.module('model/Release');
+QUnit.module('model/Version');
 
 QUnit.test('constructor must throw errors when release has more than one type', function(assert) {
-    var invalidReleases = [
+    var invalidVersions = [
         { string: '32', error: InvalidVersionError },
         { string: '32.b2', error: InvalidVersionError },
         { string: '.1', error: InvalidVersionError  },
@@ -438,22 +438,22 @@ QUnit.test('constructor must throw errors when release has more than one type', 
         { string: '32.0esrb2', error: InvalidVersionError },
     ];
 
-    invalidReleases.forEach(function(invalidRelease) {
+    invalidVersions.forEach(function(invalidVersion) {
         assert.throws(
             function() {
-                new Release(invalidRelease.string);
+                new Version(invalidVersion.string);
             },
-            invalidRelease.error,
-            invalidRelease.string + ' did not throw ' + invalidRelease.error.name
+            invalidVersion.error,
+            invalidVersion.string + ' did not throw ' + invalidVersion.error.name
         );
     });
 });
 
 QUnit.test('is*()', function(assert) {
     VALID_VERSIONS.forEach(function(versionData) {
-        var release = new Release(versionData.string);
+        var release = new Version(versionData.string);
 
-        Release.POSSIBLE_TYPES.forEach(function(field) {
+        Version.POSSIBLE_TYPES.forEach(function(field) {
             var expectedType = field.substring('is'.length).toLowerCase();
             var hasType = release[field];
 
@@ -503,8 +503,8 @@ QUnit.test('isStrictlyPreviousTo() must compare different version numbers', func
 
     data = data.map(function(couple) {
         return {
-            previous: new Release(couple.previous),
-            next: new Release(couple.next),
+            previous: new Version(couple.previous),
+            next: new Version(couple.next),
         };
     });
 
@@ -518,10 +518,10 @@ QUnit.test('isStrictlyPreviousTo() must compare different version numbers', func
 });
 
 QUnit.test('isStrictlyPreviousTo() must compare identical version numbers', function(assert) {
-    var baseCandidate = new Release('32.0');
+    var baseCandidate = new Version('32.0');
     var equalCandidates = ['32.0', '32.0build1'];
     equalCandidates = equalCandidates.map(function(candidate) {
-        return new Release(candidate);
+        return new Version(candidate);
     });
 
     equalCandidates.forEach(function(candidate) {
@@ -548,8 +548,8 @@ QUnit.test('isStrictlyPreviousTo() must throw errors when not comparable', funct
 
     data = data.map(function(couple) {
         return {
-            a: new Release(couple.a),
-            b: new Release(couple.b),
+            a: new Version(couple.a),
+            b: new Version(couple.b),
         };
     });
 
@@ -579,7 +579,7 @@ QUnit.test('toString()', function(assert) {
     for (var expectedString in data) {
         var candidates = data[expectedString];
         candidates = candidates.map(function(candidate) {
-            return new Release(candidate).toString();
+            return new Version(candidate).toString();
         })
 
         candidates.forEach(function(candidate) {

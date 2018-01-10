@@ -28,8 +28,7 @@ function isTB(name) {
 
 function getSanitizedVersionString(candidateString) {
     try {
-        // TODO: Rename Release into Version
-        var version = new Release(candidateString);
+        var version = new Version(candidateString);
         return version.toString();
     } catch (err) {
         if (!(err instanceof InvalidVersionError)) {
@@ -76,9 +75,9 @@ function guessBranchFromVersion(name, version) {
 }
 
 function craftLastReleasesAsPartials(versionString, allPreviousReleasesStrings, nbExpected) {
-    var version = new Release(versionString);
+    var version = new Version(versionString);
     var allPreviousReleases = allPreviousReleasesStrings.map(function(string) {
-        return new Release(string);
+        return new Version(string);
     });
 
     var validPreviousReleases = allPreviousReleases.filter(function(release) {
@@ -302,8 +301,7 @@ function _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject) {
 }
 
 function _getUrlAndMessages(productName, versionString, buildNumber, branchName, revision) {
-    // TODO rename Release into Version
-    var versionObject = new Release(versionString);
+    var versionObject = new Version(versionString);
     versionObject.buildNumber = parseInt(buildNumber, 10);
     if (versionObject.patchNumber || versionObject.buildNumber > 1) {
         return _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject);
