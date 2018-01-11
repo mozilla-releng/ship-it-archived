@@ -423,17 +423,20 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
 
         populateBuildNumber(version);
         var buildNumber = buildNumberElement.val();
-        var branchName = populateBranch(productName, version);
 
-        populateRevisionWithLatest(productName, branchName);
-        populatePartial(productName, version, previousBuilds, partialElement);
-        populatePartialInfo(productName, version);
-
-        $('#' + productName + '-mozillaRevision').change(function(event) {
-            var revision = $(this).val();
-            populateL10nChangesets(productName, version, buildNumber, branchName, revision);
+        // TODO Make callbacks cleaner
+        $('#' + productName + '-branch').change(function(e) {
+            var branchName = $(this).val();
+            populateRevisionWithLatest(productName, branchName);
+            $('#' + productName + '-mozillaRevision').change(function(ee) {
+                var revision = $(this).val();
+                populateL10nChangesets(productName, version, buildNumber, branchName, revision);
+            });
         });
 
+        populateBranch(productName, version);
+        populatePartial(productName, version, previousBuilds, partialElement);
+        populatePartialInfo(productName, version);
     }
 
     var VERSION_SUFFIX = '-version';
