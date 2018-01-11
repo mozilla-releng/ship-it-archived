@@ -261,18 +261,13 @@ assert.strictEqual($('#partials').val(), "52.4.1esrbuild1");
 
 QUnit.test('getElmoUrl()', function(assert) {
     var data = [{
-        product: 'firefox', version: '32.0',
+        product: 'firefox', majorVersion: 32,
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
     }, {
-        product: 'thunderbird', version: '33.0',
+        product: 'thunderbird', majorVersion: 33,
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=tb33',
     }, {
-        product: 'fennec', version: '32.0',
-        expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
-            '&multi_android-multilocale_repo=releases/mozilla-beta&multi_android-multilocale_rev=default' +
-            '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
-    }, {
-        product: 'fennec', version: '32.0b1',
+        product: 'fennec', majorVersion: 32.0,
         expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
             '&multi_android-multilocale_repo=releases/mozilla-beta&multi_android-multilocale_rev=default' +
             '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
@@ -280,56 +275,152 @@ QUnit.test('getElmoUrl()', function(assert) {
 
     data.forEach(function(piece) {
         assert.equal(
-            getElmoUrl(piece.product, piece.version),
+            getElmoUrl(piece.product, piece.majorVersion),
             piece.expectedUrl
         );
     });
 });
 
-QUnit.test('getPreviousBuildL10nUrl()', function(assert) {
+QUnit.test('_getPreviousBuildL10nUrl()', function(assert) {
     var data = [{
-        product: 'firefox', version: '32.0', previousBuildNumber: 1,
+        product: 'firefox', version: new Version('32.0build1'),
         // We get file:/// because tests run under grunt-qunit
         expectedUrl: 'file:///releases/firefox-32.0-build1/l10n',
     }, {
-        product: 'thunderbird', version: '33.0', previousBuildNumber: 2,
+        product: 'thunderbird', version: new Version('33.0build2'),
         expectedUrl: 'file:///releases/thunderbird-33.0-build2/l10n',
     }, {
-        product: 'fennec', version: '32.0b1', previousBuildNumber: 3,
+        product: 'fennec', version: new Version('32.0b1build3'),
         expectedUrl: 'file:///releases/fennec-32.0b1-build3/l10n'
     }];
 
     data.forEach(function(piece) {
         assert.equal(
-            getPreviousBuildL10nUrl(piece.product, piece.version, piece.previousBuildNumber),
+            _getPreviousBuildL10nUrl(piece.product, piece.version, piece.previousBuildNumber),
             piece.expectedUrl
         );
     });
 });
 
-QUnit.test('getUrlAndMessages()', function(assert) {
+QUnit.test('_getUrlAndMessages()', function(assert) {
     var data = [{
-        product: 'firefox', version: '32.0', buildNumber: 1,
+        product: 'firefox', version: '32.0', buildNumber: 1, revision: 'unused',
         expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=fx32',
     }, {
+        product: 'fennec', version: '32.0', buildNumber: 1, revision: 'unused',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/json-changesets?av=fennec32&platforms=android' +
+            '&multi_android-multilocale_repo=releases/mozilla-beta' +
+            '&multi_android-multilocale_rev=default' +
+            '&multi_android-multilocale_path=mobile/android/locales/maemo-locales',
+    }, {
         // We get file:/// because tests run under grunt-qunit
-        product: 'thunderbird', version: '33.0', buildNumber: 2,
+        product: 'thunderbird', version: '33.0', buildNumber: 2, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/thunderbird-33.0-build1/l10n',
     }, {
-        product: 'firefox', version: '44.0.1', buildNumber: 1,
+        product: 'firefox', version: '44.0.1', buildNumber: 1, branchName: 'unused', revision: 'unused',
         expectedUrl: 'file:///releases/firefox-44.0-build1/l10n',
     }, {
-        product: 'firefox', version: '45.6.0esr', buildNumber: 2,
-        expectedUrl: 'file:///releases/firefox-45.0-build1/l10n',
+        product: 'firefox', version: '45.6.0esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-45.6.0esr-build1/l10n',
     }, {
-        product: 'fennec', version: '32.0b1', buildNumber: 3,
-        expectedUrl: 'file:///releases/fennec-32.0b1-build2/l10n'
+        product: 'firefox', version: '45.6.1esr', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-45.6.0esr-build1/l10n',
+    }, {
+        product: 'firefox', version: '45.6.1esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-45.6.1esr-build1/l10n',
+    }, {
+        product: 'firefox', version: '57.0.1', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-57.0-build1/l10n',
+    }, {
+        product: 'firefox', version: '57.0.2', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-57.0.1-build1/l10n',
+    }, {
+        product: 'firefox', version: '45.6.1esr', buildNumber: 2, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-45.6.1esr-build1/l10n',
+    }, {
+        product: 'fennec', version: '32.0b1', buildNumber: 3, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/fennec-32.0b1-build2/l10n',
+    }, {
+        // Starting Firefox/Devedition/Fennec 59, l10nChangesets are fetched in-tree (not Thunderbird, though)
+        product: 'firefox', version: '59.0b1', buildNumber: 1, branchName: 'mozilla-beta', revision: 'abcdef123456',
+        expectedUrl: 'https://hg.mozilla.org/mozilla-beta/raw-file/abcdef123456/browser/locales/l10n-changesets.json',
+    }, {
+        product: 'devedition', version: '59.0b1', buildNumber: 1, branchName: 'mozilla-beta', revision: 'abcdef123456',
+        expectedUrl: 'https://hg.mozilla.org/mozilla-beta/raw-file/abcdef123456/browser/locales/l10n-changesets.json',
+    }, {
+        product: 'fennec', version: '59.0', buildNumber: 1, branchName: 'mozilla-release', revision: '123456abcdef',
+        expectedUrl: 'https://hg.mozilla.org/mozilla-release/raw-file/123456abcdef/mobile/locales/l10n-changesets.json',
+    }, {
+        product: 'thunderbird', version: '59.0', buildNumber: 1, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'https://l10n.mozilla.org/shipping/l10n-changesets?av=tb59',
+    }, {
+        // Build 2 is still copied from previous build
+        product: 'firefox', version: '59.0b1', buildNumber: 2, branchName: 'unused', revision: 'unused',
+        expectedUrl: 'file:///releases/firefox-59.0b1-build1/l10n',
     }];
 
     data.forEach(function(piece) {
         assert.equal(
-            getUrlAndMessages(piece.product, piece.version, piece.buildNumber).url,
+            _getUrlAndMessages(piece.product, piece.version, piece.buildNumber, piece.branchName, piece.revision).url,
             piece.expectedUrl
+        );
+    });
+});
+
+QUnit.test('convertJsonIntoOldChangesetFormat()', function(assert) {
+    var data = [{
+        jsonChangesets: {
+           'es-ES': {
+               'revision': 'fedcba654321',
+               'platforms': [
+                 'linux',
+                 'linux-devedition',
+                 'linux64',
+                 'linux64-devedition',
+                 'macosx64',
+                 'macosx64-devedition',
+                 'win32',
+                 'win32-devedition',
+                 'win64',
+                 'win64-devedition',
+              ],
+            }, 'en-GB': {
+                'revision': 'abcdef123456',
+                'platforms': [
+                  'linux',
+                  'linux-devedition',
+                  'linux64',
+                  'linux64-devedition',
+                  'macosx64',
+                  'macosx64-devedition',
+                  'win32',
+                  'win32-devedition',
+                  'win64',
+                  'win64-devedition',
+               ],
+            }, 'de': {
+                'revision': '123456abcdef',
+                'platforms': [
+                  'linux',
+                  'linux-devedition',
+                  'linux64',
+                  'linux64-devedition',
+                  'macosx64',
+                  'macosx64-devedition',
+                  'win32',
+                  'win32-devedition',
+                  'win64',
+                  'win64-devedition',
+               ],
+            }
+        },
+        expected: "de 123456abcdef\nen-GB abcdef123456\nes-ES fedcba654321",
+    }];
+
+    data.forEach(function(piece) {
+        assert.equal(
+            convertJsonIntoOldChangesetFormat(piece.jsonChangesets),
+            piece.expected
         );
     });
 });
@@ -404,10 +495,10 @@ QUnit.test('pluckLatestRevision()', function(assert) {
 });
 
 
-QUnit.module('model/Release');
+QUnit.module('model/Version');
 
 QUnit.test('constructor must throw errors when release has more than one type', function(assert) {
-    var invalidReleases = [
+    var invalidVersions = [
         { string: '32', error: InvalidVersionError },
         { string: '32.b2', error: InvalidVersionError },
         { string: '.1', error: InvalidVersionError  },
@@ -420,22 +511,22 @@ QUnit.test('constructor must throw errors when release has more than one type', 
         { string: '32.0esrb2', error: InvalidVersionError },
     ];
 
-    invalidReleases.forEach(function(invalidRelease) {
+    invalidVersions.forEach(function(invalidVersion) {
         assert.throws(
             function() {
-                new Release(invalidRelease.string);
+                new Version(invalidVersion.string);
             },
-            invalidRelease.error,
-            invalidRelease.string + ' did not throw ' + invalidRelease.error.name
+            invalidVersion.error,
+            invalidVersion.string + ' did not throw ' + invalidVersion.error.name
         );
     });
 });
 
 QUnit.test('is*()', function(assert) {
     VALID_VERSIONS.forEach(function(versionData) {
-        var release = new Release(versionData.string);
+        var release = new Version(versionData.string);
 
-        Release.POSSIBLE_TYPES.forEach(function(field) {
+        Version.POSSIBLE_TYPES.forEach(function(field) {
             var expectedType = field.substring('is'.length).toLowerCase();
             var hasType = release[field];
 
@@ -485,8 +576,8 @@ QUnit.test('isStrictlyPreviousTo() must compare different version numbers', func
 
     data = data.map(function(couple) {
         return {
-            previous: new Release(couple.previous),
-            next: new Release(couple.next),
+            previous: new Version(couple.previous),
+            next: new Version(couple.next),
         };
     });
 
@@ -500,10 +591,10 @@ QUnit.test('isStrictlyPreviousTo() must compare different version numbers', func
 });
 
 QUnit.test('isStrictlyPreviousTo() must compare identical version numbers', function(assert) {
-    var baseCandidate = new Release('32.0');
+    var baseCandidate = new Version('32.0');
     var equalCandidates = ['32.0', '32.0build1'];
     equalCandidates = equalCandidates.map(function(candidate) {
-        return new Release(candidate);
+        return new Version(candidate);
     });
 
     equalCandidates.forEach(function(candidate) {
@@ -530,8 +621,8 @@ QUnit.test('isStrictlyPreviousTo() must throw errors when not comparable', funct
 
     data = data.map(function(couple) {
         return {
-            a: new Release(couple.a),
-            b: new Release(couple.b),
+            a: new Version(couple.a),
+            b: new Version(couple.b),
         };
     });
 
@@ -556,12 +647,13 @@ QUnit.test('toString()', function(assert) {
         '32.0b1': ['32.0b1', '32.0b01'],
         '32.0esr': ['32.0esr'],
         '32.0.1esr': ['32.0.1esr'],
+        '32.1.0esr': ['32.1.0esr'],
     }
 
     for (var expectedString in data) {
         var candidates = data[expectedString];
         candidates = candidates.map(function(candidate) {
-            return new Release(candidate).toString();
+            return new Version(candidate).toString();
         })
 
         candidates.forEach(function(candidate) {

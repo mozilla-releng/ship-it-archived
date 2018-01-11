@@ -28,8 +28,7 @@ function isTB(name) {
 
 function getSanitizedVersionString(candidateString) {
     try {
-        // TODO: Rename Release into Version
-        var version = new Release(candidateString);
+        var version = new Version(candidateString);
         return version.toString();
     } catch (err) {
         if (!(err instanceof InvalidVersionError)) {
@@ -76,9 +75,9 @@ function guessBranchFromVersion(name, version) {
 }
 
 function craftLastReleasesAsPartials(versionString, allPreviousReleasesStrings, nbExpected) {
-    var version = new Release(versionString);
+    var version = new Version(versionString);
     var allPreviousReleases = allPreviousReleasesStrings.map(function(string) {
-        return new Release(string);
+        return new Version(string);
     });
 
     var validPreviousReleases = allPreviousReleases.filter(function(release) {
@@ -238,62 +237,89 @@ function _getElmoShortName(productName) {
     }
 }
 
-function getElmoUrl(productName, version) {
+function getElmoUrl(productName, majorVersionNumber) {
     var shortName = _getElmoShortName(productName);
-    var majorVersion = version.match(REGEXES.majorNumber)[1];
 
     var url = CONFIG.baseUrls.elmo;
     url += isFennec(productName) ?
-        'json-changesets?av=' + shortName + majorVersion +
+        'json-changesets?av=' + shortName + majorVersionNumber +
         '&platforms=android' +
         // TODO Use actual branch instead of mozilla-beta once bug 1280730 lands
         '&multi_android-multilocale_repo=releases/mozilla-beta' +
         '&multi_android-multilocale_rev=default' +
         '&multi_android-multilocale_path=mobile/android/locales/maemo-locales'
         :
-        'l10n-changesets?av=' + shortName + majorVersion;
+        'l10n-changesets?av=' + shortName + majorVersionNumber;
     return url;
 }
 
-function getPreviousBuildL10nUrl(productName, version, previousBuildNumber) {
+function _getL10nChangesetsOptsOfNewVersion(productName, versionObject, branchName, revision) {
+    var opts = {};
+    if (productName === 'thunderbird' || versionObject.majorNumber < 59) {
+        opts.url = getElmoUrl(productName, versionObject.majorNumber);
+        opts.downloadPlaceholder = 'Elmo';
+        opts.mustConvertToOldFormat = false;
+    } else {
+        opts.downloadPlaceholder = 'l10n-changesets.json on hg.mozilla.org';
+        var topFolder;
+        if (productName === 'fennec') {
+            opts.mustConvertToOldFormat = false;
+            topFolder = 'mobile';
+        } else {
+            opts.mustConvertToOldFormat = true;
+            topFolder = 'browser';
+        }
+        opts.url = getInTreeFileUrl(branchName, revision, topFolder + '/locales/l10n-changesets.json');
+    }
+
+    opts.previousBuildWarning = '';
+    return opts;
+}
+
+function _getPreviousBuildL10nUrl(productName, versionObject) {
     var baseUrl = window.location.origin;
-    var releaseFullName = [productName, version, 'build' + previousBuildNumber].join('-');
+    var stripBuildNumber = true;
+    var versionWithoutBuildNumber = versionObject.toString(stripBuildNumber);
+    var releaseFullName = [productName, versionWithoutBuildNumber, 'build' + versionObject.buildNumber].join('-');
     return baseUrl + '/releases/' + releaseFullName + '/l10n';
 }
 
-function getUrlAndMessages(productName, version, buildNumber) {
-    var opts = {
-        url: '',
-        downloadPlaceholder: 'Trying to download from ',
-        previousBuildWarning: '',
-    };
-    var minor = version.match(/(\d+)\.\d+\.\d+/);
-    if (minor) {
-        // Fall back to $major.0 build1
-        var previousBuildNumber = 1;
-        var previousVersion = minor[1] + '.0';
-        var buildString = previousVersion + ' build' + previousBuildNumber;
-        opts.url = getPreviousBuildL10nUrl(productName, previousVersion, previousBuildNumber);
-        opts.downloadPlaceholder += buildString;
-        opts.previousBuildWarning = 'Changesets copied from ' + buildString +
-            '. If you want to not use them, please edit this field.';
-    } else if (buildNumber > 1) {
-        var previousBuildNumber = buildNumber - 1;
-        var buildString = 'build' + previousBuildNumber;
-        opts.url = getPreviousBuildL10nUrl(productName, version, previousBuildNumber);
-        opts.downloadPlaceholder += buildString;
-        opts.previousBuildWarning = 'Changesets copied from ' + buildString +
-            '. If you want to not use them, please edit this field.';
+function _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject) {
+    var opts = {};
+    // Deep copy object
+    var previousVersion = $.extend(true, {}, versionObject);
+
+    if (versionObject.buildNumber > 1) {
+        previousVersion.buildNumber--;
+        opts.url = _getPreviousBuildL10nUrl(productName, previousVersion);
+    } else if (versionObject.patchNumber) {
+        // XX.Y.Z falls back to XX.Y.(Z-1)build1 or XX.Ybuild1.
+        previousVersion.buildNumber = 1;
+        previousVersion.patchNumber = versionObject.patchNumber <= 1 ? undefined : versionObject.patchNumber - 1;
+        opts.url = _getPreviousBuildL10nUrl(productName, previousVersion);
     } else {
-        opts.url = getElmoUrl(productName, version);
-        opts.downloadPlaceholder += 'Elmo';
-        opts.previousBuildWarning = '';
+        throw Error('Unsupported condition for previous build');
     }
+
+    opts.downloadPlaceholder = previousVersion.toString();
+    opts.previousBuildWarning = 'Changesets copied from ' + previousVersion.toString() +
+        '. If you want to not use them, please edit this field.';
+    opts.mustConvertToOldFormat = false;
 
     return opts;
 }
 
-function populateL10nChangesets(productName, version, buildNumber) {
+function _getUrlAndMessages(productName, versionString, buildNumber, branchName, revision) {
+    var versionObject = new Version(versionString);
+    versionObject.buildNumber = parseInt(buildNumber, 10);
+    if (versionObject.patchNumber || versionObject.buildNumber > 1) {
+        return _getL10nChangesetsOptsOfPreviousBuild(productName, versionObject);
+    } else {
+        return _getL10nChangesetsOptsOfNewVersion(productName, versionObject, branchName, revision);
+    }
+}
+
+function populateL10nChangesets(productName, version, buildNumber, branchName, revision) {
     var changesetsElement = $('#' + productName + '-l10nChangesets');
 
     if (!version) {
@@ -303,27 +329,43 @@ function populateL10nChangesets(productName, version, buildNumber) {
 
     var oldPlaceholder = changesetsElement.attr('placeholder');
     var warningElement = changesetsElement.siblings('.help').find('.warning');
-    var opts = getUrlAndMessages(productName, version, buildNumber);
+    var opts = _getUrlAndMessages(productName, version, buildNumber, branchName, revision);
 
     changesetsElement.val('');
-    changesetsElement.attr('placeholder', opts.downloadPlaceholder);
+    changesetsElement.attr('placeholder', 'Trying to download from ' + opts.downloadPlaceholder);
     changesetsElement.prop('disabled', true);
     warningElement.text('');
 
     $.ajax({
         url: opts.url,
     }).done(function(changesets) {
+        if (opts.mustConvertToOldFormat) {
+            changesets = convertJsonIntoOldChangesetFormat(changesets);
+        }
+        if (typeof changesets !== 'string') {
+            changesets = JSON.stringify(changesets, null, ' ');
+        }
         changesetsElement.val(changesets);
+        warningElement.text(opts.previousBuildWarning);
     }).fail(function() {
         changesetsElement.val('');
         // Sadly, jQuery.ajax() doesn't return the reason of the error :(
         // http://api.jquery.com/jQuery.ajax/
-        console.error('Could not fetch l10n changesets');
+        warningElement.text('Could not fetch l10n changesets! Are you sure the revision or the version you provided are correct?');
     }).always(function() {
         changesetsElement.prop('disabled', false);
         changesetsElement.attr('placeholder', oldPlaceholder);
-        warningElement.text(opts.previousBuildWarning);
     });
+}
+
+function convertJsonIntoOldChangesetFormat(jsonChangesets) {
+    var changesets = [];
+    for (var locale in jsonChangesets) {
+        changeset = jsonChangesets[locale].revision;
+        changesets.push(locale + ' ' + changeset);
+    }
+    changesets.sort();
+    return changesets.join('\n');
 }
 
 function setupVersionSuggestions(versionElement, versions, buildNumberElement, buildNumbers, branchElement, partialElement, previousBuilds, partialInfo) {
@@ -386,7 +428,12 @@ function setupVersionSuggestions(versionElement, versions, buildNumberElement, b
         populateRevisionWithLatest(productName, branchName);
         populatePartial(productName, version, previousBuilds, partialElement);
         populatePartialInfo(productName, version);
-        populateL10nChangesets(productName, version, buildNumber);
+
+        $('#' + productName + '-mozillaRevision').change(function(event) {
+            var revision = $(this).val();
+            populateL10nChangesets(productName, version, buildNumber, branchName, revision);
+        });
+
     }
 
     var VERSION_SUFFIX = '-version';

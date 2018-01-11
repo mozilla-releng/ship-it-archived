@@ -36,7 +36,7 @@ function doesRegexMatch(string, regex) {
     return string.match(regex) !== null;
 }
 
-function Release(string) {
+function Version(string) {
     var matches = string.match(VALID_VERSION_PATTERN);
     if (matches === null) {
         throw new InvalidVersionError(string);
@@ -86,15 +86,15 @@ function _capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-Release.POSSIBLE_TYPES = [
+Version.POSSIBLE_TYPES = [
     'isNightly', 'isDevEdition', 'isBeta', 'isEsr', 'isRelease'
 ];
 
-Release.COMPARISON_TYPES = [
+Version.COMPARISON_TYPES = [
     'isNightly', 'isDevEdition', 'isBetaOrRelease', 'isEsr'
 ];
 
-Release.prototype = {
+Version.prototype = {
 
     _assignMandatoryField: function(field, matches, string) {
         var matchPotentialIndexes = INDEXES[field];
@@ -102,9 +102,9 @@ Release.prototype = {
         this[field] = parseInt(matchValue, 10);
     },
 
-    _assignFieldIfItExists: function(field, string) {
+    _assignFieldIfItExists: function(field, matches, string) {
         try {
-            this._assignMandatoryField(field, string);
+            this._assignMandatoryField(field, matches, string);
         } catch (err) {
             if (!(err instanceof MissingFieldError)) {
                 throw err;
@@ -130,7 +130,7 @@ Release.prototype = {
         var self = this;
         var firstFieldToMatch = '';
 
-        Release.POSSIBLE_TYPES.reduce(function(previousValue, currentField) {
+        Version.POSSIBLE_TYPES.reduce(function(previousValue, currentField) {
             var currentValue = self[currentField];
             if (currentValue === true) {
                 if (previousValue === true) {
@@ -155,22 +155,22 @@ Release.prototype = {
         return !(this.isNightly || this.isDevEdition || this.isEsr);
     },
 
-    isStrictlyPreviousTo: function(otherRelease) {
-        return this._compare(otherRelease) < 0;
+    isStrictlyPreviousTo: function(otherVersion) {
+        return this._compare(otherVersion) < 0;
     },
 
     /**
-        Compare this release with another. They must be from the same channel
+        Compare this version with another. They must be from the same channel
         @return 0 if equal; < 0 is this preceeds the other; > 0 if the other preceeds this
         @throws Error if they're not from the same channel
     */
-    _compare: function(otherRelease) {
-        this._checkOtherIsOfCompatibleType(otherRelease);
+    _compare: function(otherVersion) {
+        this._checkOtherIsOfCompatibleType(otherVersion);
 
         var orderedFields = ['majorNumber', 'minorNumber', 'patchNumber', 'betaNumber'];
         for (var i = 0; i < orderedFields.length; i++) {
             var field = orderedFields[i];
-            var comparisonResult = _compareNumbers(this[field], otherRelease[field]);
+            var comparisonResult = _compareNumbers(this[field], otherVersion[field]);
 
             if (comparisonResult !== 0) {
                 return comparisonResult;
@@ -180,9 +180,9 @@ Release.prototype = {
             // the same. The release will have 'undefined' betaNumber, so isn't
             // compariable to beta with a genuine digit
             if (field == 'majorNumber') {
-                if (this.isBeta && otherRelease.isRelease) {
+                if (this.isBeta && otherVersion.isRelease) {
                     return -1;
-                } else if (this.isRelease && otherRelease.isBeta) {
+                } else if (this.isRelease && otherVersion.isBeta) {
                     return 1;
                 }
             }
@@ -191,36 +191,42 @@ Release.prototype = {
         // Build numbers are a special case. We might compare a regular version number
         // (like "32.0b8") versus a release build (as in "32.0b8build1"). As a consequence,
         // we only compare buildNumbers when we both have them.
-        if (this.buildNumber && otherRelease.buildNumber) {
-            return _compareNumbers(this.buildNumber, otherRelease.buildNumber);
+        if (this.buildNumber && otherVersion.buildNumber) {
+            return _compareNumbers(this.buildNumber, otherVersion.buildNumber);
         }
 
         return 0;
     },
 
-    _checkOtherIsOfCompatibleType: function(otherRelease) {
+    _checkOtherIsOfCompatibleType: function(otherVersion) {
         // In the 38 cycle, we built betas from the mozilla-release branch.
         // We don't want beta partials for a 38 release though.
         // This is confusing ship-it (and us)
         // For more recent versions allow beta vs release comparisons,
         // to support release candidates on the beta channel
-        if (this.majorNumber == '38' || otherRelease.majorNumber == '38') {
-            types = Release.POSSIBLE_TYPES;
+        if (this.majorNumber == '38' || otherVersion.majorNumber == '38') {
+            types = Version.POSSIBLE_TYPES;
         } else {
-            types = Release.COMPARISON_TYPES;
+            types = Version.COMPARISON_TYPES;
         }
         types.forEach(function(field) {
-            if (this[field] !== otherRelease[field]) {
-                throw new NotComparableError(this, otherRelease, field);
+            if (this[field] !== otherVersion[field]) {
+                throw new NotComparableError(this, otherVersion, field);
             }
         }, this);
     },
 
-    toString: function() {
+    toString: function(stripBuildNumber) {
+        stripBuildNumber = stripBuildNumber || false;
+
         var semvers = [this.majorNumber, this.minorNumber];
         if (this.patchNumber !== undefined) {
             semvers.push(this.patchNumber);
         }
+        if (this.isEsr && this.minorNumber > 0 && this.patchNumber === undefined) {
+            semvers.push(0);
+        }
+
         var string = semvers.join('.');
 
         if (this.isNightly) {
@@ -239,7 +245,7 @@ Release.prototype = {
             string += 'esr';
         }
 
-        if (this.buildNumber !== undefined) {
+        if (!stripBuildNumber && this.buildNumber !== undefined) {
             string += 'build' + this.buildNumber;
         }
 

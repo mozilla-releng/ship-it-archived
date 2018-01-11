@@ -22,6 +22,7 @@ function populateRevisionWithLatest(productName, branchName) {
     }).done(function(results) {
         var latestRevision = pluckLatestRevision(results);
         revisionElement.val(latestRevision);
+        revisionElement.trigger('change'); // this allows fields like revision to react
     }).fail(function() {
         revisionElement.val('');
         console.error('Could not fetch latest revision for branch "' + branchName + '"');
@@ -30,4 +31,8 @@ function populateRevisionWithLatest(productName, branchName) {
         revisionElement.attr('placeholder', oldPlaceholder);
         revisionElement.blur(); // this deactivates relbranch field, if needed
     });
+}
+
+function getInTreeFileUrl(branchName, revision, path) {
+    return CONFIG.baseUrls.hgMozilla + branchName + '/raw-file/' + revision + '/' + path;
 }
