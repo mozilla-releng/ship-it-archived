@@ -87,6 +87,7 @@ def getFilteredReleases(product, categories, esrNext=False, lastRelease=None,
         else:
             if detailledInfo:
                 results.append({"version": version,
+                                "buildNumber": r.buildNumber,
                                 "shippedAt": shippedAt,
                                 "versionDetailled": r.version,
                                 "category": r.category,
@@ -395,6 +396,7 @@ def getReleasesForJson(product):
             "date": r["shippedAt"],
             "version": r["version"],
             "product": product,
+            "build_number": r["buildNumber"],
             "category": category,
             "description": r["description"],
             "is_security_driven": r["isSecurityDriven"] is True
