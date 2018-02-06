@@ -413,6 +413,13 @@ def jsonFirefoxExport():
     return jsonify_by_sorting_values(release_list, detailledJson=True)
 
 
+@app.route(BASE_JSON_PATH + '/devedition.json', methods=['GET'])
+def jsonDeveditionExport():
+    """ Export all the devedition versions """
+    release_list = getReleasesForJson("devedition")
+    return jsonify_by_sorting_values(release_list, detailledJson=True)
+
+
 @app.route(BASE_JSON_PATH + '/mobile_android.json', methods=['GET'])
 def jsonFennecExport():
     """ Export all the fennec versions """
@@ -433,6 +440,6 @@ def jsonAllExport():
     release_list = {
         "releases": {}
     }
-    for release in ("firefox", "fennec", "thunderbird"):
+    for release in ("devedition", "firefox", "fennec", "thunderbird"):
         release_list["releases"].update(getReleasesForJson(release)["releases"])
     return jsonify_by_sorting_values(release_list, detailledJson=True)
