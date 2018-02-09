@@ -87,6 +87,7 @@ def getFilteredReleases(product, categories, esrNext=False, lastRelease=None,
         else:
             if detailledInfo:
                 results.append({"version": version,
+                                "buildNumber": r.buildNumber,
                                 "shippedAt": shippedAt,
                                 "versionDetailled": r.version,
                                 "category": r.category,
@@ -395,6 +396,7 @@ def getReleasesForJson(product):
             "date": r["shippedAt"],
             "version": r["version"],
             "product": product,
+            "build_number": r["buildNumber"],
             "category": category,
             "description": r["description"],
             "is_security_driven": r["isSecurityDriven"] is True
@@ -408,6 +410,13 @@ def getReleasesForJson(product):
 def jsonFirefoxExport():
     """ Export all the firefox versions """
     release_list = getReleasesForJson("firefox")
+    return jsonify_by_sorting_values(release_list, detailledJson=True)
+
+
+@app.route(BASE_JSON_PATH + '/devedition.json', methods=['GET'])
+def jsonDeveditionExport():
+    """ Export all the devedition versions """
+    release_list = getReleasesForJson("devedition")
     return jsonify_by_sorting_values(release_list, detailledJson=True)
 
 
@@ -431,6 +440,6 @@ def jsonAllExport():
     release_list = {
         "releases": {}
     }
-    for release in ("firefox", "fennec", "thunderbird"):
+    for release in ("devedition", "firefox", "fennec", "thunderbird"):
         release_list["releases"].update(getReleasesForJson(release)["releases"])
     return jsonify_by_sorting_values(release_list, detailledJson=True)

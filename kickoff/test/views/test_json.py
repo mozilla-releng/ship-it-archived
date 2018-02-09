@@ -306,6 +306,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "3.0b2")
         self.assertEquals(v['category'], "dev")
         self.assertEquals(v['product'], "firefox")
+        self.assertEquals(v['build_number'], 1)
         self.assertEquals(v['is_security_driven'], True)
         self.assertEquals(v['description'], "We did this because of an issue in NSS")
         v = firefoxReleases['firefox-2.0.2esr']
@@ -313,8 +314,24 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "2.0.2")
         self.assertEquals(v['category'], "esr")
         self.assertEquals(v['product'], "firefox")
+        self.assertEquals(v['build_number'], 1)
         self.assertEquals(v['is_security_driven'], False)
         self.assertEquals(v['description'], None)
+
+    def testDevedition(self):
+        ret = self.get(BASE_JSON_PATH + '/devedition.json')
+        deveditionReleases = json.loads(ret.data)
+        self.assertEquals(ret.status_code, 200)
+        deveditionReleases = deveditionReleases["releases"]
+        self.assertTrue("devedition-3.0b5" in deveditionReleases)
+        v = deveditionReleases['devedition-3.0b5']
+        self.assertEquals(v['date'], "2005-01-02")
+        self.assertEquals(v['version'], "3.0b5")
+        self.assertEquals(v['category'], "dev")
+        self.assertEquals(v['product'], "devedition")
+        self.assertEquals(v['build_number'], 1)
+        self.assertEquals(v['is_security_driven'], False)
+        self.assertEquals(v['description'], "we did this release because of foo")
 
     def testThunderbird(self):
         ret = self.get(BASE_JSON_PATH + '/thunderbird.json')
@@ -328,6 +345,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "23.0")
         self.assertEquals(v['category'], "major")
         self.assertEquals(v['product'], "thunderbird")
+        self.assertEquals(v['build_number'], 1)
         self.assertEquals(v['is_security_driven'], False)
         self.assertEquals(v['description'], "bar reason")
         v = thunderbirdReleases['thunderbird-24.0b2']
@@ -335,6 +353,7 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "24.0b2")
         self.assertEquals(v['category'], "dev")
         self.assertEquals(v['product'], "thunderbird")
+        self.assertEquals(v['build_number'], 2)
         self.assertEquals(v['is_security_driven'], False)
 
     def testFennec(self):
@@ -349,12 +368,14 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "23.0b2")
         self.assertEquals(v['category'], "dev")
         self.assertEquals(v['product'], "fennec")
+        self.assertEquals(v['build_number'], 4)
         self.assertEquals(v['is_security_driven'], False)
         v = fennecReleases['fennec-24.0']
         self.assertEquals(v['date'], "2015-03-01")
         self.assertEquals(v['version'], "24.0")
         self.assertEquals(v['category'], "major")
         self.assertEquals(v['product'], "fennec")
+        self.assertEquals(v['build_number'], 4)
         self.assertEquals(v['is_security_driven'], False)
 
     def testAll(self):
@@ -369,13 +390,25 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "3.0b2")
         self.assertEquals(v['category'], "dev")
         self.assertEquals(v['product'], "firefox")
+        self.assertEquals(v['build_number'], 1)
         self.assertEquals(v['is_security_driven'], True)
         v = allReleases['firefox-2.0.2esr']
         self.assertEquals(v['date'], "2005-01-04")
         self.assertEquals(v['version'], "2.0.2")
         self.assertEquals(v['category'], "esr")
         self.assertEquals(v['product'], "firefox")
+        self.assertEquals(v['build_number'], 1)
         self.assertEquals(v['is_security_driven'], False)
+
+        self.assertTrue("devedition-3.0b5" in allReleases)
+        v = allReleases['devedition-3.0b5']
+        self.assertEquals(v['date'], "2005-01-02")
+        self.assertEquals(v['version'], "3.0b5")
+        self.assertEquals(v['category'], "dev")
+        self.assertEquals(v['product'], "devedition")
+        self.assertEquals(v['build_number'], 1)
+        self.assertEquals(v['is_security_driven'], False)
+        self.assertEquals(v['description'], "we did this release because of foo")
 
         self.assertTrue("thunderbird-23.0" in allReleases)
         self.assertTrue("thunderbird-24.0b2" in allReleases)
@@ -384,12 +417,14 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "23.0")
         self.assertEquals(v['category'], "major")
         self.assertEquals(v['product'], "thunderbird")
+        self.assertEquals(v['build_number'], 1)
         self.assertEquals(v['is_security_driven'], False)
         v = allReleases['thunderbird-24.0b2']
         self.assertEquals(v['date'], "2005-02-01")
         self.assertEquals(v['version'], "24.0b2")
         self.assertEquals(v['category'], "dev")
         self.assertEquals(v['product'], "thunderbird")
+        self.assertEquals(v['build_number'], 2)
         self.assertEquals(v['is_security_driven'], False)
 
         self.assertTrue("fennec-23.0b2" in allReleases)
@@ -399,12 +434,14 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['version'], "23.0b2")
         self.assertEquals(v['category'], "dev")
         self.assertEquals(v['product'], "fennec")
+        self.assertEquals(v['build_number'], 4)
         self.assertEquals(v['is_security_driven'], False)
         v = allReleases['fennec-24.0']
         self.assertEquals(v['date'], "2015-03-01")
         self.assertEquals(v['version'], "24.0")
         self.assertEquals(v['category'], "major")
         self.assertEquals(v['product'], "fennec")
+        self.assertEquals(v['build_number'], 4)
         self.assertEquals(v['is_security_driven'], False)
 
     def test_esr_next_empty(self):
