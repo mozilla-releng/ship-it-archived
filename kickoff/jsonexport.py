@@ -50,10 +50,7 @@ def getFilteredReleases(product, categories, esrNext=False, lastRelease=None,
             special_majors = patternize_versions(SPECIAL_THUNDERBIRD_MAJORS)
         else:
             special_majors = patternize_versions(SPECIAL_FIREFOX_MAJORS)
-        if exclude_esr:
-            version.append(("major", r"([0-9]+\.[0-9]+%s)$" % special_majors))
-        else:
-            version.append(("major", r"([0-9]+\.[0-9]+(esr|)%s)$" % special_majors))
+        version.append(("major", r"([0-9]+\.[0-9]+%s)$" % special_majors))
     if "stability" in categories:
         if exclude_esr:
             version.append(("stability", r"([0-9]+\.[0-9]+\.[0-9]+$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)"))
@@ -118,8 +115,8 @@ BASE_JSON_PATH = '/json/' + JSON_VER
 
 @app.route(BASE_JSON_PATH + '/firefox_history_major_releases.json', methods=['GET'])
 def firefoxHistoryMajorReleasesJson():
-    # Match X.Y and 14.0.1 (special case) but not ESR
-    values = getFilteredReleases("firefox", "major", exclude_esr=True)
+    # Match X.Y and 14.0.1 (special case)
+    values = getFilteredReleases("firefox", "major")
     return jsonify_by_sorting_values(values)
 
 
