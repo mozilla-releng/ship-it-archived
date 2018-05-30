@@ -301,6 +301,7 @@ class TestJSONRequestsAPI(ViewTest):
         firefoxReleases = firefoxReleases["releases"]
         self.assertTrue("firefox-3.0b2" in firefoxReleases)
         self.assertTrue("firefox-2.0.2esr" in firefoxReleases)
+        self.assertTrue("firefox-38.0esr" in firefoxReleases)
         v = firefoxReleases['firefox-3.0b2']
         self.assertEquals(v['date'], "2005-01-02")
         self.assertEquals(v['version'], "3.0b2")
@@ -317,6 +318,8 @@ class TestJSONRequestsAPI(ViewTest):
         self.assertEquals(v['build_number'], 1)
         self.assertEquals(v['is_security_driven'], False)
         self.assertEquals(v['description'], None)
+        v = firefoxReleases['firefox-38.0esr']
+        self.assertEquals(v['category'], "esr")
 
     def testDevedition(self):
         ret = self.get(BASE_JSON_PATH + '/devedition.json')
