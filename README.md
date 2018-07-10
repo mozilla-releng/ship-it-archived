@@ -57,3 +57,5 @@ To run python and JS tests with docker:
 After a PR is merged to master, it is automatically deployed to https://ship-it-dev.allizom.org/ and https://ship-it.allizom.org/. In order to deploy to production, the `master` branch should be pushed to the `production` branch:
 
 ```git push origin origin/master:production```
+
+The current revision can be verified by browsing at https://ship-it.mozilla.org/static/revision_info.txt
