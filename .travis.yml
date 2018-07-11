@@ -2,19 +2,18 @@ sudo: false
 
 language: python
 python:
-  - "2.6"
   - "2.7"
 
 install:
     - travis_retry pip install tox-travis
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry pip install flake8; fi
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry nvm install; fi
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry npm install; fi
+    - travis_retry pip install flake8
+    - travis_retry nvm install
+    - travis_retry npm install
 
 script:
     - tox
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then ./node_modules/.bin/grunt --verbose; fi
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then flake8 kickoff/ --exclude=kickoff/test/ --max-line-length=2000 --ignore=E402,E711; fi
+    - ./node_modules/.bin/grunt --verbose
+    - flake8 kickoff/ --exclude=kickoff/test/ --max-line-length=2000 --ignore=E402,E711
 
 after_success:
-    - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then travis_retry pip install coveralls && coveralls; fi
+    - travis_retry pip install coveralls && coveralls

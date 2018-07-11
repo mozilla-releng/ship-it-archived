@@ -50,18 +50,19 @@ def _getLocalesByReleaseName(releaseTable, releaseName):
 
 
 def _getReleaseLocales(release):
-    if release is None or release.l10nChangesets == config.LEGACY_KEYWORD:
-        return jsonify_by_sorting_values({})
-
     locale_list = defaultdict()
-    if "Firefox" in release.name or "Thunderbird" in release.name:
+
+    if release is None or release.l10nChangesets == config.LEGACY_KEYWORD:
+        locale_list = {}
+
+    elif "Firefox" in release.name or "Thunderbird" in release.name:
         locales = parsePlainL10nChangesets(release.l10nChangesets)
         for key, changeset in locales.iteritems():
             locale_list[key] = {
                 "changeset": changeset,
             }
 
-    if "Fennec" in release.name:
+    elif "Fennec" in release.name:
         locales = json.loads(release.l10nChangesets)
         for key, extra in locales.iteritems():
             locale_list[key] = {
