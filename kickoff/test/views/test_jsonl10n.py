@@ -39,6 +39,7 @@ class TestJSONL10NRequestsAPI(ViewTest):
         self.assertTrue("Fennec-23.0b2-build4" in fileList)
         self.assertTrue("Thunderbird-24.0b2-build2.json" in fileList)
         self.assertTrue("Firefox-2.0-build1.json" in fileList)
+        self.assertTrue("Firefox-1.0.9-build1.json" not in fileList)
         # Check if we have duplicates of a given beta aggregation
         aggregated_entries = \
             [i for i, htmlLine in enumerate(fileList.split('<br />')) if "Firefox-3.0beta.json" in htmlLine]
@@ -53,6 +54,12 @@ class TestJSONL10NRequestsAPI(ViewTest):
 
         self.assertEquals(jsonFx['submittedAt'], pytz.utc.localize(datetime.datetime(2005, 1, 2, 3, 4, 5, 6)).isoformat())
         self.assertEquals(jsonFx['shippedAt'], pytz.utc.localize(datetime.datetime(2005, 1, 4, 3, 4, 5, 6)).isoformat())
+
+    def testJsonFileFXLegacy(self):
+        ret = self.get(BASE_JSON_PATH + '/l10n/Firefox-1.0.9-build1.json')
+        jsonFx = json.loads(ret.data)
+        self.assertEquals(ret.status_code, 200)
+        self.assertEquals(jsonFx["locales"], {})
 
     def testJsonFileFennec(self):
         ret = self.get(BASE_JSON_PATH + '/l10n/Fennec-24.0-build4.json')
