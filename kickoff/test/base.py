@@ -186,6 +186,20 @@ class TestBase(unittest.TestCase):
             r.status = "shipped"
             db.session.add(r)
 
+            r = FirefoxRelease(partials='0,1', promptWaitTime=5,
+                               submitter='joe', version='3.0.9', buildNumber=1,
+                               branch='a', mozillaRevision='def',
+                               l10nChangesets='legacy',
+                               mozillaRelbranch='FOO',
+                               submittedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
+                               shippedAt=datetime(2005, 1, 2, 3, 4, 5, 6),
+                               comment="yet an other amazing comment",
+                               description="we did this release because of foo")
+            r.complete = True
+            r.ready = True
+            r.status = "shipped"
+            db.session.add(r)
+
             r = DeveditionRelease(
                 partials='0,1', promptWaitTime=5, submitter='joe',
                 version='3.0b5', buildNumber=1, branch='a',
