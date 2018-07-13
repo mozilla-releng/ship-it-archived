@@ -54,7 +54,10 @@ To run python and JS tests with docker:
 * ```docker run --rm -v $(pwd):/src -ti shipit-test-runner /src/scripts/run_tests.sh```
 
 ## Deployment
-After a PR is merged to master, it is automatically deployed to https://ship-it-dev.allizom.org/ and https://ship-it.allizom.org/. In order to deploy to production, the `master` branch should be pushed to the `production` branch:
+After a PR is merged to master, it is automatically deployed (checked every 10
+minutes) to https://ship-it-dev.allizom.org/ and https://ship-it.allizom.org/.
+In order to deploy to production, the `master` branch should be pushed to the
+`production` branch:
 
 ```git push origin origin/master:production```
 
