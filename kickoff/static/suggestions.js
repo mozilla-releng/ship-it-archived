@@ -171,7 +171,8 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
         }
 
         partialsADI = isCurrentVersionESR ? allPartial.esr : allPartial.release;
-        maximumNumberOfPartials = isCurrentVersionESR ? 1 : 3; // 1 for ESR; max of 3 for promotion until we chain tasks instead of group
+        // 3 for ESR; 4 for release
+        maximumNumberOfPartials = isCurrentVersionESR ? 3 : 4;
     }
 
     // Transform the partialsADI datastruct in a single array to
@@ -190,14 +191,14 @@ function populatePartial(productName, version, previousBuilds, partialElement) {
 
     // When we have the ADI for Firefox Beta or Thunderbird, we can remove
     // this special case
-    partials = isTB(productName) || isFxBeta ?
+    partials = isTB(productName) || isFxBeta || isCurrentVersionESR ?
         craftLastReleasesAsPartials(version, previousReleases, 3) :
-        // The first partial will always be the previous published release
-        craftLastReleasesAsPartials(version, previousReleases, 1);
+        // releases use the last 4 releases, no ADI driven partials because the datasource is dead
+        craftLastReleasesAsPartials(version, previousReleases, 4);
 
     // Firefox X.0 releases are published to the beta channel, so generate a partial
     // from the most recent beta build to speed that up
-    if (partials.length < maximumNumberOfPartials && isFirefox(productName) && version.match(/^\d+\.0$/)) {
+    if (isFirefox(productName) && version.match(/^\d+\.0$/)) {
         betaBuilds = previousBuilds[base + 'beta'];
         if (betaBuilds) {
             // we use craftLastReleasesAsPartials() to avoid duplicates
