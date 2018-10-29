@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 # We only allow 6 partials maximum because the partial field is limited at 100 characters maximum.
 # One partial can be 16-char-long (for instance "52.1.0esrbuild1"). Hence 6 partials.
-PARTIAL_VERSIONS_REGEX = ('^(%sbuild\d+)(,%sbuild\d+){0,5}$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
+PARTIAL_VERSIONS_REGEX = (r'^(%sbuild\d+)(,%sbuild\d+){0,5}$' % (ANY_VERSION_REGEX, ANY_VERSION_REGEX))
 
 
 # From http://wtforms.simplecodes.com/docs/1.0.2/specific_problems.html#specialty-field-tricks
@@ -373,7 +373,7 @@ class DesktopReleaseForm(ReleaseForm):
                 # here's the exception
                 if release.product == 'firefox' and \
                    release.branch == 'releases/mozilla-release' and \
-                   re.match('^\d+\.0$', release.version):
+                   re.match(r'^\d+\.0$', release.version):
                     partials['releases/mozilla-beta'].append('%sbuild%d' % (release.version, release.buildNumber))
         self.partials.suggestions = json.dumps(partials)
 
