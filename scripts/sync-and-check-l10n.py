@@ -64,7 +64,7 @@ for locale in missingLocales:
     warnings.append("Warning: '%s' NOT found in SUPPORTED_NIGHTLY_LOCALES" % locale)
 if warnings:
     print ("\n".join(warnings))
-print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES (2 expected: trs, zam)" % len(missingLocales))
+print("Sanity check: %d locales not in SUPPORTED_NIGHTLY_LOCALES (1 expected: zam)" % len(missingLocales))
 
 print("Note that ship-it IS the source of truth for supported locales")
 print("Please report a bug to have a locale added/remove: https://bugzilla.mozilla.org/enter_bug.cgi?product=Release%20Engineering&component=Ship%20It")
