@@ -1,3 +1,7 @@
+# WARNING: If you update this file, please also keep
+# https://github.com/mozilla/release-services/blob/master/src/shipit/api/shipit_api/config.py
+# up to date. It's not used in production yet, but better to keep things in
+# sync.
 # To make flake8 happy
 NIGHTLY_VERSION = "65.0a1"
 LATEST_THUNDERBIRD_NIGHTLY_VERSION = "65.0a1"
