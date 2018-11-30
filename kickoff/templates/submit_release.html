@@ -16,11 +16,11 @@
 {% endif %}
 <div id='tabs'>
   <ul>
-      {% for prod in ('fennec', 'firefox', 'devedition', 'thunderbird') %}
+      {% for prod in ('thunderbird',) %}
       <li><a href="#{{ prod }}">{{ prod|capitalize }}</a></li>
       {% endfor %}
   </ul>
-  {% for prod in ('fennec', 'firefox', 'devedition', 'thunderbird') %}
+  {% for prod in ('thunderbird',) %}
   <div id={{prod}} >
     <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
     {% set product_template = 'includes/' + prod + '_release.html' %}
