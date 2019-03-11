@@ -1,35 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-{% if errors %}
-<div id='errors'>
-<ul>
-    {% for e in errors %}
-    <li>{{ e }}</li>
-    {% endfor %}
-</ul>
-</div> <!-- id=errors -->
-<script>
-  $(function(){
-     $('#tabs').tabs("select", "#{{ selectedProduct }}")
-});
-</script>
-{% endif %}
-<div id='tabs'>
-  <ul>
-      {% for prod in ('thunderbird',) %}
-      <li><a href="#{{ prod }}">{{ prod|capitalize }}</a></li>
-      {% endfor %}
-  </ul>
-  {% for prod in ('thunderbird',) %}
-  <div id={{prod}} >
-    <form class='submit_release_form' action='{{ url_for('submit_release') }}' method='post'>
-    {% set product_template = 'includes/' + prod + '_release.html' %}
-    {% include product_template %}
-    <div class='submit_release'>
-        <input type='submit' value="Gimme a {{ prod|capitalize }}"/>
-    </div>
-    </form>
-   </div>
-   {% endfor %}
+<div>
+    Please use <a href="https://shipit.mozilla-releng.net/">Ship-it V2</a> instead.
 </div>
 {% endblock %}
