@@ -209,17 +209,6 @@ class TestSubmitRelease(ViewTest):
                 self.assertEquals(ret.status_code, expected_status_code,
                                   'Version "%s" failed' % version)
 
-                if expected_status_code != 302:
-                    # Only the version error must pop up, otherwise we may get a false positive test.
-                    self.assertTrue(textwrap.dedent("""
-   <div id='errors'>
-   <ul>
-
-       <li>Version must match either X.0 or X.Y.Z</li>
-
-   </ul>
-""") in textwrap.dedent(ret.data), ret.data)
-
     def testGetSubmitForm(self):
         ret = self.get('/submit_release.html')
         self.assertEqual(ret.status_code, 200)
@@ -259,4 +248,3 @@ class TestSubmitRelease(ViewTest):
 
             ret = self.post('/submit_release.html', data='&'.join(data), content_type='application/x-www-form-urlencoded')
             self.assertEqual(ret.status_code, 400)
-            self.assertTrue('Invalid partials format. Maximum 6 partials are allowed. There must be no trailing comma.' in ret.data)
