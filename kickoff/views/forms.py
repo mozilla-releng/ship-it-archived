@@ -417,8 +417,9 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
             self.commRevision.data = self.commRelbranch.data
         else:
             if not self.commRevision.data:
-                valid = False
-                self.errors['commRevision'] = ['Comm revision is required']
+                # Thunderbird uses "revision" for commRevision, but
+                # shipitscript converts it to mozillaRevision
+                self.commRevision.data = self.mozillaRevision.data
 
         return valid
 
