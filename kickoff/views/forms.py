@@ -405,6 +405,8 @@ class ThunderbirdReleaseForm(DesktopReleaseForm):
     product = HiddenField('product')
     commRevision = StringField('Comm Revision:')
     commRelbranch = StringField('Comm Relbranch:', filters=[noneFilter])
+    # Do not validate Thunderbird partials, they are not implemented
+    partials = StringField('Partials:')
 
     def __init__(self, *args, **kwargs):
         ReleaseForm.__init__(self, prefix='thunderbird', product='thunderbird', *args, **kwargs)
