@@ -51,6 +51,10 @@
         "English": "Bambara",
         "native": "Bamanankan"
     },
+    "bn": {
+        "English": "Bengali",
+        "native": "\u09ac\u09be\u0982\u09b2\u09be"
+    },
     "bn-BD": {
         "English": "Bengali (Bangladesh)",
         "native": "\u09ac\u09be\u0982\u09b2\u09be (\u09ac\u09be\u0982\u09b2\u09be\u09a6\u09c7\u09b6)"
